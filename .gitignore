@@ -13,3 +13,6 @@
 
 # Added by cargo
 /target
+
+# build artifact
+lib/isorun/isorun*

@@ -14,7 +14,7 @@ fn init() -> Result<(), Error> {
 
     vm.define_singleton_method("new", function!(VM::new, 0))
         .expect("cannot define singleton method: VM::new");
-    vm.define_method("run", method!(VM::run, 0))
+    vm.define_method("run", method!(VM::run, 1))
         .expect("cannot define method: VM::run");
 
     Ok(())
