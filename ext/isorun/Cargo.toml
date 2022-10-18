@@ -1,0 +1,18 @@
+[package]
+name = "isorun"
+version = "0.1.0"
+edition = "2021"
+authors = ["Hannes Moser <box@hannesmoser.at>"]
+homepage = "https://github.com/eliias/isorun"
+repository = "https://github.com/eliias/isorun"
+
+[dependencies]
+magnus = { git = "https://github.com/matsadler/magnus", rev = "cc852bfa31992d882d42509b1165eb5f67f9dc2c" } # waiting for release with full rb-sys backend
+v8 = "0.53.1"
+
+[dev-dependencies]
+magnus = { git = "https://github.com/matsadler/magnus", rev = "cc852bfa31992d882d42509b1165eb5f67f9dc2c", features = ["embed"] } # waiting for release with full rb-sys backend
+
+[lib]
+name = "isorun"
+crate-type = ["cdylib"]

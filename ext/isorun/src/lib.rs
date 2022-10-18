@@ -1,0 +1,21 @@
+use magnus::{define_module, method, Error, Module, Object, function};
+use crate::isorun::{VM};
+
+mod isorun;
+
+#[magnus::init]
+fn init() -> Result<(), Error> {
+    let module = define_module("Isorun")
+        .expect("cannot define module: Isorun");
+
+    let vm = module
+        .define_class("VM", Default::default())
+        .expect("cannot define class: Isorun::VM");
+
+    vm.define_singleton_method("new", function!(VM::new, 0))
+        .expect("cannot define singleton method: VM::new");
+    vm.define_method("run", method!(VM::run, 0))
+        .expect("cannot define method: VM::run");
+
+    Ok(())
+}
