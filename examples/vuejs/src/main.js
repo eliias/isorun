@@ -1,22 +1,21 @@
-import {createSSRApp} from 'vue';
-import {renderToString} from 'vue/server-renderer';
+import {createSSRApp} from "vue"
+import {renderToString} from "vue/server-renderer";
 
-const app = createSSRApp({
-    data: () => ({ count: 1 }),
-    template: `<button @click="count++">{{ count }}</button>`
-})
+import App from "./App.vue";
 
-renderToString(app).then((html) => {
-    const str = `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <title>Vue SSR Example</title>
-      </head>
-      <body>
-        <div id="app">${html}</div>
-      </body>
-    </html>`;
+const app = createSSRApp(App)
 
-    console.log(str);
-});
+export function render() {
+    return renderToString(app).then((html) => {
+        return `
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <title>Vue SSR Example</title>
+              </head>
+              <body>
+                <div id="app">${html}</div>
+              </body>
+            </html>`;
+    });
+}

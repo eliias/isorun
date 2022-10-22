@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:server": "vite build --ssr src/main.js",
     "preview": "vite preview --port 4173"
   },
   "type": "module",

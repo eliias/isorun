@@ -14,11 +14,22 @@ RSpec.describe Isorun::VM do
   end
 
   it "initialize vm and call async render" do
+    skip
+
     code = File.read("examples/deno/renderer.js")
 
     vm = described_class.new
     actual = vm.run code
 
     expect(actual).to eq("<h1>Some rendered stuff</h1>")
+  end
+
+  it "initialize vm and call vue SSR" do
+    code = File.read("examples/vuejs/src/main.js")
+
+    vm = described_class.new
+    actual = vm.run code
+
+    expect(actual).to include("Hello, World!")
   end
 end
