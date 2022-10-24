@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class IssueController
   def show
     state = State.find

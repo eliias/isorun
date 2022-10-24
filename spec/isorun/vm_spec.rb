@@ -25,11 +25,29 @@ RSpec.describe Isorun::VM do
   end
 
   it "initialize vm and call vue SSR" do
+    skip
+
     code = File.read("examples/vuejs/src/main.js")
 
     vm = described_class.new
     actual = vm.run code
 
     expect(actual).to include("Hello, World!")
+  end
+
+  it "basic vue app" do
+    vm = described_class.new
+    vm.load("my_app", "examples/vuejs/dist/main.js")
+    html = vm.render("my_app")
+
+    expect(html).to include("Hello, World!")
+  end
+
+  it "vue app with list" do
+    vm = described_class.new
+    vm.load("my_app", "examples/vuejs-list/dist/main.js")
+    html = vm.render("my_app")
+
+    expect(html).to include("Hello, World!")
   end
 end
