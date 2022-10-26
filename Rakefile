@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require "bundler/gem_tasks"
-require "rspec/core/rake_task"
+require "rubygems/package_task"
+require "rake/testtask"
 require "rake/extensiontask"
+require "rb_sys"
 
 cross_rubies = %w[3.1.0 3.0.0 2.7.0]
 cross_platforms = %w[
@@ -15,18 +17,16 @@ cross_platforms = %w[
 
 spec = Bundler.load_gemspec("isorun.gemspec")
 
-Gem::PackageTask.new(spec).define
-task "package" => cross_platforms.map { |p| "gem:#{p}" }
+Gem::PackageTask.new(spec)
 
 Rake::ExtensionTask.new("isorun", spec) do |ext|
-  ext.lib_dir = "lib/isorun"
   ext.source_pattern = "*.{rs,toml}"
   ext.cross_compile = true
   ext.cross_platform = cross_platforms
-  ext.config_script = "extconf.rb"
-  ext.cross_compiling do |spec|
-    spec.files.reject! { |file| File.fnmatch?("*.tar.gz", file) }
-    spec.dependencies.reject! { |dep| dep.name == "rb-sys" }
+  ext.config_script = ENV["ALTERNATE_CONFIG_SCRIPT"] || "extconf.rb"
+  ext.cross_compiling do |c|
+    c.files.reject! { |file| File.fnmatch?("*.tar.gz", file) }
+    c.dependencies.reject! { |dep| dep.name == "rb-sys" }
   end
 end
 
@@ -36,22 +36,16 @@ namespace "gem" do
   end
 
   cross_platforms.each do |plat|
-    desc "Build all native binary gems in parallel"
-    multitask "native" => plat
-
     desc "Build the native gem for #{plat}"
     task plat => "prepare" do
       require "rake_compiler_dock"
 
-      ENV["RCD_IMAGE"] = if plat.include?("-musl")
-                           "eliias/rbsys-x86_64-linux-musl:#{RbSys::VERSION}"
-                         else
-                           "rbsys/#{plat}:#{RbSys::VERSION}"
-                         end
+      ENV["RCD_IMAGE"] = "rbsys/#{plat}:#{RbSys::VERSION}"
 
       RakeCompilerDock.sh <<~SH, platform: plat
         bundle && \
-        RUBY_CC_VERSION="#{cross_rubies.join(":")}" rake native:#{plat} pkg/#{spec.full_name}-#{plat}.gem
+        RUBY_CC_VERSION="#{cross_rubies.join(":")}" \
+        rake native:#{plat} pkg/#{spec.full_name}-#{plat}.gem
       SH
     end
   end

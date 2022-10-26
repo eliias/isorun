@@ -16,9 +16,12 @@ You can take this concept even further and make your application work without
 JavaScript at all, but still use React or Vue (or any other view-controller
 library) to define your user interface.
 
-Read more: [Netflix functions without client-side React, and it's a good thing](https://jakearchibald.com/2017/netflix-and-react/)).
+Read
+more: [Netflix functions without client-side React, and it's a good thing](https://jakearchibald.com/2017/netflix-and-react/))
+.
 
 Server-side rendering has a few challenges:
+
 1. You need something that can compile and run JavaScript
 2. You need to be able to integrate it into your language and framework
 3. You need to deal with the reality of frontend clients making network requests
@@ -52,7 +55,7 @@ it for everything.
 service. It allows you to intercept network calls and can provide *state* to
 the render context. This allows you to take a shortcut when rendering on the
 server. Data is no longer fetched over the network, but provided almost directly
-to the application. 
+to the application.
 
 I have built and operated Node.js SSR services, but it has always been super
 tedious to set up a dedicated service, just for server side rendering.
@@ -77,8 +80,45 @@ executing:
 
 ## Usage
 
-```ruby
-gem install isorun
+```bash
+rails new myproject --javascript esbuild
+```
+
+```jsx
+// app/javascript/my_app.jsx
+import * as React from "react";
+import {hydrateRoot} from "react-dom/client";
+
+import {App} from "./my_app/App.jsx";
+
+const container = document.querySelector('#my_app');
+hydrateRoot(container, <App/>);
+
+```
+
+```jsx
+// app/javascript/my_app-server.jsx
+import * as React from "react";
+import * as Server from "react-dom/server";
+
+import {App} from "./my_app/App.jsx";
+
+export function render() {
+  return Promise.resolve(Server.renderToString(<App/>));
+}
+```
+
+```erb
+<!--my_view.html.erb-->
+<%= isorun_app_tag("my_app") %>
+```
+
+```json
+{
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm"
+  }
+}
 ```
 
 ## Development
