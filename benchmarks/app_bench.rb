@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'benchmark/ips'
+require "benchmark/ips"
 require "bundler/setup"
 require "isorun"
 

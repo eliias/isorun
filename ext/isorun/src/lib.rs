@@ -1,4 +1,5 @@
 use magnus::{define_module, method, Error, Module, Object, function};
+
 use crate::isorun::vm::VM;
 
 mod isorun;

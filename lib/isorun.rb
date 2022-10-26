@@ -11,6 +11,10 @@ end
 require_relative "isorun/vm"
 require_relative "isorun/version"
 
+require "isorun/engine"
+
 module Isorun
+  extend ActiveSupport::Autoload
+
   class Error < StandardError; end
 end

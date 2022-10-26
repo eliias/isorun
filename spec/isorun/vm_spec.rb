@@ -25,4 +25,13 @@ RSpec.describe Isorun::VM do
 
     expect(html).to include("You’ve successfully created a project with")
   end
+
+  it "vue app with API call" do
+    vm = described_class.new
+    vm.load("my_app", "examples/vuejs-api/dist/main.js")
+    html = vm.render("my_app")
+
+    pp html
+    # expect(html).to include("You’ve successfully created a project with")
+  end
 end

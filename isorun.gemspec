@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/eliias/isorun"
   spec.metadata["changelog_uri"] = "https://github.com/eliias/isorun"
 
-  spec.files = Dir["lib/**/*.rb", "ext/**/*.{rs,toml,lock,rb}"]
+  spec.files = Dir["{app,lib}/**/*", "ext/**/*.{rs,toml,lock,rb}"]
 
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rake", "> 1"
   spec.add_dependency "rb_sys", "~> 0.9.31"
 
+  spec.add_development_dependency "rails", "~> 7.0.4"
   spec.add_development_dependency "rake-compiler", "~> 1.2.0"
   spec.add_development_dependency "rake-compiler-dock", "~> 1.2.2"
 

@@ -1,8 +1,12 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use deno_core::{FsModuleLoader, JsRuntime, ModuleId};
+use deno_core::{Extension, FsModuleLoader, JsRuntime, located_script_name, ModuleId, op};
 use deno_core::anyhow::{Error as AnyhowError};
+use deno_core::error::AnyError;
+use deno_runtime::{BootstrapOptions, js};
+use deno_runtime::permissions::Permissions;
+use deno_web::BlobStore;
 use magnus::{Error};
 use v8::{Promise, PromiseResolver};
 use tokio::runtime::Runtime;
@@ -19,10 +23,56 @@ unsafe impl Send for VM {}
 
 impl VM {
     pub fn new() -> VM {
-        let js_runtime = JsRuntime::new(deno_core::RuntimeOptions {
+        // create extensions
+        let fetch_intercept_extension = Extension::builder()
+            .ops(vec![op_fetch::decl()])
+            .build();
+
+        let mut js_runtime = JsRuntime::new(deno_core::RuntimeOptions {
             module_loader: Some(Rc::new(FsModuleLoader)),
+            startup_snapshot: Some(js::deno_isolate_init()),
+            extensions: vec![
+                // Web APIs
+                deno_webidl::init(),
+                deno_console::init(),
+                deno_url::init(),
+                deno_web::init::<Permissions>(
+                    BlobStore::default(),
+                    None,
+                ),
+                deno_node::init::<Permissions>(true, None),
+
+                // custom fetch extension
+                fetch_intercept_extension,
+            ],
             ..Default::default()
         });
+
+        // load runtime API
+        js_runtime.execute_script(
+            "[isorun:runtime.js]",
+            include_str!("../runtime.js"),
+        ).unwrap();
+
+        //
+        let bootstrap_options = BootstrapOptions {
+            args: vec![],
+            cpu_count: 1,
+            debug_flag: false,
+            enable_testing_features: false,
+            location: None,
+            no_color: false,
+            is_tty: false,
+            runtime_version: "x".to_string(),
+            ts_version: "x".to_string(),
+            unstable: false,
+            user_agent: "hello_runtime".to_string(),
+            inspect: false,
+        };
+        let script = format!("bootstrap.mainRuntime({})", bootstrap_options.as_json());
+        js_runtime
+            .execute_script(&located_script_name!(), &script)
+            .expect("Failed to execute bootstrap script");
 
         let registry: HashMap<String, ModuleId> = HashMap::new();
 
@@ -104,4 +154,10 @@ impl VM {
 
         Ok(result.to_rust_string_lossy(scope))
     }
+}
+
+#[op]
+async fn op_fetch(url: String) -> Result<String, AnyError> {
+    let response = format!("{{\"Hello\": \"World\", \"url\":\"{}\"}}", url);
+    Ok(response)
 }
