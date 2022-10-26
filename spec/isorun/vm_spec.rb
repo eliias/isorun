@@ -2,37 +2,12 @@
 
 RSpec.describe Isorun::VM do
   it "initialize vm and render vanilla JS" do
-    skip
-
-    code = File.read("examples/vanillajs/index.js")
-
     vm = described_class.new
-    actual = vm.run code
-    expected = "<h1>Hello, World!</h1>"
+    vm.load("my_app", "examples/vanillajs/index.js")
 
-    expect(actual).to eq(expected)
-  end
+    html = vm.render("my_app")
 
-  it "initialize vm and call async render" do
-    skip
-
-    code = File.read("examples/deno/renderer.js")
-
-    vm = described_class.new
-    actual = vm.run code
-
-    expect(actual).to eq("<h1>Some rendered stuff</h1>")
-  end
-
-  it "initialize vm and call vue SSR" do
-    skip
-
-    code = File.read("examples/vuejs/src/main.js")
-
-    vm = described_class.new
-    actual = vm.run code
-
-    expect(actual).to include("Hello, World!")
+    expect(html).to eq("<h1>Hello, World!</h1>")
   end
 
   it "basic vue app" do
@@ -48,6 +23,6 @@ RSpec.describe Isorun::VM do
     vm.load("my_app", "examples/vuejs-list/dist/main.js")
     html = vm.render("my_app")
 
-    expect(html).to include("Hello, World!")
+    expect(html).to include("You’ve successfully created a project with")
   end
 end
