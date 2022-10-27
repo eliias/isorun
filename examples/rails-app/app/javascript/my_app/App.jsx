@@ -1,12 +1,19 @@
 import * as React from "react";
-import  { Fragment, useState } from 'react'
+import {ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql, useApolloClient} from '@apollo/client';
+import {useMemo, useRef} from "react";
+
+const QUERY = gql`
+  query TestQuery {
+    testField
+  }
+`;
 
 const navigation = [
-  { name: 'Home', href: '#' },
-  { name: 'Trending', href: '#' },
-  { name: 'Bookmarks', href: '#' },
-  { name: 'Messages', href: '#' },
-  { name: 'Profile', href: '#' },
+  {name: 'Home', href: '#'},
+  {name: 'Trending', href: '#'},
+  {name: 'Bookmarks', href: '#'},
+  {name: 'Messages', href: '#'},
+  {name: 'Profile', href: '#'},
 ]
 const subNavigation = [
   {
@@ -57,7 +64,17 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export const App = () => {
+function createClient(isSSR) {
+  return new ApolloClient({
+    ssrMode: false,
+    uri: 'http://localhost:3000/graphql',
+    cache: new InMemoryCache(),
+  });
+}
+
+const UI = () => {
+  const {data} = useQuery(QUERY);
+
   return (
     <>
       <div className="flex h-full">
@@ -191,7 +208,8 @@ export const App = () => {
                             Username
                           </label>
                           <div className="mt-1 flex rounded-md shadow-sm">
-                            <span className="inline-flex items-center rounded-l-md border border-r-0 border-blue-gray-300 bg-blue-gray-50 px-3 text-blue-gray-500 sm:text-sm">
+                            <span
+                              className="inline-flex items-center rounded-l-md border border-r-0 border-blue-gray-300 bg-blue-gray-50 px-3 text-blue-gray-500 sm:text-sm">
                               workcation.com/
                             </span>
                             <input
@@ -216,7 +234,8 @@ export const App = () => {
                               alt=""
                             />
                             <div className="ml-4 flex">
-                              <div className="relative flex cursor-pointer items-center rounded-md border border-blue-gray-300 bg-white py-2 px-3 shadow-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 focus-within:ring-offset-blue-gray-50 hover:bg-blue-gray-50">
+                              <div
+                                className="relative flex cursor-pointer items-center rounded-md border border-blue-gray-300 bg-white py-2 px-3 shadow-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 focus-within:ring-offset-blue-gray-50 hover:bg-blue-gray-50">
                                 <label
                                   htmlFor="user-photo"
                                   className="pointer-events-none relative text-sm font-medium text-blue-gray-900"
@@ -316,7 +335,7 @@ export const App = () => {
                             autoComplete="country-name"
                             className="mt-1 block w-full rounded-md border-blue-gray-300 text-blue-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                           >
-                            <option />
+                            <option/>
                             <option>United States</option>
                             <option>Canada</option>
                             <option>Mexico</option>
@@ -337,7 +356,8 @@ export const App = () => {
 
                         <p className="text-sm text-blue-gray-500 sm:col-span-6">
                           This account was created on{' '}
-                          <time dateTime="2017-01-05T20:35:40">January 5, 2017, 8:35:40 PM</time>.
+                          <time dateTime="2017-01-05T20:35:40">January 5, 2017, 8:35:40 PM</time>
+                          .
                         </p>
                       </div>
 
@@ -365,4 +385,14 @@ export const App = () => {
       </div>
     </>
   )
+}
+
+export const App = ({isSSR}) => {
+  const client = useMemo(() => createClient(isSSR), []);
+
+  return (
+    <ApolloProvider client={client}>
+      <UI/>
+    </ApolloProvider>
+  );
 }

@@ -4,7 +4,7 @@ use std::rc::Rc;
 use deno_core::{Extension, FsModuleLoader, JsRuntime, located_script_name, ModuleId, op};
 use deno_core::anyhow::{Error as AnyhowError};
 use deno_core::error::AnyError;
-use deno_runtime::{BootstrapOptions, js};
+use deno_runtime::{BootstrapOptions, deno_ffi, deno_http, deno_net, js, ops};
 use deno_runtime::permissions::Permissions;
 use deno_web::BlobStore;
 use magnus::{Error};
@@ -41,7 +41,21 @@ impl VM {
                     None,
                 ),
                 deno_node::init::<Permissions>(true, None),
-
+                deno_fetch::init::<Permissions>(deno_fetch::Options {
+                    user_agent: "x".to_string(),
+                    root_cert_store: Default::default(),
+                    unsafely_ignore_certificate_errors: Default::default(),
+                    file_fetch_handler: Rc::new(deno_fetch::FsFetchHandler),
+                    ..Default::default()
+                }),
+                deno_ffi::init::<Permissions>(true),
+                deno_net::init::<Permissions>(
+                    Default::default(),
+                    true,
+                    Default::default(),
+                ),
+                deno_http::init(),
+                ops::http::init(),
                 // custom fetch extension
                 fetch_intercept_extension,
             ],
@@ -49,12 +63,11 @@ impl VM {
         });
 
         // load runtime API
-        js_runtime.execute_script(
-            "[isorun:runtime.js]",
-            include_str!("../runtime.js"),
-        ).unwrap();
+        js_runtime
+            .execute_script("[isorun:runtime.js]", include_str!("../runtime.js"))
+            .expect("Failed to execute runtime script");
 
-        //
+        // bootstrap
         let bootstrap_options = BootstrapOptions {
             args: vec![],
             cpu_count: 1,
@@ -108,14 +121,12 @@ impl VM {
 
     async fn load_module(&self, module_path: &str) -> Result<ModuleId, AnyhowError> {
         let mut js_runtime = self.js_runtime.borrow_mut();
-
         let main_module = deno_core::resolve_path(module_path).unwrap();
         let mod_id = js_runtime.load_main_module(&main_module, None).await?;
-        let result = js_runtime.mod_evaluate(mod_id);
+        let result = js_runtime.mod_evaluate(mod_id).await?;
         js_runtime.run_event_loop(false).await?;
-        result.await??;
 
-        Ok(mod_id)
+        result.map(|_| mod_id)
     }
 
     pub fn render(&self, app_id: String) -> Result<String, Error> {
@@ -134,6 +145,7 @@ impl VM {
         // find function
         let module_namespace = js_runtime.get_module_namespace(*module_id).unwrap();
         let scope = &mut js_runtime.handle_scope();
+
         let global = scope.get_current_context().global(scope);
         let module_namespace =
             v8::Local::<v8::Object>::new(scope, module_namespace);
