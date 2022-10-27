@@ -5,6 +5,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.0.4"
 
+gem "graphql", "~> 2.0.15"
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.4"
 
@@ -76,3 +78,4 @@ group :test do
 end
 
 gem "tailwindcss-rails", "~> 2.0"
+gem "graphiql-rails", group: :development
