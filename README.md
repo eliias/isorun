@@ -2,6 +2,9 @@
 
 > A JavaScript render target for Ruby (on Rails)
 
+Don't use this for anything but experiments. There are better ways to embed V8
+in your application. Check out [miniracer](https://github.com/rubyjs/mini_racer).
+
 ## Server-side rendering
 
 The slowest way to deliver a user interface, is delivering a JavaScript file
