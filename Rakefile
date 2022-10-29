@@ -31,7 +31,7 @@ Rake::ExtensionTask.new("isorun", spec) do |ext|
 end
 
 namespace "gem" do
-  task "prepare" do
+  task "prepare" => :environment do
     sh "bundle"
   end
 
@@ -73,7 +73,7 @@ begin
 
   YARD::Rake::YardocTask.new
 
-  task :docs do
+  task docs: :environment do
     `yard server --reload`
   end
 rescue LoadError

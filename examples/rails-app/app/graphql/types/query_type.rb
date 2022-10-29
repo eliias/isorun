@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Types
   class QueryType < Types::BaseObject
     # Add `node(id: ID!) and `nodes(ids: [ID!]!)`
@@ -9,7 +11,7 @@ module Types
 
     # TODO: remove me
     field :test_field, String, null: false,
-      description: "An example field added by the generator"
+                               description: "An example field added by the generator"
     def test_field
       "Hello World!"
     end

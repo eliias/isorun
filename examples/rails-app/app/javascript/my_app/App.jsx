@@ -1,12 +1,7 @@
 import * as React from "react";
-import {ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql, useApolloClient} from '@apollo/client';
-import {useMemo, useRef} from "react";
-
-const QUERY = gql`
-  query TestQuery {
-    testField
-  }
-`;
+import {gql, useQuery} from '@apollo/client';
+import {useCallback, useState} from "react";
+import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 
 const navigation = [
   {name: 'Home', href: '#'},
@@ -64,16 +59,17 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-function createClient(isSSR) {
-  return new ApolloClient({
-    ssrMode: false,
-    uri: 'http://localhost:3000/graphql',
-    cache: new InMemoryCache(),
-  });
-}
+export const App = () => {
+  const QUERY = gql`
+    query TestQuery {
+      testField
+    }
+  `;
 
-const UI = () => {
   const {data} = useQuery(QUERY);
+
+  const [counter, setCounter] = useState(0);
+  const increment = useCallback(() => setCounter(counter + 1), [counter]);
 
   return (
     <>
@@ -166,8 +162,10 @@ const UI = () => {
                 {/* Main content */}
                 <div className="flex-1 xl:overflow-y-auto">
                   <div className="mx-auto max-w-3xl py-10 px-4 sm:px-6 lg:py-12 lg:px-8">
-                    <h1 className="text-3xl font-bold tracking-tight text-blue-gray-900">Account</h1>
-
+                    <h1 className="text-3xl font-bold tracking-tight text-blue-gray-900">User account</h1>
+                    <h2>{data?.testField}</h2>
+                    <ChevronLeftIcon className="h-5 w-5 text-blue-gray-400" aria-hidden="true" />
+                    <button onClick={increment}>{`Counter: ${counter}`}</button>
                     <form className="divide-y-blue-gray-200 mt-6 space-y-8 divide-y">
                       <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-6 sm:gap-x-6">
                         <div className="sm:col-span-6">
@@ -355,9 +353,7 @@ const UI = () => {
                         </div>
 
                         <p className="text-sm text-blue-gray-500 sm:col-span-6">
-                          This account was created on{' '}
-                          <time dateTime="2017-01-05T20:35:40">January 5, 2017, 8:35:40 PM</time>
-                          .
+                          This account was created on <time dateTime="2017-01-05T20:35:40">January 5, 2017, 8:35:40 PM</time>.
                         </p>
                       </div>
 
@@ -385,14 +381,4 @@ const UI = () => {
       </div>
     </>
   )
-}
-
-export const App = ({isSSR}) => {
-  const client = useMemo(() => createClient(isSSR), []);
-
-  return (
-    <ApolloProvider client={client}>
-      <UI/>
-    </ApolloProvider>
-  );
 }
