@@ -1,170 +1,163 @@
-use std::cell::RefCell;
-use std::collections::HashMap;
+use std::borrow::{Borrow, BorrowMut};
+use std::ops::Deref;
+use std::path::Path;
 use std::rc::Rc;
-use deno_core::{Extension, FsModuleLoader, JsRuntime, located_script_name, ModuleId, op};
-use deno_core::anyhow::{Error as AnyhowError};
-use deno_core::error::AnyError;
-use deno_runtime::{BootstrapOptions, deno_ffi, deno_http, deno_net, js, ops};
+use std::sync::Arc;
+use std::task::Poll;
+use deno_core::{FsModuleLoader, JsRuntime, ModuleId, ModuleSpecifier, op};
+use deno_core::error::{AnyError, generic_error};
+use deno_core::futures::future::poll_fn;
+use deno_core::serde_json::to_value;
+use deno_runtime::{BootstrapOptions};
+use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
 use deno_runtime::permissions::Permissions;
+use deno_runtime::worker::{MainWorker, WorkerOptions};
 use deno_web::BlobStore;
 use magnus::{Error};
-use v8::{Promise, PromiseResolver};
-use tokio::runtime::Runtime;
+use magnus::class::thread;
+use magnus::gvl::without_gvl;
+use v8::{Handle, Local, Promise, PromiseResolver, Value};
+
+fn get_error_class_name(e: &AnyError) -> &'static str {
+    deno_runtime::errors::get_error_class_name(e).unwrap_or("Error")
+}
 
 #[magnus::wrap(class = "Isorun::VM")]
-pub struct VM {
-    js_runtime: RefCell<JsRuntime>,
-    registry: RefCell<HashMap<String, ModuleId>>,
-    runtime: RefCell<Runtime>,
-}
+pub struct VM;
 
 /// SAFETY: This is safe because we only access this data when the GVL is held.
 unsafe impl Send for VM {}
 
 impl VM {
-    pub fn new() -> VM {
-        // create extensions
-        let fetch_intercept_extension = Extension::builder()
-            .ops(vec![op_fetch::decl()])
-            .build();
+    pub fn new() -> VM { VM {} }
 
-        let mut js_runtime = JsRuntime::new(deno_core::RuntimeOptions {
-            module_loader: Some(Rc::new(FsModuleLoader)),
-            startup_snapshot: Some(js::deno_isolate_init()),
-            extensions: vec![
-                // Web APIs
-                deno_webidl::init(),
-                deno_console::init(),
-                deno_url::init(),
-                deno_web::init::<Permissions>(
-                    BlobStore::default(),
-                    None,
-                ),
-                deno_node::init::<Permissions>(true, None),
-                deno_fetch::init::<Permissions>(deno_fetch::Options {
-                    user_agent: "x".to_string(),
-                    root_cert_store: Default::default(),
-                    unsafely_ignore_certificate_errors: Default::default(),
-                    file_fetch_handler: Rc::new(deno_fetch::FsFetchHandler),
-                    ..Default::default()
-                }),
-                deno_ffi::init::<Permissions>(true),
-                deno_net::init::<Permissions>(
-                    Default::default(),
-                    true,
-                    Default::default(),
-                ),
-                deno_http::init(),
-                ops::http::init(),
-                // custom fetch extension
-                fetch_intercept_extension,
-            ],
-            ..Default::default()
+    async fn _call(&self, mut worker: MainWorker, module_id: ModuleId) -> Result<String, AnyError> {
+        let module_namespace;
+        {
+            let js_runtime = worker.js_runtime.borrow_mut();
+            module_namespace = js_runtime.get_module_namespace(module_id).unwrap();
+        }
+
+        let promise;
+        {
+            let js_runtime = worker.js_runtime.borrow_mut();
+            let mut scope = js_runtime.handle_scope();
+
+            let module_namespace =
+                Local::<v8::Object>::new(&mut scope, module_namespace);
+            let export_name = v8::String::new(&mut scope, "render").unwrap();
+            let binding = module_namespace.get(&mut scope, export_name.into()).unwrap();
+            let func = v8::Local::<v8::Function>::try_from(binding)?;
+
+            // call function
+            let args = &[];
+            let result = func.call(&mut scope, module_namespace.into(), args).unwrap();
+            promise = v8::Global::new(&mut scope, result);
+        }
+
+        let value;
+        {
+            let js_runtime = worker.js_runtime.borrow_mut();
+            js_runtime.run_event_loop(false).await?;
+            value = js_runtime.resolve_value(promise).await?;
+        }
+
+        let html;
+        {
+            let js_runtime = worker.js_runtime.borrow_mut();
+            let scope = &mut js_runtime.handle_scope();
+            html = value.open(scope).to_rust_string_lossy(scope);
+        }
+
+        Ok(html)
+    }
+
+    async fn _render(&self, app_path: String) -> Result<String, AnyError> {
+        let module_loader = Rc::new(FsModuleLoader);
+        let create_web_worker_cb = Arc::new(|_| {
+            todo!("Web workers are not supported in the example");
+        });
+        let web_worker_event_cb = Arc::new(|_| {
+            todo!("Web workers are not supported in the example");
         });
 
-        // load runtime API
-        js_runtime
-            .execute_script("[isorun:runtime.js]", include_str!("../runtime.js"))
-            .expect("Failed to execute runtime script");
-
-        // bootstrap
-        let bootstrap_options = BootstrapOptions {
-            args: vec![],
-            cpu_count: 1,
-            debug_flag: false,
-            enable_testing_features: false,
-            location: None,
-            no_color: false,
-            is_tty: false,
-            runtime_version: "x".to_string(),
-            ts_version: "x".to_string(),
-            unstable: false,
-            user_agent: "hello_runtime".to_string(),
-            inspect: false,
+        let options = WorkerOptions {
+            bootstrap: BootstrapOptions {
+                args: vec![],
+                cpu_count: 1,
+                debug_flag: false,
+                enable_testing_features: false,
+                locale: v8::icu::get_language_tag(),
+                location: None,
+                no_color: false,
+                is_tty: false,
+                runtime_version: "x".to_string(),
+                ts_version: "x".to_string(),
+                unstable: false,
+                user_agent: "hello_runtime".to_string(),
+                inspect: false,
+            },
+            extensions: vec![],
+            unsafely_ignore_certificate_errors: None,
+            root_cert_store: None,
+            seed: None,
+            source_map_getter: None,
+            format_js_error_fn: None,
+            web_worker_preload_module_cb: web_worker_event_cb.clone(),
+            web_worker_pre_execute_module_cb: web_worker_event_cb,
+            create_web_worker_cb,
+            maybe_inspector_server: None,
+            should_break_on_first_statement: false,
+            module_loader,
+            npm_resolver: None,
+            get_error_class_fn: Some(&get_error_class_name),
+            cache_storage_dir: None,
+            origin_storage_dir: None,
+            blob_store: BlobStore::default(),
+            broadcast_channel: InMemoryBroadcastChannel::default(),
+            shared_array_buffer_store: None,
+            compiled_wasm_module_store: None,
+            stdio: Default::default(),
         };
-        let script = format!("bootstrap.mainRuntime({})", bootstrap_options.as_json());
-        js_runtime
-            .execute_script(&located_script_name!(), &script)
-            .expect("Failed to execute bootstrap script");
 
-        let registry: HashMap<String, ModuleId> = HashMap::new();
+        let js_app_path = Path::new(&app_path);
+        let main_module = deno_core::resolve_path(&js_app_path.to_string_lossy())?;
+        let permissions = Permissions::allow_all();
 
-        let runtime = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
+        let mut worker = MainWorker::bootstrap_from_options(
+            main_module.clone(),
+            permissions,
+            options,
+        );
+        let module_id = worker.preload_main_module(&main_module).await.unwrap();
+        worker.evaluate_module(module_id).await?;
+        worker.run_event_loop(false).await?;
 
-        VM {
-            js_runtime: RefCell::from(js_runtime),
-            registry: RefCell::from(registry),
-            runtime: RefCell::from(runtime),
-        }
+        worker.execute_script(
+            "[isorun:01-graphql.js]",
+            include_str!("../js/01-fetch.js")
+        )?;
+
+        // call render function
+        let html = self._call(worker, module_id).await?;
+
+        Ok(html)
     }
 
-    pub fn load(&self, app_id: String, app_path: String) -> Result<(), Error> {
-        let id = app_id.as_str();
-        let mut registry = self.registry.borrow_mut();
-        let runtime = self.runtime.borrow();
+    pub fn render(&self, app_path: String) -> Result<String, Error> {
+        let result = without_gvl(move |_| {
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap();
 
-        if registry.contains_key(id) {
-            return Err(Error::runtime_error(
-                format!("cannot register app: {}. an app with the same ID already exists.", id)));
-        }
+            runtime.block_on(self._render(app_path.clone()))
+                .map_err(|error| Error::runtime_error(
+                    format!("cannot render app: {}, error: {}", app_path, error))
+                )
+        }, None::<fn()>);
 
-        runtime
-            .block_on(self.load_module(app_path.as_str()))
-            .map(|mod_id| { registry.insert(app_id, mod_id); })
-            .map_err(|err| Error::runtime_error(format!("cannot load app: {}.\n\tMake sure app is available at \"{}\"", err, app_path)))?;
-
-        Ok(())
-    }
-
-    async fn load_module(&self, module_path: &str) -> Result<ModuleId, AnyhowError> {
-        let mut js_runtime = self.js_runtime.borrow_mut();
-        let main_module = deno_core::resolve_path(module_path).unwrap();
-        let mod_id = js_runtime.load_main_module(&main_module, None).await?;
-        let result = js_runtime.mod_evaluate(mod_id).await?;
-        js_runtime.run_event_loop(false).await?;
-
-        result.map(|_| mod_id)
-    }
-
-    pub fn render(&self, app_id: String) -> Result<String, Error> {
-        let id = app_id.as_str();
-        let mut js_runtime = self.js_runtime.borrow_mut();
-        let registry = self.registry.borrow();
-
-        if !registry.contains_key(id) {
-            return Err(Error::runtime_error(
-                format!("cannot render app without loading it: {}. have you called vm#load(app_id, app_path) before.", id)));
-        }
-
-        // get module_id
-        let module_id = registry.get(id).unwrap();
-
-        // find function
-        let module_namespace = js_runtime.get_module_namespace(*module_id).unwrap();
-        let scope = &mut js_runtime.handle_scope();
-
-        let global = scope.get_current_context().global(scope);
-        let module_namespace =
-            v8::Local::<v8::Object>::new(scope, module_namespace);
-        let render_export_name = v8::String::new(scope, "render").unwrap();
-        let binding = module_namespace.get(scope, render_export_name.into()).unwrap();
-        let func = v8::Local::<v8::Function>::try_from(binding).unwrap();
-
-        // call function
-        let args = &[];
-        let result = func.call(scope, global.into(), args).unwrap();
-
-        // return value
-        let return_value = v8::Local::<Promise>::try_from(result).unwrap();
-        let resolver = PromiseResolver::new(scope).unwrap();
-        let promise = resolver.get_promise(scope);
-        resolver.resolve(scope, return_value.into());
-        let result = promise.result(scope);
-
-        Ok(result.to_rust_string_lossy(scope))
+        return result.0.unwrap();
     }
 }
 
