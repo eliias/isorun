@@ -1,8 +1,12 @@
-# Isorun
+<p align="center">
+  <img alt="isorun" src="./docs/assets/logo.png" width="200" />
+</p>
+
+---
 
 > A JavaScript render target for Ruby (on Rails)
 
-Don't use this for anything but experiments. There are better ways to embed V8
+**⚠ ️Attention:** Don't use this for anything but experiments. There are better ways to embed V8
 in your application. Check out [miniracer](https://github.com/rubyjs/mini_racer).
 
 ## Server-side rendering
@@ -20,8 +24,7 @@ JavaScript at all, but still use React or Vue (or any other view-controller
 library) to define your user interface.
 
 Read
-more: [Netflix functions without client-side React, and it's a good thing](https://jakearchibald.com/2017/netflix-and-react/))
-.
+more: [Netflix functions without client-side React, and it's a good thing](https://jakearchibald.com/2017/netflix-and-react/).
 
 Server-side rendering has a few challenges:
 

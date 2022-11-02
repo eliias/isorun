@@ -157,7 +157,7 @@ impl VM {
                 )
         }, None::<fn()>);
 
-        return result.0.unwrap();
+        result.0.unwrap()
     }
 }
 
