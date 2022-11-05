@@ -1,32 +1,22 @@
-use std::borrow::{Borrow, BorrowMut};
-use std::ops::Deref;
+use std::borrow::{BorrowMut};
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::Arc;
-use std::task::Poll;
-use deno_core::{FsModuleLoader, JsRuntime, ModuleId, ModuleSpecifier, op};
-use deno_core::error::{AnyError, generic_error};
-use deno_core::futures::future::poll_fn;
-use deno_core::serde_json::to_value;
+use deno_core::{Extension, FsModuleLoader, ModuleId};
+use deno_core::error::{AnyError};
 use deno_runtime::{BootstrapOptions};
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
 use deno_runtime::permissions::Permissions;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
 use deno_web::BlobStore;
 use magnus::{Error};
-use magnus::class::thread;
-use magnus::gvl::without_gvl;
-use v8::{Handle, Local, Promise, PromiseResolver, Value};
+use v8::{Local};
 
 fn get_error_class_name(e: &AnyError) -> &'static str {
     deno_runtime::errors::get_error_class_name(e).unwrap_or("Error")
 }
 
-#[magnus::wrap(class = "Isorun::VM")]
 pub struct VM;
-
-/// SAFETY: This is safe because we only access this data when the GVL is held.
-unsafe impl Send for VM {}
 
 impl VM {
     pub fn new() -> VM { VM {} }
@@ -50,7 +40,10 @@ impl VM {
             let func = v8::Local::<v8::Function>::try_from(binding)?;
 
             // call function
-            let args = &[];
+            let resource_id = v8::Number::new(scope.as_mut(), 1 as f64);
+            let resource_id_value = Local::from(resource_id);
+
+            let args = &[resource_id_value];
             let result = func.call(&mut scope, module_namespace.into(), args).unwrap();
             promise = v8::Global::new(&mut scope, result);
         }
@@ -72,7 +65,7 @@ impl VM {
         Ok(html)
     }
 
-    async fn _render(&self, app_path: String) -> Result<String, AnyError> {
+    async fn _render(&self, app_path: String, mut extensions: Vec<Extension>) -> Result<String, AnyError> {
         let module_loader = Rc::new(FsModuleLoader);
         let create_web_worker_cb = Arc::new(|_| {
             todo!("Web workers are not supported in the example");
@@ -97,7 +90,7 @@ impl VM {
                 user_agent: "hello_runtime".to_string(),
                 inspect: false,
             },
-            extensions: vec![],
+            extensions: std::mem::take(&mut extensions),
             unsafely_ignore_certificate_errors: None,
             root_cert_store: None,
             seed: None,
@@ -133,36 +126,21 @@ impl VM {
         worker.evaluate_module(module_id).await?;
         worker.run_event_loop(false).await?;
 
-        worker.execute_script(
-            "[isorun:01-graphql.js]",
-            include_str!("../js/01-fetch.js")
-        )?;
-
         // call render function
         let html = self._call(worker, module_id).await?;
 
         Ok(html)
     }
 
-    pub fn render(&self, app_path: String) -> Result<String, Error> {
-        let result = without_gvl(move |_| {
-            let runtime = tokio::runtime::Builder::new_current_thread()
-                .enable_all()
-                .build()
-                .unwrap();
+    pub fn render(&self, app_path: String, extensions: Vec<Extension>) -> Result<String, Error> {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
 
-            runtime.block_on(self._render(app_path.clone()))
-                .map_err(|error| Error::runtime_error(
-                    format!("cannot render app: {}, error: {}", app_path, error))
-                )
-        }, None::<fn()>);
-
-        result.0.unwrap()
+        runtime.block_on(self._render(app_path.clone(), extensions))
+            .map_err(|error| Error::runtime_error(
+                format!("cannot render app: {}, error: {}", app_path, error))
+            )
     }
-}
-
-#[op]
-async fn op_fetch(url: String) -> Result<String, AnyError> {
-    let response = format!("{{\"Hello\": \"World\", \"url\":\"{}\"}}", url);
-    Ok(response)
 }

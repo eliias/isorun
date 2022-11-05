@@ -1,9 +1,11 @@
 PATH
   remote: .
   specs:
-    isorun (0.1.0)
+    isorun (0.0.0)
+      actionpack (>= 6.0.0)
+      railties (>= 6.0.0)
       rake (> 1)
-      rb_sys (~> 0.9.31)
+      rb_sys (~> 0.9.35)
 
 GEM
   remote: https://rubygems.org/
@@ -145,7 +147,7 @@ GEM
     rake-compiler (1.2.0)
       rake
     rake-compiler-dock (1.2.2)
-    rb_sys (0.9.31)
+    rb_sys (0.9.35)
     regexp_parser (2.6.0)
     rexml (3.2.5)
     rspec (3.11.0)
@@ -203,7 +205,7 @@ PLATFORMS
 DEPENDENCIES
   benchmark-ips
   isorun!
-  rails (~> 7.0.4)
+  rails
   rake (~> 13.0)
   rake-compiler (~> 1.2.0)
   rake-compiler-dock (~> 1.2.2)

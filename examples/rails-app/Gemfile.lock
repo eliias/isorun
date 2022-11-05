@@ -1,9 +1,11 @@
 PATH
   remote: ../..
   specs:
-    isorun (0.1.0)
+    isorun (0.0.0)
+      actionpack (>= 6.0.0)
+      railties (>= 6.0.0)
       rake (> 1)
-      rb_sys (~> 0.9.31)
+      rb_sys (~> 0.9.35)
 
 GEM
   remote: https://rubygems.org/
@@ -186,7 +188,7 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
-    rb_sys (0.9.34)
+    rb_sys (0.9.35)
     redis (4.8.0)
     regexp_parser (2.6.0)
     reline (0.3.1)
