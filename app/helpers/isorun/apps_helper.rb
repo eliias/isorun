@@ -8,8 +8,16 @@ module Isorun
       html = ""
 
       html += tag.div id: id do
-        vm = Isorun::VM.new
-        vm.render(bundle_path).html_safe
+        vm = Isorun::Renderer.new(bundle_path)
+        vm.render do |action, options|
+          puts "intercepted '#{action}' to: '#{options}'"
+
+          {
+            data: {
+              testField: "Hello World!"
+            }
+          }.to_json
+        end.html_safe
       end
 
       html += "\n"

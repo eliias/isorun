@@ -1750,6 +1750,7 @@ dependencies = [
  "deno_url",
  "deno_web",
  "deno_webidl",
+ "lazy_static",
  "magnus",
  "tokio",
  "v8",

@@ -34,10 +34,11 @@ Gem::Specification.new do |spec|
 
   spec.metadata["rubygems_mfa_required"] = "true"
 
+  spec.add_dependency "actionpack", ">= 6.0.0"
+  spec.add_dependency "railties", ">= 6.0.0"
   spec.add_dependency "rake", "> 1"
-  spec.add_dependency "rb_sys", "~> 0.9.31"
+  spec.add_dependency "rb_sys", "~> 0.9.35"
 
-  spec.add_development_dependency "rails", "~> 7.0.4"
   spec.add_development_dependency "rake-compiler", "~> 1.2.0"
   spec.add_development_dependency "rake-compiler-dock", "~> 1.2.2"
 
