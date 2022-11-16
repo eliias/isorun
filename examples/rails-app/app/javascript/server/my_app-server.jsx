@@ -12,12 +12,11 @@ function createClient(isSSR) {
     link: new HttpLink({
       uri: 'http://localhost:3000/graphql',
       fetch: async (options, ...args) => {
-        console.log(options, args);
         const optionsJSON = JSON.stringify(options);
         try {
           const raw = await Deno.core.ops.op_app_send("fetch", optionsJSON);
           return new Response(raw);
-        } catch(err) {
+        } catch (err) {
           console.error(err);
         }
         return new Response("");
@@ -34,7 +33,7 @@ const Script = ({state}) => {
   );
 }
 
-export function render() {
+export async function render() {
   const client = createClient(true);
 
   const Wrapper = (
