@@ -1,47 +1,41 @@
-use std::borrow::{Borrow, BorrowMut};
-use std::cell::RefCell;
-use std::ops::Deref;
+use std::borrow::{BorrowMut};
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::Arc;
-use deno_core::{Extension, FsModuleLoader, include_js_files, ModuleId};
+use deno_core::{Extension, FsModuleLoader, ModuleId};
 use deno_core::error::{AnyError};
 use deno_runtime::{BootstrapOptions};
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
 use deno_runtime::permissions::Permissions;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
 use deno_web::BlobStore;
-use magnus::{Error};
-use magnus::gc::location;
-use tokio::runtime::Runtime;
-use v8::{DataError, Global, Handle, Local, Promise, Value};
+use v8::{Global, Local, Value};
 
 fn get_error_class_name(e: &AnyError) -> &'static str {
     deno_runtime::errors::get_error_class_name(e).unwrap_or("Error")
 }
 
 pub struct VM {
-    bundle_path: String,
     worker: MainWorker,
     module_id: ModuleId,
 }
 
 impl VM {
-    pub async fn new(bundle_path: String, extensions: Vec<Extension>) -> VM {
-        let (worker, module_id) = VM::_preload(extensions).await
+    pub async fn new(extensions: Vec<Extension>) -> VM {
+        let (worker, module_id) = VM::preload(extensions).await
             .expect("cannot preload app");
 
-        VM { bundle_path, worker, module_id }
+        VM { worker, module_id }
     }
 
-    async fn _call(&mut self) -> Result<String, AnyError> {
-        let mut module_namespace;
+    pub(crate) async fn render(&mut self, bundle_path: &str) -> Result<String, AnyError> {
+        let module_namespace;
         {
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
-            module_namespace = js_runtime.get_module_namespace(self.module_id.clone()).unwrap();
+            module_namespace = js_runtime.get_module_namespace(self.module_id).unwrap();
         }
 
-        let mut promise: Global<Value>;
+        let promise: Global<Value>;
         {
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
             let mut scope = js_runtime.create_realm().unwrap().handle_scope(js_runtime.v8_isolate());
@@ -52,18 +46,16 @@ impl VM {
             let binding = module_namespace.get(&mut scope, export_name.into()).unwrap();
             let func = v8::Local::<v8::Function>::try_from(binding)
                 .expect("cannot extract function");
-            println!("is_function: {}", func.is_function());
-            println!("is_async_function: {}", func.is_async_function());
-            println!("script line number: {:?}", func.get_script_line_number());
+
             // call function
-            let path_arg = v8::String::new(&mut scope, self.bundle_path.as_str()).unwrap();
+            let path_arg = v8::String::new(&mut scope, bundle_path).unwrap();
             let args: &[Local<Value>] = &[path_arg.into()];
             let recv = v8::undefined(scope.borrow_mut());
             let maybe_result = func.call(scope.as_mut(), recv.into(), args).unwrap();
             promise = Global::new(&mut scope, maybe_result);
         }
 
-        let mut value;
+        let value;
         {
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
             js_runtime.run_event_loop(false).await?;
@@ -80,7 +72,7 @@ impl VM {
         Ok(html)
     }
 
-    pub async fn _preload(mut extensions: Vec<Extension>) -> Result<(MainWorker, ModuleId), AnyError> {
+    async fn preload(mut extensions: Vec<Extension>) -> Result<(MainWorker, ModuleId), AnyError> {
         let module_loader = Rc::new(FsModuleLoader);
         let create_web_worker_cb = Arc::new(|_| {
             todo!("Web workers are not supported in the example");
@@ -143,9 +135,5 @@ impl VM {
         worker.run_event_loop(false).await?;
 
         Ok((worker, module_id))
-    }
-
-    pub async fn render(&mut self) -> Result<String, AnyError> {
-        self._call().await
     }
 }

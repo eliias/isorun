@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "actionpack", ">= 6.0.0"
   spec.add_dependency "railties", ">= 6.0.0"
   spec.add_dependency "rake", "> 1"
-  spec.add_dependency "rb_sys", "~> 0.9.35"
+  spec.add_dependency "rb_sys", "~> 0.9.42"
 
   spec.add_development_dependency "rake-compiler", "~> 1.2.0"
   spec.add_development_dependency "rake-compiler-dock", "~> 1.2.2"
