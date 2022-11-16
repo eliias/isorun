@@ -31,7 +31,7 @@ Rake::ExtensionTask.new("isorun", spec) do |ext|
 end
 
 namespace "gem" do
-  task "prepare" => :environment do
+  task "prepare" do # rubocop:disable Rails/RakeEnvironment
     sh "bundle"
   end
 
