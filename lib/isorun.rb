@@ -8,6 +8,7 @@ rescue LoadError
   require "isorun/isorun"
 end
 
+require_relative "isorun/app"
 require_relative "isorun/renderer"
 require_relative "isorun/version"
 

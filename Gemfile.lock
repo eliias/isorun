@@ -5,7 +5,7 @@ PATH
       actionpack (>= 6.0.0)
       railties (>= 6.0.0)
       rake (> 1)
-      rb_sys (~> 0.9.35)
+      rb_sys (~> 0.9.42)
 
 GEM
   remote: https://rubygems.org/
@@ -147,7 +147,7 @@ GEM
     rake-compiler (1.2.0)
       rake
     rake-compiler-dock (1.2.2)
-    rb_sys (0.9.35)
+    rb_sys (0.9.42)
     regexp_parser (2.6.0)
     rexml (3.2.5)
     rspec (3.11.0)
