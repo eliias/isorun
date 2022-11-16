@@ -12,8 +12,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Hannes Moser"]
   spec.email = ["box@hannesmoser.at"]
 
-  spec.summary = "V8 runtime for Ruby on Rails."
-  spec.description = "A V8 runtime used to render JavaScript applications on the server."
+  spec.summary = "A Ruby on Rails render helper for JavaScript applications."
+  spec.description = "An embedded V8 runtime, used to render JavaScript applications directly in the current Ruby process."
   spec.homepage = "https://github.com/eliias/isorun"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.7.0"
@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/eliias/isorun"
   spec.metadata["changelog_uri"] = "https://github.com/eliias/isorun"
+  spec.metadata["documentation_uri"] = "https://eliias.github.io/isorun"
 
   spec.files = Dir["{app,lib}/**/*", "ext/**/*.{rs,toml,lock,rb}"]
 
