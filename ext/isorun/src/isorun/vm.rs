@@ -1,8 +1,10 @@
-use std::borrow::{BorrowMut};
+use std::borrow::{Borrow, BorrowMut};
+use std::cell::RefCell;
+use std::ops::Deref;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::Arc;
-use deno_core::{Extension, FsModuleLoader, ModuleId};
+use deno_core::{Extension, FsModuleLoader, include_js_files, ModuleId};
 use deno_core::error::{AnyError};
 use deno_runtime::{BootstrapOptions};
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
@@ -10,54 +12,67 @@ use deno_runtime::permissions::Permissions;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
 use deno_web::BlobStore;
 use magnus::{Error};
-use v8::{Local};
+use magnus::gc::location;
+use tokio::runtime::Runtime;
+use v8::{DataError, Global, Handle, Local, Promise, Value};
 
 fn get_error_class_name(e: &AnyError) -> &'static str {
     deno_runtime::errors::get_error_class_name(e).unwrap_or("Error")
 }
 
-pub struct VM;
+pub struct VM {
+    bundle_path: String,
+    worker: MainWorker,
+    module_id: ModuleId,
+}
 
 impl VM {
-    pub fn new() -> VM { VM {} }
+    pub async fn new(bundle_path: String, extensions: Vec<Extension>) -> VM {
+        let (worker, module_id) = VM::_preload(extensions).await
+            .expect("cannot preload app");
 
-    async fn _call(&self, mut worker: MainWorker, module_id: ModuleId) -> Result<String, AnyError> {
-        let module_namespace;
+        VM { bundle_path, worker, module_id }
+    }
+
+    async fn _call(&mut self) -> Result<String, AnyError> {
+        let mut module_namespace;
         {
-            let js_runtime = worker.js_runtime.borrow_mut();
-            module_namespace = js_runtime.get_module_namespace(module_id).unwrap();
+            let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
+            module_namespace = js_runtime.get_module_namespace(self.module_id.clone()).unwrap();
         }
 
-        let promise;
+        let mut promise: Global<Value>;
         {
-            let js_runtime = worker.js_runtime.borrow_mut();
-            let mut scope = js_runtime.handle_scope();
+            let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
+            let mut scope = js_runtime.create_realm().unwrap().handle_scope(js_runtime.v8_isolate());
 
             let module_namespace =
                 Local::<v8::Object>::new(&mut scope, module_namespace);
             let export_name = v8::String::new(&mut scope, "render").unwrap();
             let binding = module_namespace.get(&mut scope, export_name.into()).unwrap();
-            let func = v8::Local::<v8::Function>::try_from(binding)?;
-
+            let func = v8::Local::<v8::Function>::try_from(binding)
+                .expect("cannot extract function");
+            println!("is_function: {}", func.is_function());
+            println!("is_async_function: {}", func.is_async_function());
+            println!("script line number: {:?}", func.get_script_line_number());
             // call function
-            let resource_id = v8::Number::new(scope.as_mut(), 1 as f64);
-            let resource_id_value = Local::from(resource_id);
-
-            let args = &[resource_id_value];
-            let result = func.call(&mut scope, module_namespace.into(), args).unwrap();
-            promise = v8::Global::new(&mut scope, result);
+            let path_arg = v8::String::new(&mut scope, self.bundle_path.as_str()).unwrap();
+            let args: &[Local<Value>] = &[path_arg.into()];
+            let recv = v8::undefined(scope.borrow_mut());
+            let maybe_result = func.call(scope.as_mut(), recv.into(), args).unwrap();
+            promise = Global::new(&mut scope, maybe_result);
         }
 
-        let value;
+        let mut value;
         {
-            let js_runtime = worker.js_runtime.borrow_mut();
+            let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
             js_runtime.run_event_loop(false).await?;
             value = js_runtime.resolve_value(promise).await?;
         }
 
         let html;
         {
-            let js_runtime = worker.js_runtime.borrow_mut();
+            let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
             let scope = &mut js_runtime.handle_scope();
             html = value.open(scope).to_rust_string_lossy(scope);
         }
@@ -65,7 +80,7 @@ impl VM {
         Ok(html)
     }
 
-    async fn _render(&self, app_path: String, mut extensions: Vec<Extension>) -> Result<String, AnyError> {
+    pub async fn _preload(mut extensions: Vec<Extension>) -> Result<(MainWorker, ModuleId), AnyError> {
         let module_loader = Rc::new(FsModuleLoader);
         let create_web_worker_cb = Arc::new(|_| {
             todo!("Web workers are not supported in the example");
@@ -87,7 +102,7 @@ impl VM {
                 runtime_version: "x".to_string(),
                 ts_version: "x".to_string(),
                 unstable: false,
-                user_agent: "hello_runtime".to_string(),
+                user_agent: "isorun".to_string(),
                 inspect: false,
             },
             extensions: std::mem::take(&mut extensions),
@@ -113,7 +128,8 @@ impl VM {
             stdio: Default::default(),
         };
 
-        let js_app_path = Path::new(&app_path);
+        let main_app_path = "/Users/hannesmoser/src/github.com/eliias/isorun/ext/isorun/src/render.js";
+        let js_app_path = Path::new(main_app_path);
         let main_module = deno_core::resolve_path(&js_app_path.to_string_lossy())?;
         let permissions = Permissions::allow_all();
 
@@ -126,21 +142,10 @@ impl VM {
         worker.evaluate_module(module_id).await?;
         worker.run_event_loop(false).await?;
 
-        // call render function
-        let html = self._call(worker, module_id).await?;
-
-        Ok(html)
+        Ok((worker, module_id))
     }
 
-    pub fn render(&self, app_path: String, extensions: Vec<Extension>) -> Result<String, Error> {
-        let runtime = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        runtime.block_on(self._render(app_path.clone(), extensions))
-            .map_err(|error| Error::runtime_error(
-                format!("cannot render app: {}, error: {}", app_path, error))
-            )
+    pub async fn render(&mut self) -> Result<String, AnyError> {
+        self._call().await
     }
 }

@@ -1,9 +1,11 @@
 use std::cell::{RefCell};
+use std::rc::Rc;
 use deno_core::{Extension, op};
 use deno_core::error::AnyError;
 use magnus::block::Proc;
 use magnus::{Error, RString};
 use magnus::gvl::{GVLContext, without_gvl};
+use tokio::runtime::Runtime;
 use crate::isorun::vm::VM;
 
 struct App {
@@ -44,7 +46,8 @@ lazy_static! {
 
 #[magnus::wrap(class = "Isorun::Renderer")]
 pub(crate) struct Renderer {
-    app_path: String,
+    runtime: RefCell<Runtime>,
+    vm: RefCell<VM>
 }
 
 /// SAFETY: This is safe because we only access this data when the GVL is held.
@@ -52,7 +55,22 @@ unsafe impl Send for Renderer {}
 
 impl Renderer {
     pub(crate) fn new(app_path: String) -> Self {
-        Self { app_path }
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+
+        let extension_send = Extension::builder()
+            .ops(vec![
+                op_app_send::decl()
+            ])
+            .build();
+        let extensions = vec![extension_send];
+
+        let vm = runtime
+            .block_on(VM::new(app_path, extensions));
+
+        Self { runtime: RefCell::from(runtime), vm: RefCell::from(vm) }
     }
 
     pub(crate) fn renderer_render(&self, block: Proc) -> Result<String, Error> {
@@ -60,15 +78,9 @@ impl Renderer {
 
         let result = without_gvl(|context| {
             APP.context.borrow_mut().replace(context);
-
-            let extension_send = Extension::builder()
-                .ops(vec![
-                    op_app_send::decl()
-                ])
-                .build();
-            let extensions = vec![extension_send];
-            let vm = VM::new();
-            vm.render(self.app_path.clone(), extensions)
+            self.runtime.borrow()
+                .block_on(self.vm.borrow_mut().render())
+                .map_err(|error| Error::runtime_error(format!("cannot render app: {}", error)))
         }, None::<fn()>);
 
         result.0.unwrap()
