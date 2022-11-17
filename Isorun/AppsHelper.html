@@ -162,8 +162,7 @@
 20
 21
 22
-23
-24</pre>
+23</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'app/helpers/isorun/apps_helper.rb', line 5</span>
@@ -174,13 +173,12 @@
   <span class='id identifier rubyid_html'>html</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_html'>html</span> <span class='op'>+=</span> <span class='id identifier rubyid_tag'>tag</span><span class='period'>.</span><span class='id identifier rubyid_div'>div</span> <span class='label'>id:</span> <span class='id identifier rubyid_id'>id</span> <span class='kw'>do</span>
     <span class='id identifier rubyid_app'>app</span><span class='period'>.</span><span class='id identifier rubyid_render'>render</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_action'>action</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='op'>|</span>
-      <span class='const'>Rails</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>intercepted &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; to: &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_options'>options</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+      <span class='const'>Rails</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>js runtime call: &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; with: &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_options'>options</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
 
-      <span class='lbrace'>{</span>
-        <span class='label'>data:</span> <span class='lbrace'>{</span>
-          <span class='label'>testField:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Hello World!</span><span class='tstring_end'>&quot;</span></span>
-        <span class='rbrace'>}</span>
-      <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+      <span class='comment'># TODO: lookup configuration, call registered blocks/procs, return
+</span>      <span class='comment'>#   result (string) or nil
+</span>
+      <span class='kw'>nil</span>
     <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_html_safe'>html_safe</span>
   <span class='kw'>end</span>
 
@@ -198,7 +196,7 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Nov 17 13:10:44 2022 by
+  Generated on Thu Nov 17 13:33:11 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.4).
 </div>
