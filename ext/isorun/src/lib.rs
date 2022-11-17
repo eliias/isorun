@@ -1,12 +1,11 @@
-use magnus::{define_module, method, Error, Module, Object, function};
 use isorun::renderer::Renderer;
+use magnus::{define_module, function, method, Error, Module, Object};
 
 mod isorun;
 
 #[magnus::init]
 fn init() -> Result<(), Error> {
-    let module = define_module("Isorun")
-        .expect("cannot define module: Isorun");
+    let module = define_module("Isorun").expect("cannot define module: Isorun");
 
     let app = module
         .define_class("Renderer", Default::default())

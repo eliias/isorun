@@ -13,7 +13,10 @@ Gem::Specification.new do |spec|
   spec.email = ["box@hannesmoser.at"]
 
   spec.summary = "A Ruby on Rails render helper for JavaScript applications."
-  spec.description = "An embedded V8 runtime, used to render JavaScript applications directly in the current Ruby process."
+  spec.description = <<~DESC
+    An embedded V8 runtime, used to render JavaScript applications directly in
+    the current Ruby process.
+  DESC
   spec.homepage = "https://github.com/eliias/isorun"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.7.0"
@@ -37,8 +40,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "actionpack", ">= 6.0.0"
   spec.add_dependency "railties", ">= 6.0.0"
-  spec.add_dependency "rake", "> 1"
-  spec.add_dependency "rb_sys", "~> 0.9.42"
+  spec.add_dependency "rake", "~> 13.0"
+  spec.add_dependency "rb_sys", "~> 0.9.43"
 
   spec.add_development_dependency "rake-compiler", "~> 1.2.0"
   spec.add_development_dependency "rake-compiler-dock", "~> 1.2.2"

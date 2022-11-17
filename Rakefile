@@ -17,7 +17,7 @@ cross_platforms = %w[
 
 spec = Bundler.load_gemspec("isorun.gemspec")
 
-Gem::PackageTask.new(spec)
+Gem::PackageTask.new(spec).define
 
 Rake::ExtensionTask.new("isorun", spec) do |ext|
   ext.source_pattern = "*.{rs,toml}"

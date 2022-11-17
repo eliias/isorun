@@ -1,14 +1,14 @@
-use std::borrow::{BorrowMut};
-use std::path::Path;
-use std::rc::Rc;
-use std::sync::Arc;
+use deno_core::error::AnyError;
 use deno_core::{Extension, FsModuleLoader, ModuleId};
-use deno_core::error::{AnyError};
-use deno_runtime::{BootstrapOptions};
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
 use deno_runtime::permissions::Permissions;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
+use deno_runtime::BootstrapOptions;
 use deno_web::BlobStore;
+use std::borrow::BorrowMut;
+use std::path::Path;
+use std::rc::Rc;
+use std::sync::Arc;
 use v8::{Global, Local, Value};
 
 fn get_error_class_name(e: &AnyError) -> &'static str {
@@ -22,28 +22,37 @@ pub struct VM {
 
 impl VM {
     pub async fn new(extensions: Vec<Extension>) -> VM {
-        let (worker, module_id) = VM::preload(extensions).await
-            .expect("cannot preload app");
+        let (worker, module_id) =
+            VM::preload(extensions).await.expect("cannot preload app");
 
         VM { worker, module_id }
     }
 
-    pub(crate) async fn render(&mut self, bundle_path: &str) -> Result<String, AnyError> {
+    pub(crate) async fn render(
+        &mut self,
+        bundle_path: &str,
+    ) -> Result<String, AnyError> {
         let module_namespace;
         {
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
-            module_namespace = js_runtime.get_module_namespace(self.module_id).unwrap();
+            module_namespace =
+                js_runtime.get_module_namespace(self.module_id).unwrap();
         }
 
         let promise: Global<Value>;
         {
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
-            let mut scope = js_runtime.create_realm().unwrap().handle_scope(js_runtime.v8_isolate());
+            let mut scope = js_runtime
+                .create_realm()
+                .unwrap()
+                .handle_scope(js_runtime.v8_isolate());
 
             let module_namespace =
                 Local::<v8::Object>::new(&mut scope, module_namespace);
             let export_name = v8::String::new(&mut scope, "render").unwrap();
-            let binding = module_namespace.get(&mut scope, export_name.into()).unwrap();
+            let binding = module_namespace
+                .get(&mut scope, export_name.into())
+                .unwrap();
             let func = v8::Local::<v8::Function>::try_from(binding)
                 .expect("cannot extract function");
 
@@ -51,7 +60,8 @@ impl VM {
             let path_arg = v8::String::new(&mut scope, bundle_path).unwrap();
             let args: &[Local<Value>] = &[path_arg.into()];
             let recv = v8::undefined(scope.borrow_mut());
-            let maybe_result = func.call(scope.as_mut(), recv.into(), args).unwrap();
+            let maybe_result =
+                func.call(scope.as_mut(), recv.into(), args).unwrap();
             promise = Global::new(&mut scope, maybe_result);
         }
 
@@ -72,7 +82,9 @@ impl VM {
         Ok(html)
     }
 
-    async fn preload(mut extensions: Vec<Extension>) -> Result<(MainWorker, ModuleId), AnyError> {
+    async fn preload(
+        mut extensions: Vec<Extension>,
+    ) -> Result<(MainWorker, ModuleId), AnyError> {
         let module_loader = Rc::new(FsModuleLoader);
         let create_web_worker_cb = Arc::new(|_| {
             todo!("Web workers are not supported in the example");
@@ -98,6 +110,7 @@ impl VM {
                 inspect: false,
             },
             extensions: std::mem::take(&mut extensions),
+            startup_snapshot: None,
             unsafely_ignore_certificate_errors: None,
             root_cert_store: None,
             seed: None,
@@ -122,7 +135,8 @@ impl VM {
 
         let main_app_path = "/Users/hannesmoser/src/github.com/eliias/isorun/ext/isorun/src/render.js";
         let js_app_path = Path::new(main_app_path);
-        let main_module = deno_core::resolve_path(&js_app_path.to_string_lossy())?;
+        let main_module =
+            deno_core::resolve_path(&js_app_path.to_string_lossy())?;
         let permissions = Permissions::allow_all();
 
         let mut worker = MainWorker::bootstrap_from_options(
