@@ -8,13 +8,12 @@ module Isorun
       html = ""
       html += tag.div id: id do
         app.render do |action, options|
-          Rails.logger.debug { "intercepted '#{action}' to: '#{options}'" }
+          Rails.logger.debug { "js runtime call: '#{action}' with: '#{options}'" }
 
-          {
-            data: {
-              testField: "Hello World!"
-            }
-          }.to_json
+          # TODO: lookup configuration, call registered blocks/procs, return
+          #   result (string) or nil
+
+          nil
         end.html_safe
       end
 

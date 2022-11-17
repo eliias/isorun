@@ -43,8 +43,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rake", "~> 13.0"
   spec.add_dependency "rb_sys", "~> 0.9.43"
 
-  spec.add_development_dependency "rake-compiler", "~> 1.2.0"
-  spec.add_development_dependency "rake-compiler-dock", "~> 1.2.2"
+  spec.add_development_dependency "rake-compiler"
+  spec.add_development_dependency "rake-compiler-dock"
+  spec.add_development_dependency "rspec-rails"
 
   spec.extensions = ["ext/isorun/extconf.rb"]
 end

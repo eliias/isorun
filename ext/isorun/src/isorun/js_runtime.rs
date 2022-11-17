@@ -1,11 +1,11 @@
-use std::cell::{RefCell};
-use deno_core::{Extension, op};
-use deno_core::error::AnyError;
-use magnus::block::Proc;
-use magnus::{Error, RString};
-use magnus::gvl::{GVLContext, without_gvl};
-use tokio::runtime::Runtime;
 use crate::isorun::vm::VM;
+use deno_core::error::AnyError;
+use deno_core::{op, Extension};
+use magnus::block::Proc;
+use magnus::gvl::{without_gvl, GVLContext};
+use magnus::{Error, RString};
+use std::cell::RefCell;
+use tokio::runtime::Runtime;
 
 pub(crate) struct JsRuntime {
     context: RefCell<Option<GVLContext>>,
@@ -21,15 +21,11 @@ impl JsRuntime {
             .build()
             .unwrap();
 
-        let extension_send = Extension::builder()
-            .ops(vec![
-                op_app_send::decl()
-            ])
-            .build();
+        let extension_send =
+            Extension::builder().ops(vec![op_app_send::decl()]).build();
         let extensions = vec![extension_send];
 
-        let vm = runtime
-            .block_on(VM::new(extensions));
+        let vm = runtime.block_on(VM::new(extensions));
 
         JsRuntime {
             context: RefCell::from(None),
@@ -39,25 +35,40 @@ impl JsRuntime {
         }
     }
 
-    pub(crate) fn render(&self, bundle_path: &str, block: Proc) -> Result<String, Error> {
+    pub(crate) fn render(
+        &self,
+        bundle_path: &str,
+        block: Proc,
+    ) -> Result<String, Error> {
         self.receiver.borrow_mut().replace(block);
 
-        let result = without_gvl(|context| {
-            self.context.borrow_mut().replace(context);
-            self.runtime
-                .block_on(self.vm.borrow_mut().render(bundle_path))
-                .map_err(|error| Error::runtime_error(
-                    format!("cannot render app: {}\nerror: {}", bundle_path, error)))
-        }, None::<fn()>);
+        let result = without_gvl(
+            |context| {
+                self.context.borrow_mut().replace(context);
+                self.runtime
+                    .block_on(self.vm.borrow_mut().render(bundle_path))
+                    .map_err(|error| {
+                        Error::runtime_error(format!(
+                            "cannot render app: {}\nerror: {}",
+                            bundle_path, error
+                        ))
+                    })
+            },
+            None::<fn()>,
+        );
 
         result.0.unwrap()
     }
 
     fn send(&self, message: String, data: String) -> Result<RString, Error> {
-        if let (Some(ctx), Some(rec)) = (self.context.borrow_mut().as_mut(), self.receiver.borrow_mut().as_mut()) {
+        if let (Some(ctx), Some(rec)) = (
+            self.context.borrow_mut().as_mut(),
+            self.receiver.borrow_mut().as_mut(),
+        ) {
             ctx.with_gvl(|| {
-                let args: (RString, RString, ) = (RString::from(message), RString::from(data), );
-                rec.call::<(RString, RString, ), RString>(args)
+                let args: (RString, RString) =
+                    (RString::from(message), RString::from(data));
+                rec.call::<(RString, RString), RString>(args)
             })?
         } else {
             Err(Error::runtime_error("cannot send message"))
@@ -69,10 +80,12 @@ thread_local! {
     pub(crate) static JS_RUNTIME: JsRuntime = JsRuntime::new();
 }
 
+#[allow(clippy::extra_unused_lifetimes)]
 #[op]
 fn op_app_send(message: String, data: String) -> Result<String, AnyError> {
     JS_RUNTIME.with(|js_runtime| {
-        js_runtime.send(message, data)
+        js_runtime
+            .send(message, data)
             .and_then(|value| value.to_string())
             .map_err(|error| AnyError::msg(format!("{}", error)))
     })
