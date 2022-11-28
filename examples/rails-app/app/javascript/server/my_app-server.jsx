@@ -11,11 +11,17 @@ function createClient(isSSR) {
     cache: new InMemoryCache(),
     link: new HttpLink({
       uri: 'http://localhost:3000/graphql',
-      fetch: async (options, ...args) => {
-        const optionsJSON = JSON.stringify(options);
+      fetch: async (url, options) => {
+        const args = JSON.stringify({url, options});
         try {
-          const raw = await Deno.core.ops.op_app_send("fetch", optionsJSON);
-          return new Response(raw);
+          // forward request to Ruby
+          const raw = await Deno.core.ops.op_app_send("fetch", args);
+          if (raw !== "") {
+            return new Response(raw);
+          }
+
+          // we failed to get data, reject promise (fail)
+          return Promise.reject("failed to fetch data, stopping now");
         } catch (err) {
           console.error(err);
         }

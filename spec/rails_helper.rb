@@ -4,14 +4,14 @@ require "spec_helper"
 
 ENV["RAILS_ENV"] ||= "test"
 
-require File.expand_path('../examples/rails-app/environment', __FILE__)
+require File.expand_path("examples/rails-app/environment", __dir__)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 
 require "rspec/rails"
 
 # autoload support files
-Dir[Rails.root / "spec" / "support" / "**" / "*.rb"].each { |f| require f }
+Dir[Rails.root / "spec" / "support" / "**" / "*.rb"].sort.each { |f| require f }
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.

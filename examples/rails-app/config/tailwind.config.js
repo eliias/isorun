@@ -12,7 +12,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'blue-gray': colors.blueGray,
+        'blue-gray': colors.slate,
       },
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],

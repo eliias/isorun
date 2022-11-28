@@ -9,6 +9,7 @@ rescue LoadError
 end
 
 require "isorun/app"
+require "isorun/config"
 require "isorun/engine"
 require "isorun/renderer"
 require "isorun/version"
