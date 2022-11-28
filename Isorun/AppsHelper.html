@@ -162,30 +162,34 @@
 20
 21
 22
-23</pre>
+23
+24
+25</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'app/helpers/isorun/apps_helper.rb', line 5</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_isorun_app_tag'>isorun_app_tag</span><span class='lparen'>(</span><span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_app'>app</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="App.html" title="Isorun::App (class)">App</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="App.html#initialize-instance_method" title="Isorun::App#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_resolve_bundle_path'>resolve_bundle_path</span><span class='lparen'>(</span><span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_app'>app</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="App.html" title="Isorun::App (class)">App</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="App.html#initialize-instance_method" title="Isorun::App#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
 
   <span class='id identifier rubyid_html'>html</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-  <span class='id identifier rubyid_html'>html</span> <span class='op'>+=</span> <span class='id identifier rubyid_tag'>tag</span><span class='period'>.</span><span class='id identifier rubyid_div'>div</span> <span class='label'>id:</span> <span class='id identifier rubyid_id'>id</span> <span class='kw'>do</span>
-    <span class='id identifier rubyid_app'>app</span><span class='period'>.</span><span class='id identifier rubyid_render'>render</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_action'>action</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='op'>|</span>
-      <span class='const'>Rails</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>js runtime call: &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; with: &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_options'>options</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
-
-      <span class='comment'># TODO: lookup configuration, call registered blocks/procs, return
-</span>      <span class='comment'>#   result (string) or nil
-</span>
-      <span class='kw'>nil</span>
-    <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_html_safe'>html_safe</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_app'>app</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span>
+    <span class='id identifier rubyid_html'>html</span> <span class='op'>+=</span> <span class='id identifier rubyid_tag'>tag</span><span class='period'>.</span><span class='id identifier rubyid_div'>div</span> <span class='label'>id:</span> <span class='id identifier rubyid_id'>id</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_app'>app</span>
+        <span class='period'>.</span><span class='id identifier rubyid_render'>render</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configuration'><span class='object_link'><a href="../Isorun.html#configuration-class_method" title="Isorun.configuration (method)">configuration</a></span></span><span class='period'>.</span><span class='id identifier rubyid_on_app_send'>on_app_send</span><span class='rparen'>)</span>
+        <span class='period'>.</span><span class='id identifier rubyid_html_safe'>html_safe</span> <span class='comment'># rubocop:disable Rails/OutputSafety
+</span>    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='const'>Rails</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_warning'>warning</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[ISORUN] the requested app does not exist or </span><span class='tstring_end'>&quot;</span></span> \
+                         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>does not have a server entrypoint. Please </span><span class='tstring_end'>&quot;</span></span> \
+                         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>check if an asset with filename </span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>
+                           `</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>-server.js` exists.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 
   <span class='id identifier rubyid_html'>html</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_html'>html</span> <span class='op'>+=</span> <span class='id identifier rubyid_javascript_include_tag'>javascript_include_tag</span><span class='lparen'>(</span><span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='label'>defer:</span> <span class='kw'>true</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_html'>html</span><span class='period'>.</span><span class='id identifier rubyid_html_safe'>html_safe</span>
-<span class='kw'>end</span></pre>
+  <span class='id identifier rubyid_html'>html</span><span class='period'>.</span><span class='id identifier rubyid_html_safe'>html_safe</span> <span class='comment'># rubocop:disable Rails/OutputSafety
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -196,9 +200,9 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Nov 17 13:33:11 2022 by
+  Generated on Mon Nov 28 12:27:52 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.28 (ruby-3.0.4).
+  0.9.28 (ruby-3.0.5).
 </div>
 
     </div>
