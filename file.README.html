@@ -115,7 +115,7 @@ export function render() {
 
 <h2 id="server-side-rendering">Server-side rendering</h2>
 
-<p>The slowest way to deliver a user interface, is delivering a JavaScript file
+<p>The slowest way to deliver a website, is delivering a JavaScript file
 to the client, and then execute it to build up a DOM tree.</p>
 
 <p>The fastest way is serving an HTML page with embedded styles, and doing so as a
@@ -138,46 +138,49 @@ more: <a href="https://jakearchibald.com/2017/netflix-and-react/">Netflix functi
 <li>You need to deal with the reality of frontend clients making network requests and managing state</li>
 </ol>
 
-<p><strong>isorun</strong> aims to make it as simple as possible to integrate any existing
+<p><strong>isorun</strong> aims to make it as simple as possible to integrate a
 JavaScript application into your server-side development and deployment
 workflow.</p>
 
-<p>This gem provides a helper that can render a JavaScript application on the
-server by embedding Google&#39;s v8 library directly in your server process(es).
-You can think of it as running a headless browser in your Ruby process.
+<p>This gem provides a helper that can render a JavaScript application directly in
+your Ruby process, embedding Google&#39;s v8 library.
+You can think of it as running a headless JavaScript VM in your Ruby process.
 <strong>isorun</strong> utilizes V8 Isolates via the Rust crates: v8 and deno_core. This
 allows us to completely separate applications from each other and to prevent
 any <a href="https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution">Cross-Request State Pollution</a>.
-It is like having multiple tabs open in your browser.</p>
+This is like having multiple tabs open in your browser.</p>
 
 <h2 id="why-ssr-for-ruby-on-rails">Why SSR for Ruby (on Rails)?</h2>
 
-<p>I use <em>Ruby on Rails</em> a lot for my own projects, and I also use Vue and React.
+<p>I use <em>Ruby on Rails</em> a lot for projects, and I also use both, Vue and React.
 One of my goals for <strong>isorun</strong>, is that server-side rendering should feel
 naturally in Rails. A simple tag helper should be enough to render, deliver,
 and hydrate your complex JavaScript application.</p>
 
-<p>I also like the relatively new concept of
-<a href="https://hotwired.dev/">HTML over the Wire</a>, but I can&#39;t and don&#39;t want to use
-it for everything.</p>
+<h3 id="alternative">Alternative</h3>
+
+<p>I also recommend taking a look at <a href="https://hotwired.dev/">HTML over the Wire</a>,
+and <a href="https://docs.stimulusreflex.com/">StimulusReflex</a>, but this is not for
+everyone.</p>
 
 <h2 id="why-not-just-spinning-up-a-node-js-deno-bun-service">Why not just spinning up a Node.js/deno/bun service?</h2>
 
-<p><strong>isorun</strong> does SSR a bit different than you would do it in a regular Node.js
-service. It allows you to intercept network calls and can provide <em>state</em> to
-the render context. This allows you to take a shortcut when rendering on the
-server. Data is no longer fetched over the network, but provided almost directly
-to the application.</p>
+<p><strong>isorun</strong> does SSR a bit different from how you would do it in a regular
+Node.js service. In addition to render an application and extracting state and
+styles, it also allows you to talk directly with your Rails application. 
+This enables you to take shortcuts for certain scenarios, for example rendering
+the result of network calls (Apollo), without hitting the network once. Instead
+of fetching data from the server via HTTP, you can just call a Ruby function
+from you JavaScript application and request the data you need to render the
+view.</p>
 
-<p>I have built and operated Node.js SSR services, but it has always been super
-tedious to set up a dedicated service, just for server side rendering.
-Especially when your backend isn&#39;t written in JavaScript. A SSR service is just
-another single point of failure, and it literally has to process every request.
-It adds significantly to your infrastructure cost, migrating from an existing
-app is hard, and there is also operational overhead.</p>
-
-<p>Most importantly, it adds complexity, and that is something I try to avoid in
-projects I am working on.</p>
+<p>I have built and operated many Node.js SSR services, but it has always been
+super tedious to set up such a dedicated service.
+This is especially true when your backend isn&#39;t written in JavaScript. In
+reality, a SSR service is just another single point of failure, and you need
+to proxy every single request through it. This can significantly add to your
+infrastructure cost, migrating from an existing app becomes harder than it
+should be, and there is operational complexity and overhead.</p>
 
 <h2 id="installation">Installation</h2>
 
@@ -216,7 +219,7 @@ git commits and the created tag, and push the <code>.gem</code> file to
 </div></div>
 
       <div id="footer">
-  Generated on Fri Dec  2 19:49:35 2022 by
+  Generated on Fri Dec  2 19:58:04 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
