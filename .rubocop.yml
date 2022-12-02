@@ -6,6 +6,8 @@ require:
 AllCops:
   NewCops: enable
   TargetRubyVersion: 2.7
+  Exclude:
+    - "examples/**/*"
 
 Style/Documentation:
   Enabled: false
