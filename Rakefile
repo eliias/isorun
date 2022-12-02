@@ -8,7 +8,6 @@ require "rb_sys"
 
 cross_rubies = %w[3.1.0 3.0.0 2.7.0]
 cross_platforms = %w[
-  aarch64-linux
   arm64-darwin
   x86_64-darwin
   x86_64-linux

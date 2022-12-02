@@ -1,5 +1,6 @@
 import * as React from "react";
 import {getDataFromTree} from "@apollo/client/react/ssr";
+import {fetch as rubyFetch} from "@isorun/rails";
 
 import {App} from "../my_app/App.jsx";
 import {ApolloClient, ApolloProvider, HttpLink, InMemoryCache} from "@apollo/client";
@@ -11,22 +12,7 @@ function createClient(isSSR) {
     cache: new InMemoryCache(),
     link: new HttpLink({
       uri: 'http://localhost:3000/graphql',
-      fetch: async (url, options) => {
-        const args = JSON.stringify({url, options});
-        try {
-          // forward request to Ruby
-          const raw = await Deno.core.ops.op_app_send("fetch", args);
-          if (raw !== "") {
-            return new Response(raw);
-          }
-
-          // we failed to get data, reject promise (fail)
-          return Promise.reject("failed to fetch data, stopping now");
-        } catch (err) {
-          console.error(err);
-        }
-        return new Response("");
-      }
+      fetch: rubyFetch
     })
   });
 }

@@ -17,3 +17,7 @@ Gemfile.lock
 
 # build artifact
 lib/isorun/isorun*
+
+# turbo
+dist/
+.turbo
