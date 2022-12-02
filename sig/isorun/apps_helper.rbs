@@ -1,0 +1,5 @@
+module Isorun
+  module AppsHelper
+    def isorun_app_tag: -> String
+  end
+end

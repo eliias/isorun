@@ -2,7 +2,7 @@
 
 module Isorun
   module AppsHelper
-    def isorun_app_tag(id)
+    def isorun_app_tag(id) # rubocop:disable Metrics/MethodLength
       app = Isorun::App.new(id)
 
       html = ""
@@ -13,7 +13,7 @@ module Isorun
             .html_safe # rubocop:disable Rails/OutputSafety
         end
       else
-        Rails.logger.warning("[ISORUN] the requested app does not exist or " \
+        Rails.logger.warn("[ISORUN] the requested app does not exist or " \
                              "does not have a server entrypoint. Please " \
                              "check if an asset with filename " + "
                                `#{id}-server.js` exists.")
