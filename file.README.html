@@ -70,6 +70,49 @@
 <p><strong>⚠ ️Attention:</strong> Don&#39;t use this for anything but experiments. There are better ways to embed V8
 in your application. Check out <a href="https://github.com/rubyjs/mini_racer">miniracer</a>.</p>
 
+<h2 id="usage">Usage</h2>
+
+<pre class="code bash"><code class="bash">rails new myproject --javascript esbuild
+</code></pre>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># config/initializers/isorun.rb
+</span><span class='const'><span class='object_link'><a href="Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'><span class='object_link'><a href="Isorun.html#configure-class_method" title="Isorun.configure (method)">configure</a></span></span> <span class='kw'>do</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<pre class="code jsx"><code class="jsx">// app/javascript/my_app.jsx
+import * as React from &quot;react&quot;;
+import {hydrateRoot} from &quot;react-dom/client&quot;;
+
+import {App} from &quot;./my_app/App.jsx&quot;;
+
+const container = document.querySelector(&#39;#my_app&#39;);
+hydrateRoot(container, &lt;App/&gt;);
+
+</code></pre>
+
+<pre class="code jsx"><code class="jsx">// app/javascript/my_app-server.jsx
+import * as React from &quot;react&quot;;
+import * as Server from &quot;react-dom/server&quot;;
+
+import {App} from &quot;./my_app/App.jsx&quot;;
+
+export function render() {
+  return Promise.resolve(Server.renderToString(&lt;App/&gt;));
+}
+</code></pre>
+
+<pre class="code erb"><code class="erb">&lt;!--my_view.html.erb--&gt;
+&lt;%= isorun_app_tag(&quot;my_app&quot;) %&gt;
+</code></pre>
+
+<pre class="code json"><code class="json">{
+  &quot;scripts&quot;: {
+    &quot;build&quot;: &quot;esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm&quot;
+  }
+}
+</code></pre>
+
 <h2 id="server-side-rendering">Server-side rendering</h2>
 
 <p>The slowest way to deliver a user interface, is delivering a JavaScript file
@@ -149,44 +192,6 @@ executing:</p>
 <pre class="code ruby"><code class="ruby">$ gem install isorun
 </code></pre>
 
-<h2 id="usage">Usage</h2>
-
-<pre class="code bash"><code class="bash">rails new myproject --javascript esbuild
-</code></pre>
-
-<pre class="code jsx"><code class="jsx">// app/javascript/my_app.jsx
-import * as React from &quot;react&quot;;
-import {hydrateRoot} from &quot;react-dom/client&quot;;
-
-import {App} from &quot;./my_app/App.jsx&quot;;
-
-const container = document.querySelector(&#39;#my_app&#39;);
-hydrateRoot(container, &lt;App/&gt;);
-
-</code></pre>
-
-<pre class="code jsx"><code class="jsx">// app/javascript/my_app-server.jsx
-import * as React from &quot;react&quot;;
-import * as Server from &quot;react-dom/server&quot;;
-
-import {App} from &quot;./my_app/App.jsx&quot;;
-
-export function render() {
-  return Promise.resolve(Server.renderToString(&lt;App/&gt;));
-}
-</code></pre>
-
-<pre class="code erb"><code class="erb">&lt;!--my_view.html.erb--&gt;
-&lt;%= isorun_app_tag(&quot;my_app&quot;) %&gt;
-</code></pre>
-
-<pre class="code json"><code class="json">{
-  &quot;scripts&quot;: {
-    &quot;build&quot;: &quot;esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm&quot;
-  }
-}
-</code></pre>
-
 <h2 id="development">Development</h2>
 
 <p>After checking out the repo, run <code>bin/setup</code> to install dependencies. Then, run
@@ -211,7 +216,7 @@ git commits and the created tag, and push the <code>.gem</code> file to
 </div></div>
 
       <div id="footer">
-  Generated on Fri Dec  2 19:43:31 2022 by
+  Generated on Fri Dec  2 19:45:59 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
