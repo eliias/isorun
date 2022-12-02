@@ -71,7 +71,7 @@ impl JsRuntime {
                 rec.call::<(RString, RString), RString>(args)
             })?
         } else {
-            Err(Error::runtime_error("cannot send message"))
+            Err(Error::runtime_error("cannot send message: "))
         }
     }
 }
@@ -87,6 +87,9 @@ fn op_app_send(message: String, data: String) -> Result<String, AnyError> {
         js_runtime
             .send(message, data)
             .and_then(|value| value.to_string())
-            .map_err(|error| AnyError::msg(format!("{}", error)))
+            .map_err(|error| {
+                println!("{:?}", error);
+                AnyError::msg(format!("{}", error))
+            })
     })
 }

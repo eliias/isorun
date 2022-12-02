@@ -133,12 +133,10 @@ impl VM {
             stdio: Default::default(),
         };
 
-        let main_app_path = "/Users/hannesmoser/src/github.com/eliias/isorun/ext/isorun/src/render.js";
-        let js_app_path = Path::new(main_app_path);
-        let main_module =
-            deno_core::resolve_path(&js_app_path.to_string_lossy())?;
+        let js_path =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("src/render.js");
+        let main_module = deno_core::resolve_path(&js_path.to_string_lossy())?;
         let permissions = Permissions::allow_all();
-
         let mut worker = MainWorker::bootstrap_from_options(
             main_module.clone(),
             permissions,
