@@ -1,34 +1,35 @@
 <script lang="ts">
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   data() {
     return {
-      info: {}
+      info: {},
+    };
+  },
+  async mounted() {
+    if (!this.info) {
+      this.info = await this.load();
     }
   },
   methods: {
     async load() {
       try {
-        const result = await fetch("https://awesomeapi.com/version")
+        const result = await fetch("https://awesomeapi.com/version");
         return await result.text();
-      } catch(e) {
+      } catch (e: any) {
         return `Error: ${e.message}`;
       }
-    }
+    },
+    async serverPrefetch() {
+      try {
+        this.info = await this.load();
+      } catch (e: any) {
+        this.info = `Error: ${e.message}`;
+      }
+    },
   },
-  async serverPrefetch() {
-    try {
-      this.info = await this.load();
-    } catch(e) {
-      this.info = `Error: ${e.message}`;
-    }
-  },
-  async mounted() {
-    if (!this.data) {
-      this.info = await this.load();
-    }
-  }
-}
+});
 </script>
 
 <template>

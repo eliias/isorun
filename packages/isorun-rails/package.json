@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "The JavaScript companion library for isorun",
   "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "repository": "https://github.com/eliias/isorun",
   "author": "Hannes Moser <box@hannesmoser.at>",
   "license": "MIT",
@@ -11,13 +13,16 @@
   "devDependencies": {
     "eslint-config-custom": "*",
     "tsconfig": "*",
-    "turbo": "^1.6.3",
     "tsup": "^6.5.0",
+    "turbo": "^1.6.3",
     "typescript": "^4.9.3"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs,iife --dts --sourcemap",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix"
+  },
+  "dependencies": {
+    "@changesets/cli": "^2.25.2"
   }
 }

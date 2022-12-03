@@ -1,10 +1,10 @@
 import * as React from "react";
 import {getDataFromTree} from "@apollo/client/react/ssr";
-import {fetch as rubyFetch} from "@isorun/rails";
-
-import {App} from "../my_app/App.jsx";
 import {ApolloClient, ApolloProvider, HttpLink, InMemoryCache} from "@apollo/client";
 import {renderToStaticMarkup} from "react-dom/server";
+import {apollo} from "@isorun/rails";
+
+import {App} from "../my_app/App.jsx";
 
 function createClient(isSSR) {
   return new ApolloClient({
@@ -12,7 +12,7 @@ function createClient(isSSR) {
     cache: new InMemoryCache(),
     link: new HttpLink({
       uri: 'http://localhost:3000/graphql',
-      fetch: rubyFetch
+      fetch: apollo.fetch
     })
   });
 }

@@ -7,6 +7,7 @@
 /spec/reports/
 /target/
 /tmp/
+/node_modules/
 Gemfile.lock
 
 # rspec failure tracking

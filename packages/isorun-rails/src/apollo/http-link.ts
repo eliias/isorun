@@ -1,7 +1,7 @@
 import {send} from "../deno";
 
-export async function fetch(url: RequestInfo | URL, init?: RequestInit) {
-  const args = JSON.stringify({url, options: init});
+export async function fetch(url: string, init?: RequestInit) {
+  const args = {url, options: JSON.stringify(init)};
   try {
     // forward request to Ruby
     const raw = await send("fetch", args);

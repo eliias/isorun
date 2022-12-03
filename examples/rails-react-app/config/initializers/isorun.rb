@@ -14,21 +14,36 @@ Isorun.configure do
   #     end
   #   end
   on_app_send do |action, args|
-    url, options = JSON.parse!(args)
-                       .with_indifferent_access
-                       .values_at(:url, :options)
-    url = URI.parse(url)
-
     case action
+    when "test"
+      puts action
+      pp args
+      args
     when "fetch"
-      session = ActionDispatch::Integration::Session.new(Rails.application)
-      session.host!("localhost:3000")
-      session.process(
-        options[:method], url.path, params: JSON.parse!(options[:body])
+      options, = args.with_indifferent_access
+                     .values_at(:options)
+      body, = JSON.parse!(options).with_indifferent_access
+                 .values_at(:body)
+
+      context = {}
+      operation_name, query, variables = JSON.parse!(body)
+        .with_indifferent_access
+        .values_at(:operation_name, :query, :variables)
+
+      puts "[ISORUN] Process JavaScript GraphQL request:\n\n#{query}\n\n"
+
+      result = RailsAppSchema.execute(
+        query,
+        variables: variables,
+        context: context,
+        operation_name: operation_name
       )
-      session.response.body
+
+      result.to_json
     else
-      ""
+      nil
     end
+  rescue StandardError => e
+    Rails.logger.error("[ISORUN] Cannot process send: #{e.message}\n\n#{e.backtrace&.join("\n")}")
   end
 end

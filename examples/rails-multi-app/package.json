@@ -1,6 +1,7 @@
 {
-  "name": "app",
-  "private": "true",
+  "name": "rails-multi-app",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "build": "webpack --config webpack.config.mjs",
     "build:server": "webpack --config webpack.server.config.mjs",
