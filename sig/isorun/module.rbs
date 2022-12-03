@@ -1,0 +1,27 @@
+module Isorun
+  class Module
+    DEFAULT_RECEIVER: untyped
+    DEFAULT_RESOLVER: untyped
+
+    @bundle_path: string
+    @entrypoint: string
+
+    attr_reader bundle_path: string
+    attr_writer bundle_resolver: untyped
+    attr_reader entrypoint: string
+
+    attr_writer mesage_receiver: untyped
+
+    attr_writer message_receiver: untyped
+
+    def bundle_resolver: -> untyped
+
+    def call: -> untyped
+
+    def exist?: -> bool
+
+    def message_receiver: -> untyped
+
+    def resolve_bundle_path: -> String
+  end
+end

@@ -1,19 +1,26 @@
-use isorun::renderer::Renderer;
-use magnus::{define_module, function, method, Error, Module, Object};
+use isorun::module::Module;
+use magnus::{define_module, function, method, Error, Module as M, Object};
 
 mod isorun;
 
 #[magnus::init]
 fn init() -> Result<(), Error> {
-    let module = define_module("Isorun").expect("cannot define module: Isorun");
+    let root = define_module("Isorun").expect("cannot define module: Isorun");
 
-    let app = module
-        .define_class("Renderer", Default::default())
-        .expect("cannot define class: Isorun::Renderer");
-    app.define_singleton_method("new", function!(Renderer::new, 0))
-        .expect("cannot define singleton method: new");
-    app.define_method("render", method!(Renderer::render, 2))
-        .expect("cannot defined method: render");
-
+    let module = root
+        .define_class("Module", Default::default())
+        .expect("cannot define class: Isorun::Module");
+    module
+        .define_singleton_method("new", function!(Module::new, 2))
+        .expect("cannot define singelton method: new");
+    module
+        .define_method("id", method!(Module::id, 0))
+        .expect("cannot define method: id");
+    module
+        .define_method("entrypoint", method!(Module::entrypoint, 0))
+        .expect("cannot define method: entrypoint");
+    module
+        .define_private_method("module_call", method!(Module::module_call, -1))
+        .expect("cannot define method: module_call");
     Ok(())
 }

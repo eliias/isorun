@@ -1,3 +1,4 @@
+use crate::isorun::utils::{convert_ruby_to_v8, convert_v8_to_ruby};
 use deno_core::error::AnyError;
 use deno_core::{Extension, FsModuleLoader, ModuleId};
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
@@ -5,6 +6,7 @@ use deno_runtime::permissions::Permissions;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
 use deno_runtime::BootstrapOptions;
 use deno_web::BlobStore;
+use magnus::{RArray, RHash};
 use std::borrow::BorrowMut;
 use std::path::Path;
 use std::rc::Rc;
@@ -16,7 +18,7 @@ fn get_error_class_name(e: &AnyError) -> &'static str {
 }
 
 pub struct VM {
-    worker: MainWorker,
+    pub(crate) worker: MainWorker,
     module_id: ModuleId,
 }
 
@@ -28,10 +30,13 @@ impl VM {
         VM { worker, module_id }
     }
 
-    pub(crate) async fn render(
+    pub(crate) async fn call<'a>(
         &mut self,
         bundle_path: &str,
-    ) -> Result<String, AnyError> {
+        entrypoint: &str,
+        args: RArray,
+        kwargs: RHash,
+    ) -> Result<magnus::Value, AnyError> {
         let module_namespace;
         {
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
@@ -39,7 +44,7 @@ impl VM {
                 js_runtime.get_module_namespace(self.module_id).unwrap();
         }
 
-        let promise: Global<Value>;
+        let promise;
         {
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
             let mut scope = js_runtime
@@ -47,39 +52,56 @@ impl VM {
                 .unwrap()
                 .handle_scope(js_runtime.v8_isolate());
 
+            let v8_args =
+                convert_ruby_to_v8(magnus::Value::from(args), &mut scope)
+                    .unwrap();
+            let v8_kwargs =
+                convert_ruby_to_v8(magnus::Value::from(kwargs), &mut scope)
+                    .unwrap();
+
             let module_namespace =
                 Local::<v8::Object>::new(&mut scope, module_namespace);
-            let export_name = v8::String::new(&mut scope, "render").unwrap();
+            let export_name = v8::String::new(&mut scope, "call").unwrap();
             let binding = module_namespace
                 .get(&mut scope, export_name.into())
                 .unwrap();
             let func = v8::Local::<v8::Function>::try_from(binding)
-                .expect("cannot extract function");
+                .unwrap_or_else(|error| {
+                    panic!(
+                        "cannot extract function `{}` from module `{}`: {}",
+                        entrypoint, bundle_path, error
+                    )
+                });
 
             // call function
-            let path_arg = v8::String::new(&mut scope, bundle_path).unwrap();
-            let args: &[Local<Value>] = &[path_arg.into()];
+            let v8_bundle_path: Local<Value> =
+                v8::String::new(&mut scope, bundle_path).unwrap().into();
+            let v8_entrypoint: Local<Value> =
+                v8::String::new(&mut scope, entrypoint).unwrap().into();
+            let args: &[Local<Value>] =
+                &[v8_bundle_path, v8_entrypoint, v8_args, v8_kwargs];
             let recv = v8::undefined(scope.borrow_mut());
             let maybe_result =
                 func.call(scope.as_mut(), recv.into(), args).unwrap();
             promise = Global::new(&mut scope, maybe_result);
         }
 
-        let value;
+        let global_v8_value;
         {
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
             js_runtime.run_event_loop(false).await?;
-            value = js_runtime.resolve_value(promise).await?;
+            global_v8_value = js_runtime.resolve_value(promise).await?;
         }
 
-        let html;
+        let value: magnus::Value;
         {
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
             let scope = &mut js_runtime.handle_scope();
-            html = value.open(scope).to_rust_string_lossy(scope);
+            let v8_value = Local::new(scope, global_v8_value);
+            value = convert_v8_to_ruby(v8_value, scope).unwrap();
         }
 
-        Ok(html)
+        Ok(value)
     }
 
     async fn preload(
@@ -133,8 +155,7 @@ impl VM {
             stdio: Default::default(),
         };
 
-        let js_path =
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("src/render.js");
+        let js_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/call.js");
         let main_module = deno_core::resolve_path(&js_path.to_string_lossy())?;
         let permissions = Permissions::allow_all();
         let mut worker = MainWorker::bootstrap_from_options(
@@ -144,6 +165,7 @@ impl VM {
         );
         let module_id = worker.preload_main_module(&main_module).await.unwrap();
         worker.evaluate_module(module_id).await?;
+
         worker.run_event_loop(false).await?;
 
         Ok((worker, module_id))

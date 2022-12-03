@@ -36,6 +36,7 @@ module Isorun
     extend Option
     include Validations
 
-    option :on_app_send, default: ->(_action, _options = nil) { "" }
+    option :bundle_resolver, default: Isorun::Resolver::SSR_APP_RESOLVER
+    option :message_receiver, default: ->(*_args, **_kwargs) {}
   end
 end

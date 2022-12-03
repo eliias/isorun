@@ -8,6 +8,10 @@ AllCops:
   TargetRubyVersion: 2.7
   Exclude:
     - "examples/**/*"
+    - "node_modules/**/*"
+    - "packages/**/*"
+    - "target/**/*"
+    - "tmp/**/*"
 
 Style/Documentation:
   Enabled: false

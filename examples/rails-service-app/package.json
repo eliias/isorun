@@ -1,0 +1,14 @@
+{
+  "name": "rails-service-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm"
+  },
+  "dependencies": {
+    "esbuild": "^0.15.16"
+  },
+  "devDependencies": {
+    "d3-node": "^3.0.0"
+  }
+}

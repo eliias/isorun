@@ -1,0 +1,6 @@
+module Isorun
+  module Resolver
+    SIMPLE_RESOLVER: untyped
+    SSR_APP_RESOLVER: untyped
+  end
+end

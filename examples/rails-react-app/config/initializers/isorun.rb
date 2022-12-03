@@ -5,7 +5,7 @@ Isorun.configure do
   # respond to a given action and the arguments provided by the action
   #
   # @example
-  #   on_app_send do |action, args|
+  #   message_receiver do |action, args|
   #     case action
   #       when "fetch"
   #       { data: { testField: "Hello from isorun" } }.to_json
@@ -13,7 +13,7 @@ Isorun.configure do
   #       ""
   #     end
   #   end
-  on_app_send do |action, args|
+  message_receiver do |action, args|
     case action
     when "test"
       puts action
@@ -23,12 +23,12 @@ Isorun.configure do
       options, = args.with_indifferent_access
                      .values_at(:options)
       body, = JSON.parse!(options).with_indifferent_access
-                 .values_at(:body)
+                  .values_at(:body)
 
       context = {}
       operation_name, query, variables = JSON.parse!(body)
-        .with_indifferent_access
-        .values_at(:operation_name, :query, :variables)
+                                             .with_indifferent_access
+                                             .values_at(:operation_name, :query, :variables)
 
       puts "[ISORUN] Process JavaScript GraphQL request:\n\n#{query}\n\n"
 
@@ -40,8 +40,6 @@ Isorun.configure do
       )
 
       result.to_json
-    else
-      nil
     end
   rescue StandardError => e
     Rails.logger.error("[ISORUN] Cannot process send: #{e.message}\n\n#{e.backtrace&.join("\n")}")

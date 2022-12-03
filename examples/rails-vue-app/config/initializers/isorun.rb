@@ -5,7 +5,7 @@ Isorun.configure do
   # respond to a given action and the arguments provided by the action
   #
   # @example
-  #   on_app_send do |action, args|
+  #   message_receiver do |action, args|
   #     case action
   #       when "fetch"
   #       { data: { testField: "Hello from isorun" } }.to_json
@@ -13,7 +13,7 @@ Isorun.configure do
   #       ""
   #     end
   #   end
-  on_app_send do |action, args|
+  message_receiver do |action, args|
     options = JSON.parse!(args)
                   .with_indifferent_access
                   .values_at(:options)

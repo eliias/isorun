@@ -1,4 +1,11 @@
 module Isorun
   VERSION: String
   # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+  self.@config: untyped
+
+  alias self.config self.configuration
+
+  def self.configuration: -> untyped
+
+  def self.configure: -> untyped
 end
