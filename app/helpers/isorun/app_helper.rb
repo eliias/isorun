@@ -3,12 +3,13 @@
 module Isorun
   module AppHelper
     def isorun_app(id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-      app = Isorun::Module.new(id, "render")
+      app = Isorun::Module.new(id)
 
       html = ""
       if app.exist?
         html += tag.div id: id do
-          app.call.html_safe # rubocop:disable Rails/OutputSafety
+          result = app.call
+          result.html_safe if result.is_a? String # rubocop:disable Rails/OutputSafety
         rescue StandardError => e
           Rails.logger.error("[ISORUN] cannot render app:\n#{e.message}\n\n#{e.backtrace&.join("\n")}")
         end

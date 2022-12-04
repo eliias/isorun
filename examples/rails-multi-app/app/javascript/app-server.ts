@@ -19,7 +19,7 @@ const renderScript = ({state}: Args): string => {
     </script>`;
 };
 
-export async function render() {
+export default async function render() {
     const client = createClient(true);
 
     const app = createSSRApp({

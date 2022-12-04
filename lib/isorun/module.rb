@@ -16,6 +16,7 @@ module Isorun
       keyword_init: true
     )
 
+    # the default ECMAScript module export name
     DEFAULT_ENTRYPOINT = "default"
 
     private_constant :CallOptions, :DEFAULT_ENTRYPOINT
@@ -66,7 +67,7 @@ module Isorun
     # @!attribute [r] id
     #   @return [String]
 
-    # @!method initialize(bundle_path, entrypoint)
+    # @!method initialize(id)
 
     # @!method module_call(bundle_path, entrypoint, *args, **kwargs, &block)
     #   Executes the module by invoking the function declared as entrypoint

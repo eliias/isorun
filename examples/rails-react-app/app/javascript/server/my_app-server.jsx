@@ -25,7 +25,7 @@ const Script = ({state}) => {
   );
 }
 
-export async function render() {
+export default async function render() {
   const client = createClient(true);
 
   const Wrapper = (
