@@ -8,7 +8,19 @@ module Isorun
       end
     end
 
-    attr_writer :bundle_resolver, :message_receiver
+    CallOptions = Struct.new(
+      :environment,
+      :bundle_path,
+      :entrypoint,
+      :message_receiver,
+      keyword_init: true
+    )
+
+    DEFAULT_ENTRYPOINT = "default"
+
+    private_constant :CallOptions, :DEFAULT_ENTRYPOINT
+
+    attr_writer :entrypoint, :bundle_resolver, :message_receiver
 
     def bundle_resolver
       @bundle_resolver || Isorun.configuration.bundle_resolver
@@ -25,7 +37,14 @@ module Isorun
     def call(*args, **kwargs, &block)
       raise ModuleMissingError unless exist?
 
-      module_call(bundle_path, entrypoint, message_receiver, args, kwargs, block)
+      options = CallOptions.new(
+        bundle_path: bundle_path,
+        environment: Rails.env.to_s,
+        entrypoint: entrypoint,
+        message_receiver: message_receiver
+      )
+
+      module_call(options, args, kwargs, block)
     end
 
     protected
@@ -40,10 +59,11 @@ module Isorun
       resolve_bundle_path(id)
     end
 
-    # @!attribute [r] id
-    #   @return [String]
+    def entrypoint
+      @entrypoint || DEFAULT_ENTRYPOINT
+    end
 
-    # @!attribute [r] entrypoint
+    # @!attribute [r] id
     #   @return [String]
 
     # @!method initialize(bundle_path, entrypoint)

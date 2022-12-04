@@ -19,6 +19,9 @@ Gemfile.lock
 # build artifact
 lib/isorun/isorun*
 
+# todo: magnus/rb_sys copy the bundle into the wrong directory
+lib/isorun.bundle
+
 # turbo
 dist/
 .turbo

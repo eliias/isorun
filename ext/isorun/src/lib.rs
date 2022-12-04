@@ -11,14 +11,11 @@ fn init() -> Result<(), Error> {
         .define_class("Module", Default::default())
         .expect("cannot define class: Isorun::Module");
     module
-        .define_singleton_method("new", function!(Module::new, 2))
+        .define_singleton_method("new", function!(Module::new, -1))
         .expect("cannot define singelton method: new");
     module
         .define_method("id", method!(Module::id, 0))
         .expect("cannot define method: id");
-    module
-        .define_method("entrypoint", method!(Module::entrypoint, 0))
-        .expect("cannot define method: entrypoint");
     module
         .define_private_method("module_call", method!(Module::module_call, -1))
         .expect("cannot define method: module_call");

@@ -5,7 +5,7 @@ use deno_core::serde_v8::from_v8;
 use deno_core::{op, serde_v8, Extension};
 use magnus::block::Proc;
 use magnus::gvl::{without_gvl, GVLContext};
-use magnus::{Error, RArray, RHash, RString, Value};
+use magnus::{Error, RArray, RHash, RString, RStruct, Value};
 use std::cell::RefCell;
 use tokio::runtime::Runtime;
 
@@ -39,32 +39,27 @@ impl JsRuntime {
 
     pub(crate) fn call(
         &self,
-        bundle_path: &str,
-        entrypoint: &str,
-        receiver: Proc,
+        call_options: RStruct,
         args: RArray,
         kwargs: RHash,
         block: Option<Proc>,
     ) -> Result<Value, Error> {
+        let receiver = call_options
+            .getmember::<&str, Proc>("message_receiver")
+            .unwrap();
+
         self.receiver.borrow_mut().replace(receiver);
 
         let result = without_gvl(
             |context| {
                 self.context.borrow_mut().replace(context);
-                self
-                    .runtime
+                self.runtime
                     .block_on(self.vm.borrow_mut().call(
-                        bundle_path,
-                        entrypoint,
+                        call_options,
                         args,
                         kwargs,
                     ))
-                    .map_err(|error| {
-                        Error::runtime_error(format!(
-                            "cannot call function `{}` in module `{}`\nerror: {}",
-                            entrypoint, bundle_path, error
-                        ))
-                    })
+                    .map_err(|error| Error::runtime_error(format!("{}", error)))
             },
             None::<fn()>,
         );

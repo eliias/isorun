@@ -2,7 +2,8 @@ use deno_core::error::AnyError;
 use magnus::r_hash::ForEach;
 use magnus::value::{Qfalse, Qtrue};
 use magnus::{
-    Integer, RArray, RFloat, RHash, RString, Symbol, Value, QFALSE, QNIL, QTRUE,
+    Integer, RArray, RFloat, RHash, RString, RStruct, Symbol, Value, QFALSE,
+    QNIL, QTRUE,
 };
 use v8::{Array, GetPropertyNamesArgs, HandleScope, Local, Object};
 
@@ -133,6 +134,20 @@ pub fn convert_ruby_to_v8<'s>(
             Ok(ForEach::Continue)
         })
         .expect("cannot convert hash into JavaScript object");
+
+        return Ok(obj.into());
+    }
+
+    if let Some(v) = RStruct::from_value(value) {
+        let obj = Object::new(scope);
+        for member in v.members().unwrap() {
+            let key = member.to_string();
+            let val = v.getmember::<&str, Value>(key.as_str()).unwrap();
+            let v8_key = v8::String::new(scope, key.as_str()).unwrap();
+            let v8_val = convert_ruby_to_v8(val, scope).unwrap();
+
+            obj.set(scope, v8_key.into(), v8_val);
+        }
 
         return Ok(obj.into());
     }

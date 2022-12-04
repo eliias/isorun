@@ -6,7 +6,7 @@ use deno_runtime::permissions::Permissions;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
 use deno_runtime::BootstrapOptions;
 use deno_web::BlobStore;
-use magnus::{RArray, RHash};
+use magnus::{RArray, RHash, RStruct};
 use std::borrow::BorrowMut;
 use std::path::Path;
 use std::rc::Rc;
@@ -32,8 +32,7 @@ impl VM {
 
     pub(crate) async fn call<'a>(
         &mut self,
-        bundle_path: &str,
-        entrypoint: &str,
+        call_options: RStruct,
         args: RArray,
         kwargs: RHash,
     ) -> Result<magnus::Value, AnyError> {
@@ -46,6 +45,13 @@ impl VM {
 
         let promise;
         {
+            let entrypoint = call_options
+                .getmember::<&str, String>("entrypoint")
+                .unwrap();
+            let bundle_path = call_options
+                .getmember::<&str, String>("bundle_path")
+                .unwrap();
+
             let js_runtime = self.worker.borrow_mut().js_runtime.borrow_mut();
             let mut scope = js_runtime
                 .create_realm()
@@ -74,12 +80,12 @@ impl VM {
                 });
 
             // call function
-            let v8_bundle_path: Local<Value> =
-                v8::String::new(&mut scope, bundle_path).unwrap().into();
-            let v8_entrypoint: Local<Value> =
-                v8::String::new(&mut scope, entrypoint).unwrap().into();
-            let args: &[Local<Value>] =
-                &[v8_bundle_path, v8_entrypoint, v8_args, v8_kwargs];
+            let v8_call_options = convert_ruby_to_v8(
+                magnus::Value::from(call_options),
+                &mut scope,
+            )
+            .unwrap();
+            let args: &[Local<Value>] = &[v8_call_options, v8_args, v8_kwargs];
             let recv = v8::undefined(scope.borrow_mut());
             let maybe_result =
                 func.call(scope.as_mut(), recv.into(), args).unwrap();

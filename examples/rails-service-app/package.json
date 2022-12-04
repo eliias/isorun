@@ -9,6 +9,9 @@
     "esbuild": "^0.15.16"
   },
   "devDependencies": {
-    "d3-node": "^3.0.0"
+    "color-convert": "^2.0.1",
+    "d3": "^7.7.0",
+    "d3-node": "^3.0.0",
+    "linkedom": "^0.14.21"
   }
 }
