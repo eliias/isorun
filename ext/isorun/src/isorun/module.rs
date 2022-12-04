@@ -16,11 +16,12 @@ impl Module {
             return Err(Error::runtime_error("Provide a valid asset id"));
         }
 
-        let id = RString::from_value(options[0]).unwrap();
+        let id = RString::from_value(options[0])
+            .unwrap()
+            .to_string()
+            .unwrap();
 
-        Ok(Module {
-            id: id.to_string().unwrap(),
-        })
+        Ok(Module { id })
     }
 
     pub(crate) fn id(&self) -> String {

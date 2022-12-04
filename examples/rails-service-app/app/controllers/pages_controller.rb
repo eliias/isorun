@@ -1,7 +1,6 @@
 class PagesController < ApplicationController
   def index
-    service = Isorun::Module.new("service", "generate")
-    service.entrypoint = "generate"
+    service = Isorun::Module.new("service")
     @result = service.call(canvas, settings, data)
   end
 

@@ -8,6 +8,8 @@ module Isorun
     @bundle_path: string
     @entrypoint: string
 
+    @module_mtime: untyped
+
     attr_reader bundle_path: string
     attr_writer bundle_resolver: Proc
     attr_reader entrypoint: string
@@ -26,5 +28,11 @@ module Isorun
     def message_receiver: -> untyped
 
     def resolve_bundle_path: -> String
+
+    private
+
+    def environment: -> string
+
+    def force_reload: -> bool
   end
 end

@@ -2,7 +2,7 @@ import {parseHTML} from 'linkedom';
 import * as d3 from "d3";
 import convert from 'color-convert';
 
-export function generate(canvas, settings, data) {
+export default function generate(canvas, settings, data) {
   const {document} = parseHTML(`
     <!doctype html>
     <html lang="en">
@@ -41,7 +41,7 @@ export function generate(canvas, settings, data) {
     .attr('class', 'groupDots')
     .attr('width', w)
     .attr('height', h)
-    .attr('transform', 'translate(20, 20)');
+    .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
   const dots = d => {
     const result = d.map((entry, index) => ({

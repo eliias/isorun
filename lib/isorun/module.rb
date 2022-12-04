@@ -13,13 +13,16 @@ module Isorun
       :bundle_path,
       :entrypoint,
       :message_receiver,
+      :force_reload,
       keyword_init: true
     )
 
     # the default ECMAScript module export name
     DEFAULT_ENTRYPOINT = "default"
 
-    private_constant :CallOptions, :DEFAULT_ENTRYPOINT
+    CACHE_KEY = "isorun_asset_mtime_cache"
+
+    private_constant :CallOptions, :DEFAULT_ENTRYPOINT, :CACHE_KEY
 
     attr_writer :entrypoint, :bundle_resolver, :message_receiver
 
@@ -40,9 +43,10 @@ module Isorun
 
       options = CallOptions.new(
         bundle_path: bundle_path,
-        environment: Rails.env.to_s,
+        environment: environment,
         entrypoint: entrypoint,
-        message_receiver: message_receiver
+        message_receiver: message_receiver,
+        force_reload: force_reload
       )
 
       module_call(options, args, kwargs, block)
@@ -60,8 +64,35 @@ module Isorun
       resolve_bundle_path(id)
     end
 
+    def environment
+      Rails.env.to_s
+    end
+
     def entrypoint
       @entrypoint || DEFAULT_ENTRYPOINT
+    end
+
+    def force_reload
+      return false if Rails.env.production?
+
+      file = File.open(bundle_path)
+      mtime = file.mtime
+
+      cache_miss = false
+
+      prev_mtime = Rails.cache.fetch("#{CACHE_KEY}:#{id}") do
+        cache_miss = true
+        mtime
+      end
+
+      return true if cache_miss
+
+      if prev_mtime < mtime
+        Rails.cache.write("#{CACHE_KEY}:#{id}", mtime)
+        return true
+      end
+
+      false
     end
 
     # @!attribute [r] id
