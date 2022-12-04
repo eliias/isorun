@@ -275,12 +275,12 @@
       <pre class="lines">
 
 
-26
-27
-28</pre>
+29
+30
+31</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 26</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 29</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_bundle_resolver'>bundle_resolver</span>
   <span class='ivar'>@bundle_resolver</span> <span class='op'>||</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configuration'><span class='object_link'><a href="../Isorun.html#configuration-class_method" title="Isorun.configuration (method)">configuration</a></span></span><span class='period'>.</span><span class='id identifier rubyid_bundle_resolver'>bundle_resolver</span>
@@ -336,12 +336,12 @@
       <pre class="lines">
 
 
-24
-25
-26</pre>
+27
+28
+29</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 24</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 27</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_entrypoint='>entrypoint=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='ivar'>@entrypoint</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
@@ -368,12 +368,12 @@
       <pre class="lines">
 
 
-30
-31
-32</pre>
+33
+34
+35</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 30</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 33</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_message_receiver'>message_receiver</span>
   <span class='ivar'>@message_receiver</span> <span class='op'>||</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configuration'><span class='object_link'><a href="../Isorun.html#configuration-class_method" title="Isorun.configuration (method)">configuration</a></span></span><span class='period'>.</span><span class='id identifier rubyid_message_receiver'>message_receiver</span>
@@ -427,9 +427,6 @@
       <pre class="lines">
 
 
-38
-39
-40
 41
 42
 43
@@ -438,19 +435,24 @@
 46
 47
 48
-49</pre>
+49
+50
+51
+52
+53</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 38</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 41</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Module/ModuleMissingError.html" title="Isorun::Module::ModuleMissingError (class)">ModuleMissingError</a></span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_exist?'>exist?</span>
 
   <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='const'>CallOptions</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
     <span class='label'>bundle_path:</span> <span class='id identifier rubyid_bundle_path'>bundle_path</span><span class='comma'>,</span>
-    <span class='label'>environment:</span> <span class='const'>Rails</span><span class='period'>.</span><span class='id identifier rubyid_env'>env</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
+    <span class='label'>environment:</span> <span class='id identifier rubyid_environment'>environment</span><span class='comma'>,</span>
     <span class='label'>entrypoint:</span> <span class='id identifier rubyid_entrypoint'>entrypoint</span><span class='comma'>,</span>
-    <span class='label'>message_receiver:</span> <span class='id identifier rubyid_message_receiver'>message_receiver</span>
+    <span class='label'>message_receiver:</span> <span class='id identifier rubyid_message_receiver'>message_receiver</span><span class='comma'>,</span>
+    <span class='label'>force_reload:</span> <span class='id identifier rubyid_force_reload'>force_reload</span>
   <span class='rparen'>)</span>
 
   <span class='id identifier rubyid_module_call'>module_call</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
@@ -497,12 +499,12 @@
       <pre class="lines">
 
 
-34
-35
-36</pre>
+37
+38
+39</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 34</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 37</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_exist?'>exist?</span>
   <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_bundle_path'>bundle_path</span><span class='rparen'>)</span>
@@ -517,7 +519,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Dec  4 12:16:07 2022 by
+  Generated on Sun Dec  4 15:54:11 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
