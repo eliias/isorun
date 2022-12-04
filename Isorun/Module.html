@@ -144,6 +144,34 @@
       <li class="public ">
   <span class="summary_signature">
     
+      <a href="#entrypoint=-instance_method" title="#entrypoint= (instance method)">#<strong>entrypoint</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+      <span class="note title writeonly">writeonly</span>
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Sets the attribute entrypoint.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#message_receiver-instance_method" title="#message_receiver (instance method)">#<strong>message_receiver</strong>  &#x21d2; Object </a>
     
 
@@ -247,15 +275,76 @@
       <pre class="lines">
 
 
-13
-14
-15</pre>
+25
+26
+27</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 13</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 25</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_bundle_resolver'>bundle_resolver</span>
   <span class='ivar'>@bundle_resolver</span> <span class='op'>||</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configuration'><span class='object_link'><a href="../Isorun.html#configuration-class_method" title="Isorun.configuration (method)">configuration</a></span></span><span class='period'>.</span><span class='id identifier rubyid_bundle_resolver'>bundle_resolver</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="entrypoint-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="entrypoint=-instance_method">
+  
+    #<strong>entrypoint=</strong>(value)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Sets the attribute entrypoint</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the value to set the attribute entrypoint to.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+23
+24
+25</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 23</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_entrypoint='>entrypoint=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='ivar'>@entrypoint</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -279,12 +368,12 @@
       <pre class="lines">
 
 
-17
-18
-19</pre>
+29
+30
+31</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 17</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 29</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_message_receiver'>message_receiver</span>
   <span class='ivar'>@message_receiver</span> <span class='op'>||</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configuration'><span class='object_link'><a href="../Isorun.html#configuration-class_method" title="Isorun.configuration (method)">configuration</a></span></span><span class='period'>.</span><span class='id identifier rubyid_message_receiver'>message_receiver</span>
@@ -338,19 +427,33 @@
       <pre class="lines">
 
 
-25
-26
-27
-28
-29</pre>
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 25</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 37</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Module/ModuleMissingError.html" title="Isorun::Module::ModuleMissingError (class)">ModuleMissingError</a></span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_exist?'>exist?</span>
 
-  <span class='id identifier rubyid_module_call'>module_call</span><span class='lparen'>(</span><span class='id identifier rubyid_bundle_path'>bundle_path</span><span class='comma'>,</span> <span class='id identifier rubyid_entrypoint'>entrypoint</span><span class='comma'>,</span> <span class='id identifier rubyid_message_receiver'>message_receiver</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='const'>CallOptions</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
+    <span class='label'>bundle_path:</span> <span class='id identifier rubyid_bundle_path'>bundle_path</span><span class='comma'>,</span>
+    <span class='label'>environment:</span> <span class='const'>Rails</span><span class='period'>.</span><span class='id identifier rubyid_env'>env</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
+    <span class='label'>entrypoint:</span> <span class='id identifier rubyid_entrypoint'>entrypoint</span><span class='comma'>,</span>
+    <span class='label'>message_receiver:</span> <span class='id identifier rubyid_message_receiver'>message_receiver</span>
+  <span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_module_call'>module_call</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='comma'>,</span> <span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -394,12 +497,12 @@
       <pre class="lines">
 
 
-21
-22
-23</pre>
+33
+34
+35</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 21</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/module.rb', line 33</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_exist?'>exist?</span>
   <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_bundle_path'>bundle_path</span><span class='rparen'>)</span>
@@ -414,7 +517,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Dec  3 23:43:51 2022 by
+  Generated on Sun Dec  4 11:59:27 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
