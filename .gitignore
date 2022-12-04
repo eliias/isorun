@@ -25,3 +25,7 @@ lib/isorun.bundle
 # turbo
 dist/
 .turbo
+
+# demos
+docs/demos/
+
