@@ -1,5 +1,6 @@
 module Isorun
   class Module
+    CACHE_KEY: untyped
     CallOptions: untyped
     DEFAULT_ENTRYPOINT: untyped
     DEFAULT_RECEIVER: untyped
@@ -19,15 +20,17 @@ module Isorun
 
     attr_writer message_receiver: untyped
 
-    def bundle_resolver: -> untyped
+    def bundle_resolver: -> string
 
     def call: -> untyped
 
     def exist?: -> bool
 
-    def message_receiver: -> untyped
+    def import: -> untyped
 
-    def resolve_bundle_path: -> String
+    def message_receiver: -> string
+
+    def resolve_bundle_path: -> string
 
     private
 

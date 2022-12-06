@@ -1,10 +1,8 @@
-use crate::isorun::module_item::ModuleItem;
 use crate::js;
-use magnus::{Error, RString, Value};
 use std::cell::RefCell;
 
 #[magnus::wrap(class = "Isorun::Module")]
-pub(crate) struct Module(RefCell<js::module::Module>);
+pub(crate) struct Module(RefCell<js::module::Context>);
 
 /// SAFETY: This is safe because we only access this data when the GVL is held.
 unsafe impl Send for Module {}
