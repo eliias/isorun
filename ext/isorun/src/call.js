@@ -25,3 +25,11 @@ export async function call(options, args, kwargs) {
     throw new Error(`failed to call "${entrypoint}" in "${bundlePath}" with options: ${JSON.stringify(options, null, "  ")}`);
   }
 }
+
+export async function load(url) {
+  try {
+    return await import(url);
+  } catch(err) {
+    throw new Error(`failed to import module: "${url}"`);
+  }
+}
