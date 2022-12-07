@@ -1,7 +1,11 @@
 class PagesController < ApplicationController
   def index
-    service = Isorun::Module.load("service")
+    service_path = Isorun.configuration.bundle_resolver.call("service")
+
+    context = Isorun::Context.create
+    service = context.load(service_path)
     generate = service.import("default")
+
     @result = generate.call(canvas, settings, data)
   end
 

@@ -40,9 +40,9 @@ module Isorun
       File.exist?(bundle_path)
     end
 
-    def import(export_name)
-      module_import(export_name)
-    end
+    # def import(export_name)
+    #   module_import(export_name)
+    # end
 
     private
 

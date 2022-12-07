@@ -1,8 +1,7 @@
 use crate::isorun::utils::{convert_ruby_to_v8, convert_v8_to_ruby};
-use crate::js::context::Context;
 use deno_core::error::AnyError;
 use deno_core::serde_v8::from_v8;
-use deno_core::{op, serde_v8, Extension, FsModuleLoader, JsRuntime, ModuleId};
+use deno_core::{op, serde_v8, Extension, FsModuleLoader, ModuleId};
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
 use deno_runtime::permissions::Permissions;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
@@ -10,48 +9,56 @@ use deno_runtime::BootstrapOptions;
 use deno_web::BlobStore;
 use magnus::block::Proc;
 use magnus::gvl::GVLContext;
-use magnus::{Error, Value, QNIL};
+use magnus::{Error, Value};
 use std::borrow::BorrowMut;
 use std::cell::RefCell;
+use std::collections::{HashMap, HashSet};
 use std::path::Path;
 use std::rc::Rc;
 use std::string::ToString;
 use std::sync::Arc;
 use tokio::runtime::Runtime;
-use v8::{Global, Local, Object};
+use v8::{Global, Local};
 
 fn get_error_class_name(e: &AnyError) -> &'static str {
     deno_runtime::errors::get_error_class_name(e).unwrap_or("Error")
 }
 
-const BUNDLE_PATH: &str = "bundle_path";
-const ENTRYPOINT: &str = "entrypoint";
-const MESSAGE_RECEIVER: &str = "message_receiver";
+// const BUNDLE_PATH: &str = "bundle_path";
+// const ENTRYPOINT: &str = "entrypoint";
+// const MESSAGE_RECEIVER: &str = "message_receiver";
 const USER_AGENT: &str = "isorun";
 
 pub(crate) struct Worker {
     runtime: Runtime,
     pub(crate) worker: RefCell<MainWorker>,
-    main_module_id: ModuleId,
+    module_map: RefCell<HashMap<String, ModuleId>>,
     ruby_context: RefCell<Option<GVLContext>>,
     ruby_receiver: RefCell<Option<Proc>>,
 }
 
 impl Worker {
-    pub(crate) fn create_context(&self) -> Context {
-        Context::create()
-    }
-
     pub(crate) fn load_module(&self, path: &str) -> Result<ModuleId, AnyError> {
-        self.runtime.block_on(async {
-            let module_specifier = deno_core::resolve_path(path).unwrap();
-            let mut worker = self.worker.borrow_mut();
-            let module_id =
-                worker.preload_side_module(&module_specifier).await?;
-            self.worker.borrow_mut().evaluate_module(module_id).await?;
+        let mut module_map = self.module_map.borrow_mut();
+        if module_map.contains_key(path) {
+            return Ok(*module_map.get(path).unwrap());
+        }
 
-            Ok(module_id)
-        })
+        let module_id = {
+            let mut worker = self.worker.borrow_mut();
+
+            let module_specifier = deno_core::resolve_path(path).unwrap();
+            let module_id = self
+                .runtime
+                .block_on(worker.preload_side_module(&module_specifier))?;
+            self.runtime.block_on(worker.evaluate_module(module_id))?;
+
+            module_id
+        };
+
+        module_map.insert(path.to_string(), module_id);
+
+        Ok(module_id)
     }
 
     pub(crate) fn call(
@@ -59,28 +66,34 @@ impl Worker {
         callee: &Global<v8::Value>,
         args: &[Global<v8::Value>],
     ) -> Result<Value, Error> {
-        let mut worker = self.worker.borrow_mut();
-        let mut scope = worker.js_runtime.handle_scope();
+        let promise = {
+            let mut worker = self.worker.borrow_mut();
+            let mut scope = worker.js_runtime.handle_scope();
 
-        let callee = Local::<v8::Value>::new(&mut scope, callee);
-        let callee = Local::<v8::Function>::try_from(callee).unwrap();
+            let callee = Local::<v8::Value>::new(&mut scope, callee);
+            let callee = Local::<v8::Function>::try_from(callee).unwrap();
 
-        let mut local_args: Vec<Local<v8::Value>> = vec![];
-        for arg in args {
-            let local_arg = Local::<v8::Value>::new(&mut scope, arg);
-            local_args.push(local_arg);
-        }
-        let args = args
-            .iter()
-            .map(|arg| Local::<v8::Value>::new(&mut scope, arg))
-            .collect::<Vec<Local<v8::Value>>>()
-            .as_slice();
+            let mut local_args: Vec<Local<v8::Value>> = vec![];
+            for arg in args {
+                let local_arg = Local::<v8::Value>::new(&mut scope, arg);
+                local_args.push(local_arg);
+            }
+            let receiver = v8::undefined(scope.borrow_mut());
+            let promise = callee
+                .call(&mut scope, receiver.into(), local_args.as_slice())
+                .unwrap();
+            Global::<v8::Value>::new(&mut scope, promise)
+        };
 
-        let receiver = v8::undefined(scope.borrow_mut());
-        let promise = callee.call(&mut scope, receiver.into(), args).unwrap();
-        let promise = Global::<v8::Value>::new(&mut scope, promise);
+        let value = {
+            let mut worker = self.worker.borrow_mut();
+            let value = worker.js_runtime.resolve_value(promise);
+            self.runtime.block_on(value).unwrap()
+        };
 
-        Ok(Value::from(QNIL))
+        let value = self.to_ruby(&value).unwrap();
+
+        Ok(value)
     }
 
     pub(crate) fn to_ruby(&self, value: &Global<v8::Value>) -> Option<Value> {
@@ -104,15 +117,6 @@ impl Worker {
         Some(value)
     }
 
-    fn get_namespace(&self) -> Global<Object> {
-        self.worker
-            .borrow_mut()
-            .js_runtime
-            .borrow_mut()
-            .get_module_namespace(self.main_module_id)
-            .unwrap()
-    }
-
     fn send(&self, value: Value) -> Result<Value, Error> {
         if let (Some(ctx), Some(rec)) = (
             // we need to deref as mut as both, context and receiver, are behind
@@ -129,11 +133,6 @@ impl Worker {
                 "either ruby context or receiver are not initialized",
             ))
         }
-    }
-
-    fn run_event_loop(&self) -> Result<(), AnyError> {
-        self.runtime
-            .block_on(self.worker.borrow_mut().run_event_loop(false))
     }
 }
 
@@ -207,9 +206,9 @@ impl Default for Worker {
             .build()
             .unwrap();
 
-        let mut module_id = -1;
         runtime.block_on(async {
-            module_id = worker.preload_main_module(&main_module).await.unwrap();
+            let module_id =
+                worker.preload_main_module(&main_module).await.unwrap();
             worker
                 .evaluate_module(module_id)
                 .await
@@ -218,8 +217,8 @@ impl Default for Worker {
 
         Worker {
             runtime,
+            module_map: RefCell::from(HashMap::default()),
             worker: RefCell::from(worker),
-            main_module_id: module_id,
             ruby_context: RefCell::from(None),
             ruby_receiver: RefCell::from(None),
         }
@@ -228,6 +227,7 @@ impl Default for Worker {
 
 thread_local! {
     pub(crate) static WORKER: Worker = Worker::default();
+    pub(crate) static MODULE_MAP: HashSet<ModuleId> = HashSet::default();
 }
 
 #[allow(clippy::extra_unused_lifetimes)]

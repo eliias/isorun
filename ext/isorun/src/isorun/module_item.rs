@@ -1,5 +1,6 @@
 use crate::js;
-use magnus::{Error, QNIL};
+use crate::js::worker::WORKER;
+use magnus::Error;
 use std::cell::RefCell;
 
 #[magnus::wrap(class = "Isorun::Function")]
@@ -11,10 +12,17 @@ unsafe impl Send for Function {}
 impl Function {
     pub(crate) fn call(
         &self,
-        all_args: &[magnus::Value],
+        args: &[magnus::Value],
     ) -> Result<magnus::Value, Error> {
-        let args = &[];
-        self.0.borrow().call(args).map_err(|error| {
+        let args = WORKER.with(|worker| {
+            let mut v8_args = vec![];
+            for arg in args {
+                v8_args.push(worker.to_v8(*arg).unwrap());
+            }
+            v8_args
+        });
+
+        self.0.borrow().call(args.as_slice()).map_err(|error| {
             Error::runtime_error(format!("cannot call function: {}", error))
         })
     }
