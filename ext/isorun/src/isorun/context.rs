@@ -1,49 +1,33 @@
-use crate::js;
+use crate::{isorun, js};
+use magnus::Error;
 use std::cell::RefCell;
+use std::rc::Rc;
 
-#[magnus::wrap(class = "Isorun::Module")]
-pub(crate) struct Module(RefCell<js::module::Context>);
+#[magnus::wrap(class = "Isorun::Context")]
+pub(crate) struct Context(Rc<RefCell<js::context::Context>>);
 
 /// SAFETY: This is safe because we only access this data when the GVL is held.
-unsafe impl Send for Module {}
+unsafe impl Send for Context {}
 
-impl Module {
-    pub(crate) fn new(options: &[Value]) -> Result<Self, Error> {
-        if options.is_empty() {
-            return Err(Error::runtime_error("Provide a valid asset id"));
-        }
+impl Context {
+    pub(crate) fn create() -> Result<Self, Error> {
+        let context = js::context::Context::create();
 
-        let id = RString::from_value(options[0])
-            .unwrap()
-            .to_string()
-            .unwrap();
-
-        let path = RString::from_value(options[1])
-            .unwrap()
-            .to_string()
-            .unwrap();
-
-        let module = Module(RefCell::from(js::module::Module { id, path }));
-
-        Ok(module)
+        Ok(Context(Rc::from(RefCell::from(context))))
     }
 
-    pub(crate) fn module_id(&self) -> String {
-        self.0.borrow().id.clone()
-    }
-
-    pub(crate) fn module_load(&self, path: String) -> Result<(), Error> {
-        Ok(())
-    }
-
-    pub(crate) fn module_import(
+    pub(crate) fn load(
         &self,
-        export_name: String,
-    ) -> Result<ModuleItem, Error> {
-        let module = self.0.borrow();
-        module
-            .import(export_name.as_str())
-            .map(|module_item| ModuleItem(RefCell::from(module_item)))
-            .map_err(|error| Error::runtime_error(format!("{}", error)))
+        path: String,
+    ) -> Result<isorun::module::Module, Error> {
+        let module =
+            js::context::Context::load(path.as_str()).map_err(|error| {
+                Error::runtime_error(format!(
+                    "cannot load module: `{:?}`",
+                    error
+                ))
+            })?;
+
+        Ok(isorun::module::Module(RefCell::from(module)))
     }
 }

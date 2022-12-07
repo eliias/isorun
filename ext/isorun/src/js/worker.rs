@@ -10,7 +10,7 @@ use deno_runtime::BootstrapOptions;
 use deno_web::BlobStore;
 use magnus::block::Proc;
 use magnus::gvl::GVLContext;
-use magnus::{Error, Value};
+use magnus::{Error, Value, QNIL};
 use std::borrow::BorrowMut;
 use std::cell::RefCell;
 use std::path::Path;
@@ -18,7 +18,7 @@ use std::rc::Rc;
 use std::string::ToString;
 use std::sync::Arc;
 use tokio::runtime::Runtime;
-use v8::{Global, Object, OwnedIsolate};
+use v8::{Global, Local, Object};
 
 fn get_error_class_name(e: &AnyError) -> &'static str {
     deno_runtime::errors::get_error_class_name(e).unwrap_or("Error")
@@ -31,7 +31,7 @@ const USER_AGENT: &str = "isorun";
 
 pub(crate) struct Worker {
     runtime: Runtime,
-    worker: RefCell<MainWorker>,
+    pub(crate) worker: RefCell<MainWorker>,
     main_module_id: ModuleId,
     ruby_context: RefCell<Option<GVLContext>>,
     ruby_receiver: RefCell<Option<Proc>>,
@@ -39,38 +39,78 @@ pub(crate) struct Worker {
 
 impl Worker {
     pub(crate) fn create_context(&self) -> Context {
-        let realm = self.worker.borrow_mut().js_runtime.create_realm().unwrap();
-        Context::create(realm, &self)
+        Context::create()
     }
 
     pub(crate) fn load_module(&self, path: &str) -> Result<ModuleId, AnyError> {
-        let module_specifier = deno_core::resolve_path(path).unwrap();
-
         self.runtime.block_on(async {
-            let module_id = self
-                .worker
-                .borrow_mut()
-                .preload_side_module(&module_specifier)
-                .await?;
-
+            let module_specifier = deno_core::resolve_path(path).unwrap();
+            let mut worker = self.worker.borrow_mut();
+            let module_id =
+                worker.preload_side_module(&module_specifier).await?;
             self.worker.borrow_mut().evaluate_module(module_id).await?;
 
             Ok(module_id)
         })
     }
 
+    pub(crate) fn call(
+        &self,
+        callee: &Global<v8::Value>,
+        args: &[Global<v8::Value>],
+    ) -> Result<Value, Error> {
+        let mut worker = self.worker.borrow_mut();
+        let mut scope = worker.js_runtime.handle_scope();
+
+        let callee = Local::<v8::Value>::new(&mut scope, callee);
+        let callee = Local::<v8::Function>::try_from(callee).unwrap();
+
+        let mut local_args: Vec<Local<v8::Value>> = vec![];
+        for arg in args {
+            let local_arg = Local::<v8::Value>::new(&mut scope, arg);
+            local_args.push(local_arg);
+        }
+        let args = args
+            .iter()
+            .map(|arg| Local::<v8::Value>::new(&mut scope, arg))
+            .collect::<Vec<Local<v8::Value>>>()
+            .as_slice();
+
+        let receiver = v8::undefined(scope.borrow_mut());
+        let promise = callee.call(&mut scope, receiver.into(), args).unwrap();
+        let promise = Global::<v8::Value>::new(&mut scope, promise);
+
+        Ok(Value::from(QNIL))
+    }
+
+    pub(crate) fn to_ruby(&self, value: &Global<v8::Value>) -> Option<Value> {
+        let mut worker = self.worker.borrow_mut();
+        let mut scope = worker.js_runtime.handle_scope();
+        let value = Local::new(&mut scope, value);
+        let result = convert_v8_to_ruby(value, &mut scope);
+
+        match result {
+            Ok(v) => Some(v),
+            Err(_) => None,
+        }
+    }
+
+    pub(crate) fn to_v8(&self, value: Value) -> Option<Global<v8::Value>> {
+        let mut worker = self.worker.borrow_mut();
+        let mut scope = worker.js_runtime.handle_scope();
+        let value = convert_ruby_to_v8(value, &mut scope).unwrap();
+        let value = Global::<v8::Value>::new(&mut scope, value);
+
+        Some(value)
+    }
+
     fn get_namespace(&self) -> Global<Object> {
-        self.get_runtime()
+        self.worker
+            .borrow_mut()
+            .js_runtime
+            .borrow_mut()
             .get_module_namespace(self.main_module_id)
             .unwrap()
-    }
-
-    pub(crate) fn get_runtime(&self) -> &mut JsRuntime {
-        self.worker.borrow_mut().js_runtime.borrow_mut()
-    }
-
-    pub(crate) fn get_isolate(&self) -> &mut OwnedIsolate {
-        self.get_runtime().v8_isolate()
     }
 
     fn send(&self, value: Value) -> Result<Value, Error> {

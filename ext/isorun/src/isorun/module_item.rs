@@ -1,40 +1,33 @@
 use crate::js;
-use crate::js::context::CONTEXT;
-use magnus::{Error, Value};
+use magnus::{Error, QNIL};
 use std::cell::RefCell;
 
-#[magnus::wrap(class = "Isorun::ModuleItem")]
-pub(crate) struct ModuleItem(pub(crate) RefCell<js::module_item::ModuleItem>);
+#[magnus::wrap(class = "Isorun::Function")]
+pub(crate) struct Function(pub(crate) RefCell<js::module_item::Function>);
 
 /// SAFETY: This is safe because we only access this data when the GVL is held.
-unsafe impl Send for ModuleItem {}
+unsafe impl Send for Function {}
 
-impl ModuleItem {
-    pub(crate) fn module_item_export_name(&self) -> String {
-        self.0.borrow().export_name.to_string()
-    }
-
-    pub(crate) fn module_item_call(
+impl Function {
+    pub(crate) fn call(
         &self,
-        all_args: &[Value],
-    ) -> Result<Value, Error> {
-        CONTEXT.with(|context| {
-            let args = context.convert_to_v8(all_args[0]).unwrap();
-            let kwargs = context.convert_to_v8(all_args[1]).unwrap();
-
-            let value = self.0.borrow().call(args, kwargs);
-            context
-                .convert_to_ruby(value)
-                .map_err(|error| Error::runtime_error(format!("{}", error)))
+        all_args: &[magnus::Value],
+    ) -> Result<magnus::Value, Error> {
+        let args = &[];
+        self.0.borrow().call(args).map_err(|error| {
+            Error::runtime_error(format!("cannot call function: {}", error))
         })
     }
+}
 
-    pub(crate) fn module_item_to_value(&self) -> Result<Value, Error> {
-        CONTEXT.with(|context| {
-            let value = self.0.borrow().to_value();
-            context
-                .convert_to_ruby(value.unwrap())
-                .map_err(|error| Error::runtime_error(format!("{}", error)))
-        })
+#[magnus::wrap(class = "Isorun::Value")]
+pub(crate) struct Value(pub(crate) RefCell<js::module_item::Value>);
+
+/// SAFETY: This is safe because we only access this data when the GVL is held.
+unsafe impl Send for Value {}
+
+impl Value {
+    pub(crate) fn to_ruby(&self) -> Option<magnus::Value> {
+        self.0.borrow().to_ruby()
     }
 }
