@@ -1,5 +1,4 @@
 use crate::js::worker::WORKER;
-use magnus::QNIL;
 use v8::Global;
 
 pub(crate) enum ModuleItem {

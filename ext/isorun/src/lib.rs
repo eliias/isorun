@@ -28,7 +28,7 @@ fn init() -> Result<(), Error> {
         .expect("cannot define method: module_id");
     module
         .define_method("import", method!(Module::import, 1))
-        .expect("cannot define method: module_import");
+        .expect("cannot define method: import");
 
     let function = root
         .define_class("Function", Default::default())
