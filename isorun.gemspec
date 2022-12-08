@@ -28,10 +28,9 @@ Gem::Specification.new do |spec|
   spec.metadata["changelog_uri"] = "https://github.com/eliias/isorun"
   spec.metadata["documentation_uri"] = "https://eliias.github.io/isorun"
 
-  spec.files = Dir["{app,lib}/**/*", "ext/**/*.{rs,toml,lock,rb}"]
+  spec.files = Dir["{app,lib}/**/*", "ext/**/*.{js,rs,toml,lock,rb}", "LICENSE", "Rakefile", "README.md"]
 
   spec.bindir = "exe"
-  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
   spec.metadata["rubygems_mfa_required"] = "true"
