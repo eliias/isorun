@@ -84,7 +84,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/isorun/config.rb<span class="defines">,<br />
-  lib/isorun.rb,<br /> lib/isorun/engine.rb,<br /> lib/isorun/module.rb,<br /> lib/isorun/version.rb,<br /> lib/isorun/resolver.rb,<br /> lib/isorun/config/option.rb,<br /> app/helpers/isorun/app_helper.rb,<br /> lib/isorun/config/validations.rb,<br /> lib/isorun/config/abstract_builder.rb</span>
+  lib/isorun.rb,<br /> lib/isorun/engine.rb,<br /> lib/isorun/module.rb,<br /> lib/isorun/context.rb,<br /> lib/isorun/version.rb,<br /> lib/isorun/resolver.rb,<br /> lib/isorun/config/option.rb,<br /> app/helpers/isorun/app_helper.rb,<br /> lib/isorun/config/validations.rb,<br /> lib/isorun/config/abstract_builder.rb</span>
 </dd>
   </dl>
   
@@ -92,7 +92,7 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>inspired by <a href="https://github.com/doorkeeper-gem/doorkeeper/blob/main/lib/doorkeeper/config.rb">https://github.com/doorkeeper-gem/doorkeeper/blob/main/lib/doorkeeper/config.rb</a></p>
+    <p>taken from <a href="https://github.com/doorkeeper-gem/doorkeeper/blob/main/lib/doorkeeper/config.rb">https://github.com/doorkeeper-gem/doorkeeper/blob/main/lib/doorkeeper/config.rb</a></p>
 
 
   </div>
@@ -108,7 +108,7 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Isorun/Config.html" title="Isorun::Config (class)">Config</a></span>, <span class='object_link'><a href="Isorun/Engine.html" title="Isorun::Engine (class)">Engine</a></span>, <span class='object_link'><a href="Isorun/Error.html" title="Isorun::Error (class)">Error</a></span>, <span class='object_link'><a href="Isorun/MissingConfiguration.html" title="Isorun::MissingConfiguration (class)">MissingConfiguration</a></span>, <span class='object_link'><a href="Isorun/MissingConfigurationBuilderClass.html" title="Isorun::MissingConfigurationBuilderClass (class)">MissingConfigurationBuilderClass</a></span>, <span class='object_link'><a href="Isorun/Module.html" title="Isorun::Module (class)">Module</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Isorun/Config.html" title="Isorun::Config (class)">Config</a></span>, <span class='object_link'><a href="Isorun/Context.html" title="Isorun::Context (class)">Context</a></span>, <span class='object_link'><a href="Isorun/Engine.html" title="Isorun::Engine (class)">Engine</a></span>, <span class='object_link'><a href="Isorun/Error.html" title="Isorun::Error (class)">Error</a></span>, <span class='object_link'><a href="Isorun/MissingConfiguration.html" title="Isorun::MissingConfiguration (class)">MissingConfiguration</a></span>, <span class='object_link'><a href="Isorun/MissingConfigurationBuilderClass.html" title="Isorun::MissingConfigurationBuilderClass (class)">MissingConfigurationBuilderClass</a></span>, <span class='object_link'><a href="Isorun/Module.html" title="Isorun::Module (class)">Module</a></span>
     
   
 </p>
@@ -189,6 +189,60 @@
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#with_receiver-class_method" title="with_receiver (class method)">.<strong>with_receiver</strong>(receiver)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#receiver=-instance_method" title="#receiver= (instance method)">#<strong>receiver=</strong>(receiver)  &#x21d2; Isorun::Context </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The newly created context.</p>
+</div></span>
+  
+</li>
+
+      
     </ul>
   
 
@@ -263,12 +317,122 @@
 </table>
 </div>
     
+      <div class="method_details ">
+  <h3 class="signature " id="with_receiver-class_method">
+  
+    .<strong>with_receiver</strong>(receiver)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+23
+24
+25
+26
+27
+28</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/isorun.rb', line 23</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_with_receiver'>with_receiver</span><span class='lparen'>(</span><span class='id identifier rubyid_receiver'>receiver</span><span class='rparen'>)</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span> <span class='op'>=</span> <span class='id identifier rubyid_receiver'>receiver</span>
+  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='kw'>yield</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_result'>result</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="receiver=-instance_method">
+  
+    #<strong>receiver=</strong>(receiver)  &#x21d2; <tt><span class='object_link'><a href="Isorun/Context.html" title="Isorun::Context (class)">Isorun::Context</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns the newly created context.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>receiver</span>
+      
+      
+        <span class='type'>(<tt>Proc</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Isorun/Context.html" title="Isorun::Context (class)">Isorun::Context</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the newly created context</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/isorun/context.rb', line 81</span>
+
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
   </div>
 
 </div>
 
       <div id="footer">
-  Generated on Sun Dec  4 16:19:10 2022 by
+  Generated on Thu Dec  8 17:54:00 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
