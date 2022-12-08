@@ -4,12 +4,20 @@
 
 ---
 
-> A JavaScript render target for Ruby (on Rails)
+> Run JavaScript applications in your Rails application.
 
-**⚠ ️Attention:** Don't use this for anything but experiments. There are better ways to embed V8
-in your application. Check out [miniracer](https://github.com/rubyjs/mini_racer).
+## Features
 
-## Usage
+* Import JavaScript functions, objects, or just values and use them in Ruby
+* An EMCAScript module spec like Ruby DSL to load modules
+* Automatically converts arguments and return values
+* Send messages between *JavaScript*<->*Ruby* (allows to intercept network requests and avoid network round-trips for e.g. API calls)
+* Automatically reload modules when updates (in the development environment)
+* Automatically extracts state (Apollo) and hydrates clients 
+* Supports server-side rendering of multiple apps on a single page
+* Examples for [React](./examples/rails-react-app), [Vue](./examples/rails-vue-app), [D3](./examples/rails-service-app) and a [multi-app](./examples/rails-multi-app) setup
+
+## How to
 
 ```bash
 rails new myproject --javascript esbuild
@@ -18,6 +26,7 @@ rails new myproject --javascript esbuild
 ```ruby
 # config/initializers/isorun.rb
 Isorun.configure do
+  # …configure isorun
 end
 ```
 
@@ -40,33 +49,27 @@ import * as Server from "react-dom/server";
 
 import {App} from "./my_app/App.jsx";
 
-export function render() {
-  return Promise.resolve(Server.renderToString(<App/>));
+export default async function() {
+  return Server.renderToString(<App/>);
 }
 ```
 
 ```erb
 <!--my_view.html.erb-->
-<%= isorun_app_tag("my_app") %>
+<%= isorun_app("my_app") %>
 ```
 
-```json
-{
-  "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm"
-  }
-}
-```
+## Why server-side rendering (SSR)?
 
-## Server-side rendering
+The fastest way to deliver an application to the user is streaming HTML directly
+to the browser. The slowest way to deliver an application, is downloading a
+JavaScript file first, parse and execute it on the client side.
 
-The slowest way to deliver a website, is delivering a JavaScript file
-to the client, and then execute it to build up a DOM tree.
-
-The fastest way is serving an HTML page with embedded styles, and doing so as a
-stream of contents to the client. Eventually the application will (re-)hydrate
-the already rendered user interface as soon as the downloaded JavaScript code
-is executed.
+Server-side rendering is taking advantage of the fact that we can render a
+JavaScript application directly on the server, and stream the resulting HTML
+directly to the browser.
+Then we fetch the JavaScript file and eventually the application will
+(re-)hydrate the already rendered user interface.
 
 You can take this concept even further and make your application work without
 JavaScript at all, but still use React or Vue (or any other view-controller
@@ -83,47 +86,83 @@ Server-side rendering has a few challenges:
 
 **isorun** aims to make it as simple as possible to integrate a
 JavaScript application into your server-side development and deployment
-workflow.
+workflow, without changing the development workflow for frontend engineers.
 
 This gem provides a helper that can render a JavaScript application directly in
-your Ruby process, embedding Google's v8 library.
-You can think of it as running a headless JavaScript VM in your Ruby process.
-**isorun** utilizes V8 Isolates via the Rust crates: v8 and deno_core. This
-allows us to completely separate applications from each other and to prevent
-any [Cross-Request State Pollution](https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution).
-This is like having multiple tabs open in your browser.
+your Ruby process, embedding Google's *v8* library via [*deno_core*](https://crates.io/crates/deno_core).
+You can think of it as running a headless JavaScript browser directly in your
+Ruby process (threads). Using *v8* allows us to completely separate the
+execution environments between individual renders and therefore prevent any
+potential [Cross-Request State Pollution](https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution).
+It is essentiallly the same as opening many tabs in one browser.
 
 ## Why SSR for Ruby (on Rails)?
 
-I use *Ruby on Rails* a lot for projects, and I also use both, Vue and React.
-One of my goals for **isorun**, is that server-side rendering should feel
-naturally in Rails. A simple tag helper should be enough to render, deliver,
-and hydrate your complex JavaScript application.
+I personally enjoy and use *Ruby on Rails* a lot, but I like to use some
+Vue and React for frontend work. The integration of frontend and backend always
+felt a bit off, and I wanted something that "just works" for most of my use
+cases.
+
+One goal of **isorun** is that server-side rendering should feel naturally in
+Ruby and Rails. A simple tag helper should be enough to render, deliver, and
+hydrate your complex JavaScript application. And if we want to do something
+nice with visualization libraries, it should be possible to run any JavaScript
+program and return the result to the user without spinning up a separate
+service.
 
 ### Alternative
 
-I also recommend taking a look at [HTML over the Wire](https://hotwired.dev/),
-and [StimulusReflex](https://docs.stimulusreflex.com/), but this is not for
-everyone.
+If you want to go all-in on the server side, I highly recommend taking a look at
+[HTML over the Wire](https://hotwired.dev/), and [StimulusReflex](https://docs.stimulusreflex.com/).
 
 ## Why not just spinning up a Node.js/deno/bun service?
 
 **isorun** does SSR a bit different from how you would do it in a regular
-Node.js service. In addition to render an application and extracting state and
-styles, it also allows you to talk directly with your Rails application. 
-This enables you to take shortcuts for certain scenarios, for example rendering
-the result of network calls (Apollo), without hitting the network once. Instead
-of fetching data from the server via HTTP, you can just call a Ruby function
-from you JavaScript application and request the data you need to render the
-view.
+Node.js service. In addition to being able to render the application, it also
+supports more powerful features like network intercepts. This means, that you
+can directly call into the Ruby process from the JavaScript application and
+e.g. fetch data from the database. This is helpful for applications that
+utilize APIs to fetch their data.
+Even when server-side rendered, these applications issue network requests
+against the production API endpoints to get access to data. In a lot of cases,
+we can accelerate this process by forwarding the network requests directly to
+the target controller/action in Rails.Instead of fetching 
 
-I have built and operated many Node.js SSR services, but it has always been
-super tedious to set up such a dedicated service.
-This is especially true when your backend isn't written in JavaScript. In
-reality, a SSR service is just another single point of failure, and you need
-to proxy every single request through it. This can significantly add to your
-infrastructure cost, migrating from an existing app becomes harder than it
-should be, and there is operational complexity and overhead.
+**Example** A React applications queries a Rails GraphQL API
+
+We can override the HttpLink `fetch` method and utilize the `@isorun/rails`
+package to send the HTTP request for the GraphQL API directly to the Ruby
+process, instead of sending it over the network.
+
+```js
+import {apollo} from "@isorun/rails";
+
+import {App} from "../my_app/App.jsx";
+
+const apolloClient = new ApolloClient({
+  ssrMode: true,
+  cache: new InMemoryCache(),
+  link: new HttpLink({
+    uri: 'http://localhost:3000/graphql',
+    fetch: apollo.fetch
+  })
+});
+```
+
+```ruby
+Isorun.configure do
+  receiver do |request|
+    query, variables, context, operation_name = parse(request)
+    
+    RailsAppSchema.execute(
+      query,
+      variables: variables,
+      context: context,
+      operation_name: operation_name
+    )
+  end
+end
+```
 
 ## Installation
 

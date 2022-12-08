@@ -1,0 +1,6 @@
+module Isorun
+  class Function
+    def call: -> [Object|nil]
+    def call_without_gvl: -> [Object|nil]
+  end
+end

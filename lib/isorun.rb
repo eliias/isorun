@@ -8,10 +8,10 @@ rescue LoadError
   require "isorun/isorun"
 end
 
-require "isorun/resolver"
 require "isorun/config"
 require "isorun/context"
 require "isorun/engine"
+require "isorun/function"
 require "isorun/module"
 require "isorun/version"
 

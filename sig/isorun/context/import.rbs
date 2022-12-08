@@ -6,7 +6,7 @@ module Isorun
       attr_reader context: Context
       attr_reader export_names: [string]
 
-      def from: -> ModuleItem
+      def from: -> [Function|Object]
     end
   end
 end

@@ -3,6 +3,7 @@
 require "isorun/config/abstract_builder"
 require "isorun/config/option"
 require "isorun/config/validations"
+require "isorun/resolver"
 
 # taken from https://github.com/doorkeeper-gem/doorkeeper/blob/main/lib/doorkeeper/config.rb
 module Isorun

@@ -1,5 +1,0 @@
-module Isorun
-  class ModuleItem
-    def call: -> untyped
-  end
-end
