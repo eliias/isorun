@@ -64,13 +64,23 @@
 <hr>
 
 <blockquote>
-<p>A JavaScript render target for Ruby (on Rails)</p>
+<p>Run JavaScript applications in your Rails application.</p>
 </blockquote>
 
-<p><strong>⚠ ️Attention:</strong> Don&#39;t use this for anything but experiments. There are better ways to embed V8
-in your application. Check out <a href="https://github.com/rubyjs/mini_racer">miniracer</a>.</p>
+<h2 id="features">Features</h2>
 
-<h2 id="usage">Usage</h2>
+<ul>
+<li>Import JavaScript functions, objects, or just values and use them in Ruby</li>
+<li>An EMCAScript module spec like Ruby DSL to load modules</li>
+<li>Automatically converts arguments and return values</li>
+<li>Send messages between <em>JavaScript</em>&lt;-&gt;<em>Ruby</em> (allows to intercept network requests and avoid network round-trips for e.g. API calls)</li>
+<li>Automatically reload modules when updates (in the development environment)</li>
+<li>Automatically extracts state (Apollo) and hydrates clients </li>
+<li>Supports server-side rendering of multiple apps on a single page</li>
+<li>Examples for <a href="./examples/rails-react-app">React</a>, <a href="./examples/rails-vue-app">Vue</a>, <a href="./examples/rails-service-app">D3</a> and a <a href="./examples/rails-multi-app">multi-app</a> setup</li>
+</ul>
+
+<h2 id="how-to">How to</h2>
 
 <pre class="code bash"><code class="bash">rails new myproject --javascript esbuild
 </code></pre>
@@ -97,31 +107,26 @@ import * as Server from &quot;react-dom/server&quot;;
 
 import {App} from &quot;./my_app/App.jsx&quot;;
 
-export function render() {
-  return Promise.resolve(Server.renderToString(&lt;App/&gt;));
+export default async function() {
+  return Server.renderToString(&lt;App/&gt;);
 }
 </code></pre>
 
 <pre class="code erb"><code class="erb">&lt;!--my_view.html.erb--&gt;
-&lt;%= isorun_app_tag(&quot;my_app&quot;) %&gt;
+&lt;%= isorun_app(&quot;my_app&quot;) %&gt;
 </code></pre>
 
-<pre class="code json"><code class="json">{
-  &quot;scripts&quot;: {
-    &quot;build&quot;: &quot;esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm&quot;
-  }
-}
-</code></pre>
+<h2 id="why-server-side-rendering-ssr">Why server-side rendering (SSR)?</h2>
 
-<h2 id="server-side-rendering">Server-side rendering</h2>
+<p>The fastest way to deliver an application to the user is streaming HTML directly
+to the browser. The slowest way to deliver an application, is downloading a
+JavaScript file first, parse and execute it on the client side.</p>
 
-<p>The slowest way to deliver a website, is delivering a JavaScript file
-to the client, and then execute it to build up a DOM tree.</p>
-
-<p>The fastest way is serving an HTML page with embedded styles, and doing so as a
-stream of contents to the client. Eventually the application will (re-)hydrate
-the already rendered user interface as soon as the downloaded JavaScript code
-is executed.</p>
+<p>Server-side rendering is taking advantage of the fact that we can render a
+JavaScript application directly on the server, and stream the resulting HTML
+directly to the browser.
+Then we fetch the JavaScript file and eventually the application will
+(re-)hydrate the already rendered user interface.</p>
 
 <p>You can take this concept even further and make your application work without
 JavaScript at all, but still use React or Vue (or any other view-controller
@@ -140,47 +145,81 @@ more: <a href="https://jakearchibald.com/2017/netflix-and-react/">Netflix functi
 
 <p><strong>isorun</strong> aims to make it as simple as possible to integrate a
 JavaScript application into your server-side development and deployment
-workflow.</p>
+workflow, without changing the development workflow for frontend engineers.</p>
 
 <p>This gem provides a helper that can render a JavaScript application directly in
-your Ruby process, embedding Google&#39;s v8 library.
-You can think of it as running a headless JavaScript VM in your Ruby process.
-<strong>isorun</strong> utilizes V8 Isolates via the Rust crates: v8 and deno_core. This
-allows us to completely separate applications from each other and to prevent
-any <a href="https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution">Cross-Request State Pollution</a>.
-This is like having multiple tabs open in your browser.</p>
+your Ruby process, embedding Google&#39;s <em>v8</em> library via <a href="https://crates.io/crates/deno_core"><em>deno_core</em></a>.
+You can think of it as running a headless JavaScript browser directly in your
+Ruby process (threads). Using <em>v8</em> allows us to completely separate the
+execution environments between individual renders and therefore prevent any
+potential <a href="https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution">Cross-Request State Pollution</a>.
+It is essentiallly the same as opening many tabs in one browser.</p>
 
 <h2 id="why-ssr-for-ruby-on-rails">Why SSR for Ruby (on Rails)?</h2>
 
-<p>I use <em>Ruby on Rails</em> a lot for projects, and I also use both, Vue and React.
-One of my goals for <strong>isorun</strong>, is that server-side rendering should feel
-naturally in Rails. A simple tag helper should be enough to render, deliver,
-and hydrate your complex JavaScript application.</p>
+<p>I personally enjoy and use <em>Ruby on Rails</em> a lot, but I like to use some
+Vue and React for frontend work. The integration of frontend and backend always
+felt a bit off, and I wanted something that &quot;just works&quot; for most of my use
+cases.</p>
+
+<p>One goal of <strong>isorun</strong> is that server-side rendering should feel naturally in
+Ruby and Rails. A simple tag helper should be enough to render, deliver, and
+hydrate your complex JavaScript application. And if we want to do something
+nice with visualization libraries, it should be possible to run any JavaScript
+program and return the result to the user without spinning up a separate
+service.</p>
 
 <h3 id="alternative">Alternative</h3>
 
-<p>I also recommend taking a look at <a href="https://hotwired.dev/">HTML over the Wire</a>,
-and <a href="https://docs.stimulusreflex.com/">StimulusReflex</a>, but this is not for
-everyone.</p>
+<p>If you want to go all-in on the server side, I highly recommend taking a look at
+<a href="https://hotwired.dev/">HTML over the Wire</a>, and <a href="https://docs.stimulusreflex.com/">StimulusReflex</a>.</p>
 
 <h2 id="why-not-just-spinning-up-a-node-js-deno-bun-service">Why not just spinning up a Node.js/deno/bun service?</h2>
 
 <p><strong>isorun</strong> does SSR a bit different from how you would do it in a regular
-Node.js service. In addition to render an application and extracting state and
-styles, it also allows you to talk directly with your Rails application. 
-This enables you to take shortcuts for certain scenarios, for example rendering
-the result of network calls (Apollo), without hitting the network once. Instead
-of fetching data from the server via HTTP, you can just call a Ruby function
-from you JavaScript application and request the data you need to render the
-view.</p>
+Node.js service. In addition to being able to render the application, it also
+supports more powerful features like network intercepts. This means, that you
+can directly call into the Ruby process from the JavaScript application and
+e.g. fetch data from the database. This is helpful for applications that
+utilize APIs to fetch their data.
+Even when server-side rendered, these applications issue network requests
+against the production API endpoints to get access to data. In a lot of cases,
+we can accelerate this process by forwarding the network requests directly to
+the target controller/action in Rails.Instead of fetching </p>
 
-<p>I have built and operated many Node.js SSR services, but it has always been
-super tedious to set up such a dedicated service.
-This is especially true when your backend isn&#39;t written in JavaScript. In
-reality, a SSR service is just another single point of failure, and you need
-to proxy every single request through it. This can significantly add to your
-infrastructure cost, migrating from an existing app becomes harder than it
-should be, and there is operational complexity and overhead.</p>
+<p><strong>Example</strong> A React applications queries a Rails GraphQL API</p>
+
+<p>We can override the HttpLink <code>fetch</code> method and utilize the <code>@isorun/rails</code>
+package to send the HTTP request for the GraphQL API directly to the Ruby
+process, instead of sending it over the network.</p>
+
+<pre class="code js"><code class="js">import {apollo} from &quot;@isorun/rails&quot;;
+
+import {App} from &quot;../my_app/App.jsx&quot;;
+
+const apolloClient = new ApolloClient({
+  ssrMode: true,
+  cache: new InMemoryCache(),
+  link: new HttpLink({
+    uri: &#39;http://localhost:3000/graphql&#39;,
+    fetch: apollo.fetch
+  })
+});
+</code></pre>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'><span class='object_link'><a href="Isorun.html#configure-class_method" title="Isorun.configure (method)">configure</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_receiver'>receiver</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_request'>request</span><span class='op'>|</span>
+    <span class='id identifier rubyid_query'>query</span><span class='comma'>,</span> <span class='id identifier rubyid_variables'>variables</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span><span class='comma'>,</span> <span class='id identifier rubyid_operation_name'>operation_name</span> <span class='op'>=</span> <span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='rparen'>)</span>
+
+    <span class='const'>RailsAppSchema</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span>
+      <span class='id identifier rubyid_query'>query</span><span class='comma'>,</span>
+      <span class='label'>variables:</span> <span class='id identifier rubyid_variables'>variables</span><span class='comma'>,</span>
+      <span class='label'>context:</span> <span class='id identifier rubyid_context'>context</span><span class='comma'>,</span>
+      <span class='label'>operation_name:</span> <span class='id identifier rubyid_operation_name'>operation_name</span>
+    <span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
 
 <h2 id="installation">Installation</h2>
 
@@ -219,7 +258,7 @@ git commits and the created tag, and push the <code>.gem</code> file to
 </div></div>
 
       <div id="footer">
-  Generated on Thu Dec  8 17:54:00 2022 by
+  Generated on Thu Dec  8 18:32:03 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>

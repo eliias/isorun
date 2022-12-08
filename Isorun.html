@@ -84,7 +84,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/isorun/config.rb<span class="defines">,<br />
-  lib/isorun.rb,<br /> lib/isorun/engine.rb,<br /> lib/isorun/module.rb,<br /> lib/isorun/context.rb,<br /> lib/isorun/version.rb,<br /> lib/isorun/resolver.rb,<br /> lib/isorun/config/option.rb,<br /> app/helpers/isorun/app_helper.rb,<br /> lib/isorun/config/validations.rb,<br /> lib/isorun/config/abstract_builder.rb</span>
+  lib/isorun.rb,<br /> lib/isorun/engine.rb,<br /> lib/isorun/module.rb,<br /> lib/isorun/context.rb,<br /> lib/isorun/version.rb,<br /> lib/isorun/function.rb,<br /> lib/isorun/resolver.rb,<br /> lib/isorun/config/option.rb,<br /> app/helpers/isorun/app_helper.rb,<br /> lib/isorun/config/validations.rb,<br /> lib/isorun/config/abstract_builder.rb</span>
 </dd>
   </dl>
   
@@ -108,7 +108,7 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Isorun/Config.html" title="Isorun::Config (class)">Config</a></span>, <span class='object_link'><a href="Isorun/Context.html" title="Isorun::Context (class)">Context</a></span>, <span class='object_link'><a href="Isorun/Engine.html" title="Isorun::Engine (class)">Engine</a></span>, <span class='object_link'><a href="Isorun/Error.html" title="Isorun::Error (class)">Error</a></span>, <span class='object_link'><a href="Isorun/MissingConfiguration.html" title="Isorun::MissingConfiguration (class)">MissingConfiguration</a></span>, <span class='object_link'><a href="Isorun/MissingConfigurationBuilderClass.html" title="Isorun::MissingConfigurationBuilderClass (class)">MissingConfigurationBuilderClass</a></span>, <span class='object_link'><a href="Isorun/Module.html" title="Isorun::Module (class)">Module</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Isorun/Config.html" title="Isorun::Config (class)">Config</a></span>, <span class='object_link'><a href="Isorun/Context.html" title="Isorun::Context (class)">Context</a></span>, <span class='object_link'><a href="Isorun/Engine.html" title="Isorun::Engine (class)">Engine</a></span>, <span class='object_link'><a href="Isorun/Error.html" title="Isorun::Error (class)">Error</a></span>, <span class='object_link'><a href="Isorun/Function.html" title="Isorun::Function (class)">Function</a></span>, <span class='object_link'><a href="Isorun/MissingConfiguration.html" title="Isorun::MissingConfiguration (class)">MissingConfiguration</a></span>, <span class='object_link'><a href="Isorun/MissingConfigurationBuilderClass.html" title="Isorun::MissingConfigurationBuilderClass (class)">MissingConfigurationBuilderClass</a></span>, <span class='object_link'><a href="Isorun/Module.html" title="Isorun::Module (class)">Module</a></span>
     
   
 </p>
@@ -272,12 +272,12 @@
       <pre class="lines">
 
 
-22
 23
-24</pre>
+24
+25</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/config.rb', line 22</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/config.rb', line 23</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_configuration'>configuration</span>
   <span class='ivar'>@config</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Isorun/MissingConfiguration.html" title="Isorun::MissingConfiguration (class)">MissingConfiguration</a></span></span><span class='rparen'>)</span>
@@ -302,12 +302,12 @@
       <pre class="lines">
 
 
-18
 19
-20</pre>
+20
+21</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/isorun/config.rb', line 18</span>
+      <pre class="code"><span class="info file"># File 'lib/isorun/config.rb', line 19</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_configure'>configure</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='ivar'>@config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Isorun/Config.html" title="Isorun::Config (class)">Config</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Isorun/Config/Builder.html" title="Isorun::Config::Builder (class)">Builder</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Isorun/Config/AbstractBuilder.html#initialize-instance_method" title="Isorun::Config::AbstractBuilder#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="Isorun/Config/AbstractBuilder.html#build-instance_method" title="Isorun::Config::AbstractBuilder#build (method)">build</a></span></span>
@@ -432,7 +432,7 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Dec  8 17:54:00 2022 by
+  Generated on Thu Dec  8 18:32:04 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
