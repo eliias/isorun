@@ -201,6 +201,8 @@ impl Default for Worker {
             stdio: Default::default(),
         };
 
+        // todo: we don't use the main module at all, but it could be used as an
+        //  entry point for "eval" JavaScript.
         let js_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/call.js");
         let main_module =
             deno_core::resolve_path(&js_path.to_string_lossy()).unwrap();
