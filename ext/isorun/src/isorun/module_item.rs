@@ -2,6 +2,7 @@ use crate::js;
 use crate::js::worker::WORKER;
 use magnus::Error;
 use std::cell::RefCell;
+use std::ops::Deref;
 
 #[magnus::wrap(class = "Isorun::Function")]
 pub(crate) struct Function(pub(crate) RefCell<js::module_item::Function>);
@@ -15,9 +16,13 @@ impl Function {
         args: &[magnus::Value],
     ) -> Result<magnus::Value, Error> {
         let args = WORKER.with(|worker| {
+            let func = self.0.borrow();
+            let realm = func.realm.borrow();
+            let realm = realm.deref();
+
             let mut v8_args = vec![];
             for arg in args {
-                v8_args.push(worker.to_v8(*arg).unwrap());
+                v8_args.push(worker.to_v8(realm, *arg).unwrap());
             }
             v8_args
         });
