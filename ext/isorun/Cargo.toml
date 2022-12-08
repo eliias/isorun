@@ -1,23 +1,23 @@
 [package]
 name = "isorun"
-version = "0.2.0"
+version = "0.1.0"
 edition = "2021"
 authors = ["Hannes Moser <box@hannesmoser.at>"]
 homepage = "https://github.com/eliias/isorun"
 repository = "https://github.com/eliias/isorun"
 
 [dependencies]
-deno_console = "0.78.0"
-deno_core = "0.160.0"
-deno_fetch = "0.101.0"
-deno_runtime = "0.86.0"
-deno_url = "0.78.0"
-deno_web = "0.109.0"
-deno_webidl = "0.78.0"
+deno_console = "0.80.0"
+deno_core = "0.162.0"
+deno_fetch = "0.103.0"
+deno_runtime = "0.88.0"
+deno_url = "0.80.0"
+deno_web = "0.111.0"
+deno_webidl = "0.80.0"
 lazy_static = "1.4.0"
 magnus = { git = "https://github.com/eliias/magnus", rev = "1833ad96919b8891c1b5d62a22f0fc2b94f5961a" } # waiting for release with full rb-sys backend
-tokio = { version = "1.22.0", features = ["full"] }
-v8 = "0.55.0"
+tokio = { version = "1.21.1", features = ["full"] }
+v8 = "0.58.0"
 
 [dev-dependencies]
 magnus = { git = "https://github.com/eliias/magnus", rev = "1833ad96919b8891c1b5d62a22f0fc2b94f5961a", features = ["embed"] } # waiting for release with full rb-sys backend
