@@ -59,6 +59,14 @@ export default async function() {
 <%= isorun_app("my_app") %>
 ```
 
+## Demo
+
+You can also check out this demo video on YouTube. It shows how you can utilize
+*isorun* to render SVGs with Ruby on the server, utilizing JavaScript and the
+D3 library.
+
+[![How to use d3 in Ruby](./docs/assets/how-to-use-d3-in-ruby.png)](https://www.youtube.com/watch?v=EPHX4po4X4g)
+
 ## Why server-side rendering (SSR)?
 
 The fastest way to deliver an application to the user is streaming HTML directly
