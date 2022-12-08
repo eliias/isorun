@@ -1,6 +1,7 @@
 use crate::isorun::context::Context;
+use isorun::configure::set_receiver;
+use isorun::function::Function;
 use isorun::module::Module;
-use isorun::module_item::Function;
 use magnus::{define_module, function, method, Error, Module as M, Object};
 
 mod isorun;
@@ -9,6 +10,9 @@ mod js;
 #[magnus::init]
 fn init() -> Result<(), Error> {
     let root = define_module("Isorun").expect("cannot define module: Isorun");
+
+    root.define_module_function("receiver=", function!(set_receiver, 1))
+        .expect("cannot define module function: receiver=");
 
     let context = root
         .define_class("Context", Default::default())
@@ -36,6 +40,12 @@ fn init() -> Result<(), Error> {
     function
         .define_method("call", method!(Function::call, -1))
         .expect("cannot define method: call");
+    function
+        .define_method(
+            "call_without_gvl",
+            method!(Function::call_without_gvl, -1),
+        )
+        .expect("cannot define method: call_without_gvl");
 
     Ok(())
 }

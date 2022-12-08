@@ -24,17 +24,14 @@ fn get_error_class_name(e: &AnyError) -> &'static str {
     deno_runtime::errors::get_error_class_name(e).unwrap_or("Error")
 }
 
-// const BUNDLE_PATH: &str = "bundle_path";
-// const ENTRYPOINT: &str = "entrypoint";
-// const MESSAGE_RECEIVER: &str = "message_receiver";
 const USER_AGENT: &str = "isorun";
 
 pub(crate) struct Worker {
-    runtime: Runtime,
+    pub(crate) runtime: Runtime,
     pub(crate) worker: RefCell<MainWorker>,
     module_map: RefCell<HashMap<String, ModuleId>>,
-    ruby_context: RefCell<Option<GVLContext>>,
-    ruby_receiver: RefCell<Option<Proc>>,
+    pub(crate) ruby_context: RefCell<Option<GVLContext>>,
+    pub(crate) ruby_receiver: RefCell<Option<Proc>>,
 }
 
 impl Worker {
@@ -67,7 +64,7 @@ impl Worker {
         Ok(module_id)
     }
 
-    pub(crate) fn call(
+    pub(crate) async fn call(
         &self,
         realm: &JsRealm,
         callee: &Global<v8::Value>,
@@ -94,11 +91,10 @@ impl Worker {
 
         let value = {
             let mut worker = self.worker.borrow_mut();
-            let value = worker.js_runtime.resolve_value(promise);
-            self.runtime.block_on(value).unwrap()
+            worker.js_runtime.resolve_value(promise).await.unwrap()
         };
 
-        let value = self.to_ruby(&realm, &value).unwrap();
+        let value = self.to_ruby(realm, &value).unwrap();
 
         Ok(value)
     }
@@ -133,9 +129,8 @@ impl Worker {
     }
 
     fn send(&self, value: Value) -> Result<Value, Error> {
+        // we need to deref the receiver as mut, as it is behind an Option
         if let (Some(ctx), Some(rec)) = (
-            // we need to deref as mut as both, context and receiver, are behind
-            // an Option, and we need to get access to the actual values
             self.ruby_context.borrow_mut().as_mut(),
             self.ruby_receiver.borrow_mut().as_mut(),
         ) {
@@ -145,7 +140,7 @@ impl Worker {
             })?
         } else {
             Err(Error::runtime_error(
-                "either ruby context or receiver are not initialized",
+                "Cannot send to ruby. Is the ruby receiver and context initialized and set?",
             ))
         }
     }

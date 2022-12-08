@@ -12,15 +12,15 @@ module Isorun
     @module_mtime: untyped
 
     attr_reader bundle_path: string
-    attr_writer bundle_resolver: Proc
+    attr_writer module_resolver: Proc
     attr_reader entrypoint: string
 
     attr_writer entrypoint: untyped
     attr_writer mesage_receiver: untyped
 
-    attr_writer message_receiver: untyped
+    attr_writer receiver: untyped
 
-    def bundle_resolver: -> string
+    def module_resolver: -> string
 
     def call: -> untyped
 
@@ -28,7 +28,7 @@ module Isorun
 
     def import: -> untyped
 
-    def message_receiver: -> string
+    def receiver: -> string
 
     def resolve_bundle_path: -> string
 

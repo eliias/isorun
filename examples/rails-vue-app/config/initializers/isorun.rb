@@ -5,7 +5,7 @@ Isorun.configure do
   # respond to a given action and the arguments provided by the action
   #
   # @example
-  #   message_receiver do |action, args|
+  #   receiver do |action, args|
   #     case action
   #       when "fetch"
   #       { data: { testField: "Hello from isorun" } }.to_json
@@ -13,31 +13,37 @@ Isorun.configure do
   #       ""
   #     end
   #   end
-  message_receiver do |action, args|
-    options = JSON.parse!(args)
-                  .with_indifferent_access
-                  .values_at(:options)
-                  .first
+  receiver do |message|
+    action, args = message.with_indifferent_access.values_at(:action, :args)
 
     case action
+    when "test"
+      puts action
+      pp args
+      args
     when "fetch"
-      query, variables = JSON.parse!(options["body"])
-                             .with_indifferent_access
-                             .values_at(:query, :variables)
+      options, = args.with_indifferent_access
+                     .values_at(:options)
+      body, = JSON.parse!(options).with_indifferent_access
+                  .values_at(:body)
 
-      puts "[ISORUN] process JavaScript GraphQL request:\n\nquery #{query}\n"
+      context = {}
+      operation_name, query, variables = JSON.parse!(body)
+                                             .with_indifferent_access
+                                             .values_at(:operation_name, :query, :variables)
+
+      puts "[ISORUN] Process JavaScript GraphQL request:\n\n#{query}\n\n"
 
       result = RailsViteAppSchema.execute(
         query,
         variables: variables,
-        context: {},
-        operation_name: nil
+        context: context,
+        operation_name: operation_name
       )
+
       result.to_json
-    else
-      ""
     end
   rescue StandardError => e
-    Rails.logger.error("[ISORUN] Cannot process send: #{e.message}\n\n#{e.backtrace&.join("\n")}")
+    Rails.logger.error("[ISORUN] Cannot process received message: #{e.message}\n\n#{e.backtrace&.join("\n")}")
   end
 end

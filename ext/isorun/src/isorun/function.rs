@@ -22,7 +22,8 @@ impl Function {
 
             let mut v8_args = vec![];
             for arg in args {
-                v8_args.push(worker.to_v8(realm, *arg).unwrap());
+                let v8_arg = worker.to_v8(realm, *arg).unwrap();
+                v8_args.push(v8_arg);
             }
             v8_args
         });
@@ -30,5 +31,30 @@ impl Function {
         self.0.borrow().call(args.as_slice()).map_err(|error| {
             Error::runtime_error(format!("cannot call function: {}", error))
         })
+    }
+
+    pub(crate) fn call_without_gvl(
+        &self,
+        args: &[magnus::Value],
+    ) -> Result<magnus::Value, Error> {
+        let args = WORKER.with(|worker| {
+            let func = self.0.borrow();
+            let realm = func.realm.borrow();
+            let realm = realm.deref();
+
+            let mut v8_args = vec![];
+            for arg in args {
+                let v8_arg = worker.to_v8(realm, *arg).unwrap();
+                v8_args.push(v8_arg);
+            }
+            v8_args
+        });
+
+        self.0
+            .borrow()
+            .call_without_gvl(args.as_slice())
+            .map_err(|error| {
+                Error::runtime_error(format!("cannot call function: {}", error))
+            })
     }
 }

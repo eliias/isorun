@@ -7,7 +7,7 @@ declare global {
   namespace Deno {
     namespace core {
       namespace ops {
-        function op_app_send(action: string, args: serde): Promise<serde>;
+        function op_send_to_ruby(message: serde): Promise<serde>;
       }
     }
   }

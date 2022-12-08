@@ -51,12 +51,23 @@ module Isorun
 
     private_constant :Import
 
-    def self.create(&block)
-      context = Isorun::Context.new
-      if block
-        yield(context) if block
-      else
-        context
+    class << self
+      def create(&block)
+        raise "[Isorun::Context] block missing when creating context" unless block
+
+        context = Isorun::Context.new
+        yield(context)
+      end
+
+      # @!method new()
+      # @return [Isorun::Context] the newly created context
+
+      private
+
+      def default_options
+        {
+          receiver: Isorun.configuration.receiver
+        }
       end
     end
 
@@ -65,6 +76,9 @@ module Isorun
       export_names = [:default.to_s] if export_names.empty?
       Import.new(self, export_names)
     end
-
   end
+
+  # @!method receiver=(receiver)
+  # @param receiver [Proc]
+  # @return [Isorun::Context] the newly created context
 end
