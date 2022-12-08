@@ -1,4 +1,4 @@
-use crate::isorun::module_item::{Function, Value};
+use crate::isorun::module_item::Function;
 use crate::js;
 use magnus::Error;
 use std::cell::RefCell;
@@ -24,9 +24,7 @@ impl Module {
             .map_err(|error| Error::runtime_error(format!("{}", error)))?;
 
         match module_item {
-            js::module_item::ModuleItem::Value(v) => {
-                Ok(magnus::Value::from(Value(RefCell::from(v))))
-            }
+            js::module_item::ModuleItem::Value(v) => Ok(v.to_ruby().unwrap()),
             js::module_item::ModuleItem::Function(f) => {
                 Ok(magnus::Value::from(Function(RefCell::from(f))))
             }

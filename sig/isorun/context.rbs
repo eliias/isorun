@@ -1,0 +1,9 @@
+module Isorun
+  class Context
+    def self.create: -> Context
+
+    def enter: -> untyped
+
+    def import: -> untyped
+  end
+end

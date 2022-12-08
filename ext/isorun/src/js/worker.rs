@@ -47,7 +47,8 @@ impl Worker {
         let module_id = {
             let mut worker = self.worker.borrow_mut();
 
-            let module_specifier = deno_core::resolve_path(path).unwrap();
+            let module_specifier =
+                deno_core::resolve_url_or_path(path).unwrap();
             let module_id = self
                 .runtime
                 .block_on(worker.preload_side_module(&module_specifier))?;

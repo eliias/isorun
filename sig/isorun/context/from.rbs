@@ -1,0 +1,9 @@
+module Isorun
+  module Context
+    class From
+      @context: Context
+
+      attr_reader module_path: string
+    end
+  end
+end

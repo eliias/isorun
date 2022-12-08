@@ -19,6 +19,7 @@ Gem::PackageTask.new(spec).define
 
 Rake::ExtensionTask.new("isorun", spec) do |ext|
   ext.source_pattern = "*.{rs,toml}"
+  ext.lib_dir = "lib/isorun"
   ext.cross_compile = true
   ext.cross_platform = cross_platforms
   ext.config_script = ENV["ALTERNATE_CONFIG_SCRIPT"] || "extconf.rb"

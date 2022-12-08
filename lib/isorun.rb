@@ -10,9 +10,9 @@ end
 
 require "isorun/resolver"
 require "isorun/config"
+require "isorun/context"
 require "isorun/engine"
 require "isorun/module"
-require "isorun/module_item"
 require "isorun/version"
 
 module Isorun

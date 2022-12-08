@@ -27,15 +27,3 @@ impl Function {
         })
     }
 }
-
-#[magnus::wrap(class = "Isorun::Value")]
-pub(crate) struct Value(pub(crate) RefCell<js::module_item::Value>);
-
-/// SAFETY: This is safe because we only access this data when the GVL is held.
-unsafe impl Send for Value {}
-
-impl Value {
-    pub(crate) fn to_ruby(&self) -> Option<magnus::Value> {
-        self.0.borrow().to_ruby()
-    }
-}
