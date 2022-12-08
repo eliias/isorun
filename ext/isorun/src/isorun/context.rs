@@ -1,27 +1,38 @@
 use crate::isorun;
 use crate::js::module::Module;
 use crate::js::worker::WORKER;
+use deno_core::JsRealm;
 use magnus::Error;
 use std::cell::RefCell;
+use std::rc::Rc;
 
 #[magnus::wrap(class = "Isorun::Context")]
-pub(crate) struct Context();
+pub(crate) struct Context(pub(crate) Rc<RefCell<JsRealm>>);
 
 /// SAFETY: This is safe because we only access this data when the GVL is held.
 unsafe impl Send for Context {}
 
 impl Context {
     pub(crate) fn new() -> Result<Self, Error> {
-        Ok(Context())
+        WORKER
+            .with(|worker| worker.create_realm())
+            .map(|realm| Context(Rc::new(RefCell::from(realm))))
+            .map_err(|_error| {
+                Error::runtime_error("cannot create JavaScript context")
+            })
     }
 
     pub(crate) fn load(
         &self,
         path: String,
     ) -> Result<isorun::module::Module, Error> {
+        let realm = self.0.clone();
+
         WORKER
             .with(|worker| {
-                worker.load_module(path.as_str()).map(|id| Module { id })
+                worker
+                    .load_module(path.as_str())
+                    .map(|id| Module { id, realm })
             })
             .map(|module| isorun::Module(RefCell::from(module)))
             .map_err(|error| {

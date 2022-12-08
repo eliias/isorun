@@ -1,7 +1,7 @@
 use crate::isorun::utils::{convert_ruby_to_v8, convert_v8_to_ruby};
 use deno_core::error::AnyError;
 use deno_core::serde_v8::from_v8;
-use deno_core::{op, serde_v8, Extension, FsModuleLoader, ModuleId};
+use deno_core::{op, serde_v8, Extension, FsModuleLoader, JsRealm, ModuleId};
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
 use deno_runtime::permissions::Permissions;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
@@ -38,6 +38,11 @@ pub(crate) struct Worker {
 }
 
 impl Worker {
+    pub(crate) fn create_realm(&self) -> Result<JsRealm, AnyError> {
+        let mut worker = self.worker.borrow_mut();
+        worker.js_runtime.create_realm()
+    }
+
     pub(crate) fn load_module(&self, path: &str) -> Result<ModuleId, AnyError> {
         let mut module_map = self.module_map.borrow_mut();
         if module_map.contains_key(path) {
@@ -64,12 +69,13 @@ impl Worker {
 
     pub(crate) fn call(
         &self,
+        realm: &JsRealm,
         callee: &Global<v8::Value>,
         args: &[Global<v8::Value>],
     ) -> Result<Value, Error> {
         let promise = {
             let mut worker = self.worker.borrow_mut();
-            let mut scope = worker.js_runtime.handle_scope();
+            let mut scope = realm.handle_scope(worker.js_runtime.v8_isolate());
 
             let callee = Local::<v8::Value>::new(&mut scope, callee);
             let callee = Local::<v8::Function>::try_from(callee).unwrap();
@@ -92,14 +98,18 @@ impl Worker {
             self.runtime.block_on(value).unwrap()
         };
 
-        let value = self.to_ruby(&value).unwrap();
+        let value = self.to_ruby(&realm, &value).unwrap();
 
         Ok(value)
     }
 
-    pub(crate) fn to_ruby(&self, value: &Global<v8::Value>) -> Option<Value> {
+    pub(crate) fn to_ruby(
+        &self,
+        realm: &JsRealm,
+        value: &Global<v8::Value>,
+    ) -> Option<Value> {
         let mut worker = self.worker.borrow_mut();
-        let mut scope = worker.js_runtime.handle_scope();
+        let mut scope = realm.handle_scope(worker.js_runtime.v8_isolate());
         let value = Local::new(&mut scope, value);
         let result = convert_v8_to_ruby(value, &mut scope);
 
@@ -109,9 +119,13 @@ impl Worker {
         }
     }
 
-    pub(crate) fn to_v8(&self, value: Value) -> Option<Global<v8::Value>> {
+    pub(crate) fn to_v8(
+        &self,
+        realm: &JsRealm,
+        value: Value,
+    ) -> Option<Global<v8::Value>> {
         let mut worker = self.worker.borrow_mut();
-        let mut scope = worker.js_runtime.handle_scope();
+        let mut scope = realm.handle_scope(worker.js_runtime.v8_isolate());
         let value = convert_ruby_to_v8(value, &mut scope).unwrap();
         let value = Global::<v8::Value>::new(&mut scope, value);
 

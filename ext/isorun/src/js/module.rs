@@ -1,11 +1,14 @@
 use crate::js::module_item::{Function, ModuleItem, Value as JsValue};
 use crate::js::worker::WORKER;
 use deno_core::error::AnyError;
-use deno_core::ModuleId;
+use deno_core::{JsRealm, ModuleId};
+use std::cell::RefCell;
+use std::rc::Rc;
 use v8::{Global, Local, Value};
 
 pub(crate) struct Module {
     pub(crate) id: ModuleId,
+    pub(crate) realm: Rc<RefCell<JsRealm>>,
 }
 
 impl Module {
@@ -19,8 +22,11 @@ impl Module {
                 worker.js_runtime.get_module_namespace(self.id).unwrap()
             };
 
+            let realm = self.realm.borrow();
+
             let mut worker = worker.worker.borrow_mut();
-            let mut scope = worker.js_runtime.handle_scope();
+            let mut scope = realm.handle_scope(worker.js_runtime.v8_isolate());
+
             let namespace = Local::new(&mut scope, namespace);
 
             let export_name = v8::String::new(&mut scope, export_name).unwrap();
@@ -32,10 +38,12 @@ impl Module {
             if binding.is_function() {
                 Ok(ModuleItem::Function(Function {
                     binding: global_binding,
+                    realm: self.realm.clone(),
                 }))
             } else {
                 Ok(ModuleItem::Value(JsValue {
                     binding: global_binding,
+                    realm: self.realm.clone(),
                 }))
             }
         })
