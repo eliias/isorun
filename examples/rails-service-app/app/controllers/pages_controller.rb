@@ -1,12 +1,11 @@
 class PagesController < ApplicationController
   def index
-    service_path = Isorun.configuration.bundle_resolver.call("service")
+    service_path = Isorun::Resolver::SIMPLE_RESOLVER.("service")
 
-    context = Isorun::Context.create
-    service = context.load(service_path)
-    generate = service.import("default")
-
-    @result = generate.call(canvas, settings, data)
+    @result = Isorun::Context.create do |ctx|
+      default = ctx.import(:default).from(service_path)
+      default.(canvas, settings, data)
+    end
   end
 
   private

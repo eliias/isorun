@@ -1,0 +1,12 @@
+module Isorun
+  class Context
+    class Import
+      @context: Context
+
+      attr_reader context: Context
+      attr_reader export_names: [string]
+
+      def from: -> ModuleItem
+    end
+  end
+end

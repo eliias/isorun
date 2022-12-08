@@ -11,7 +11,7 @@ pub(crate) struct Context();
 unsafe impl Send for Context {}
 
 impl Context {
-    pub(crate) fn create() -> Result<Self, Error> {
+    pub(crate) fn new() -> Result<Self, Error> {
         Ok(Context())
     }
 

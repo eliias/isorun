@@ -4,7 +4,7 @@ require "isorun/config/abstract_builder"
 require "isorun/config/option"
 require "isorun/config/validations"
 
-# inspired by https://github.com/doorkeeper-gem/doorkeeper/blob/main/lib/doorkeeper/config.rb
+# taken from https://github.com/doorkeeper-gem/doorkeeper/blob/main/lib/doorkeeper/config.rb
 module Isorun
   class MissingConfiguration < StandardError
     def initialize

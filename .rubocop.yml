@@ -10,6 +10,7 @@ AllCops:
     - "examples/**/*"
     - "node_modules/**/*"
     - "packages/**/*"
+    - "pkg/**/*"
     - "target/**/*"
     - "tmp/**/*"
 
