@@ -19,4 +19,11 @@ module Isorun
   extend ActiveSupport::Autoload
 
   class Error < StandardError; end
+
+  def self.with_receiver(receiver)
+    self.receiver = receiver
+    result = yield
+    self.receiver = nil
+    result
+  end
 end

@@ -2,7 +2,7 @@ export async function call(options, args, kwargs) {
   const {bundle_path: bundlePath, entrypoint, force_reload: forceReload} = options;
 
   // Filter options that should not be passed to JavaScript
-  ["bundle_path", "entrypoint", "force_reload", "message_receiver"].forEach(i => delete options[i]);
+  ["bundle_path", "entrypoint", "force_reload", "receiver"].forEach(i => delete options[i]);
 
   try {
     let fullBundleUrl = bundlePath
@@ -23,13 +23,5 @@ export async function call(options, args, kwargs) {
     }
   } catch (err) {
     throw new Error(`failed to call "${entrypoint}" in "${bundlePath}" with options: ${JSON.stringify(options, null, "  ")}`);
-  }
-}
-
-export async function load(url) {
-  try {
-    return await import(url);
-  } catch(err) {
-    throw new Error(`failed to import module: "${url}"`);
   }
 }

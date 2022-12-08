@@ -4,7 +4,7 @@ class PagesController < ApplicationController
 
     @result = Isorun::Context.create do |ctx|
       default = ctx.import(:default).from(service_path)
-      default.(canvas, settings, data)
+      default.call(canvas, settings, data)
     end
   end
 

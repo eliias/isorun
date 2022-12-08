@@ -1,4 +1,4 @@
-use crate::isorun::module_item::Function;
+use crate::isorun::function::Function;
 use crate::js;
 use magnus::Error;
 use std::cell::RefCell;

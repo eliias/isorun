@@ -4,7 +4,7 @@ export async function fetch(url: string, init?: RequestInit) {
   const args = {url, options: JSON.stringify(init)};
   try {
     // forward request to Ruby
-    const raw = await send("fetch", args);
+    const raw = await send({action: "fetch", args});
     if (raw != null) {
       return new Response(raw.toString());
     }

@@ -5,7 +5,7 @@ Isorun.configure do
   # respond to a given action and the arguments provided by the action
   #
   # @example
-  #   message_receiver do |action, args|
+  #   receiver do |action, args|
   #     case action
   #       when "fetch"
   #       { data: { testField: "Hello from isorun" } }.to_json
@@ -13,7 +13,9 @@ Isorun.configure do
   #       ""
   #     end
   #   end
-  message_receiver do |action, args|
+  receiver do |message|
+    action, args = message.with_indifferent_access.values_at(:action, :args)
+
     case action
     when "test"
       puts action
@@ -42,6 +44,6 @@ Isorun.configure do
       result.to_json
     end
   rescue StandardError => e
-    Rails.logger.error("[ISORUN] Cannot process send: #{e.message}\n\n#{e.backtrace&.join("\n")}")
+    Rails.logger.error("[ISORUN] Cannot process received message: #{e.message}\n\n#{e.backtrace&.join("\n")}")
   end
 end
