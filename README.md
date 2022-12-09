@@ -21,15 +21,24 @@
 
 ```bash
 rails new myproject --javascript esbuild
+cd myproject
 ```
 
-```json
+```js
+// package.json
 {
   "scripts": {
     "build": "esbuild app/javascript/app.jsx --bundle --sourcemap --outdir=app/assets/builds --public-path=assets",
     "build-server": "esbuild app/javascript/app-server.jsx --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm"
   }
 }
+```
+
+```bash
+# Procfile.dev
+web: bin/rails server -p 3000
+js: yarn build --watch
+ssr: yarn build-server --watch
 ```
 
 ```ruby
