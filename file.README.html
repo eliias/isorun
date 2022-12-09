@@ -125,6 +125,24 @@ export default async function() {
 &lt;%= isorun_app(&quot;my_app&quot;) %&gt;
 </code></pre>
 
+<h2 id="ruby-and-platform-support">Ruby and platform support</h2>
+
+<p>Ruby versions:</p>
+
+<ul>
+<li><code>2.7</code></li>
+<li><code>3.0</code></li>
+<li><code>3.1</code>.</li>
+</ul>
+
+<p>Platforms and architectures:</p>
+
+<ul>
+<li><code>x86_64-linux</code></li>
+<li><code>x86_64-apple</code></li>
+<li><code>arm64-apple</code> </li>
+</ul>
+
 <h2 id="demo">Demo</h2>
 
 <p>You can also check out this demo video on YouTube. It shows how you can utilize
@@ -186,12 +204,14 @@ nice with visualization libraries, it should be possible to run any JavaScript
 program and return the result to the user without spinning up a separate
 service.</p>
 
-<h3 id="alternative">Alternative</h3>
+<h3 id="alternatives">Alternatives</h3>
+
+<h4 id="no-javascript">&quot;No&quot; JavaScript</h4>
 
 <p>If you want to go all-in on the server side, I highly recommend taking a look at
 <a href="https://hotwired.dev/">HTML over the Wire</a>, and <a href="https://docs.stimulusreflex.com/">StimulusReflex</a>.</p>
 
-<h2 id="why-not-just-spinning-up-a-node-js-deno-bun-service">Why not just spinning up a Node.js/deno/bun service?</h2>
+<h4 id="run-a-node-js-deno-or-bun-service">Run a Node.js, deno, or  bun service</h4>
 
 <p><strong>isorun</strong> does SSR a bit different from how you would do it in a regular
 Node.js service. In addition to being able to render the application, it also
@@ -275,7 +295,7 @@ git commits and the created tag, and push the <code>.gem</code> file to
 </div></div>
 
       <div id="footer">
-  Generated on Fri Dec  9 11:15:44 2022 by
+  Generated on Fri Dec  9 11:20:30 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
