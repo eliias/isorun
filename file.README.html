@@ -71,11 +71,11 @@
 
 <ul>
 <li>Import JavaScript functions, objects, or just values and use them in Ruby</li>
-<li>An EMCAScript module spec like Ruby DSL to load modules</li>
+<li>An EMCAScript like Ruby DSL to load modules and import items</li>
 <li>Automatically converts arguments and return values</li>
 <li>Send messages between <em>JavaScript</em>&lt;-&gt;<em>Ruby</em> (allows to intercept network requests and avoid network round-trips for e.g. API calls)</li>
-<li>Automatically reload modules when updates (in the development environment)</li>
-<li>Automatically extracts state (Apollo) and hydrates clients </li>
+<li>Automatically reload modules when updated in development</li>
+<li>Automatically extracts state (Apollo) and hydrates client-side </li>
 <li>Supports server-side rendering of multiple apps on a single page</li>
 <li>Examples for <a href="./examples/rails-react-app">React</a>, <a href="./examples/rails-vue-app">Vue</a>, <a href="./examples/rails-service-app">D3</a> and a <a href="./examples/rails-multi-app">multi-app</a> setup</li>
 </ul>
@@ -83,6 +83,14 @@
 <h2 id="how-to">How to</h2>
 
 <pre class="code bash"><code class="bash">rails new myproject --javascript esbuild
+</code></pre>
+
+<pre class="code json"><code class="json">{
+  &quot;scripts&quot;: {
+    &quot;build&quot;: &quot;esbuild app/javascript/app.jsx --bundle --sourcemap --outdir=app/assets/builds --public-path=assets&quot;,
+    &quot;build-server&quot;: &quot;esbuild app/javascript/app-server.jsx --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm&quot;
+  }
+}
 </code></pre>
 
 <pre class="code ruby"><code class="ruby"><span class='comment'># config/initializers/isorun.rb
@@ -267,7 +275,7 @@ git commits and the created tag, and push the <code>.gem</code> file to
 </div></div>
 
       <div id="footer">
-  Generated on Fri Dec  9 09:35:07 2022 by
+  Generated on Fri Dec  9 11:15:44 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
