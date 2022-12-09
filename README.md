@@ -68,6 +68,18 @@ export default async function() {
 <%= isorun_app("my_app") %>
 ```
 
+## Ruby and platform support
+
+Ruby versions:
+  - `2.7`
+  - `3.0`
+  - `3.1`.
+
+Platforms and architectures:
+  - `x86_64-linux`
+  - `x86_64-apple`
+  - `arm64-apple` 
+
 ## Demo
 
 You can also check out this demo video on YouTube. It shows how you can utilize
@@ -127,12 +139,14 @@ nice with visualization libraries, it should be possible to run any JavaScript
 program and return the result to the user without spinning up a separate
 service.
 
-### Alternative
+### Alternatives
+
+#### "No" JavaScript
 
 If you want to go all-in on the server side, I highly recommend taking a look at
 [HTML over the Wire](https://hotwired.dev/), and [StimulusReflex](https://docs.stimulusreflex.com/).
 
-## Why not just spinning up a Node.js/deno/bun service?
+#### Run a Node.js, deno, or  bun service
 
 **isorun** does SSR a bit different from how you would do it in a regular
 Node.js service. In addition to being able to render the application, it also
