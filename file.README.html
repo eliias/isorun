@@ -77,7 +77,7 @@
 <li>Automatically reload modules when updated in development</li>
 <li>Automatically extracts state (Apollo) and hydrates client-side </li>
 <li>Supports server-side rendering of multiple apps on a single page</li>
-<li>Examples for <a href="./examples/rails-react-app">React</a>, <a href="./examples/rails-vue-app">Vue</a>, <a href="./examples/rails-service-app">D3</a> and a <a href="./examples/rails-multi-app">multi-app</a> setup</li>
+<li>Examples for <a href="./examples/rails-react-app">React</a>, <a href="./examples/rails-vue-app">Vue</a>, <a href="./examples/rails-d3-app">D3</a> and a <a href="./examples/rails-multi-app">multi-app</a> setup</li>
 </ul>
 
 <h2 id="how-to">How to</h2>
@@ -90,9 +90,10 @@ export function say(word) {
 }
 </code></pre>
 
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Isorun/Context.html" title="Isorun::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="Isorun/Context.html#create-class_method" title="Isorun::Context.create (method)">create</a></span></span>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Isorun/Context.html" title="Isorun::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
 
-<span class='id identifier rubyid_say'>say</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_import'>import</span><span class='lparen'>(</span><span class='symbol'>:say</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>./module.js</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='comment'># import `export function say` from module 
+</span><span class='id identifier rubyid_say'>say</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_import'>import</span><span class='lparen'>(</span><span class='symbol'>:say</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>./module.js</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='id identifier rubyid_say'>say</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Hello!</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='comment'># &quot;Hello!&quot;
 </span></code></pre>
 
@@ -319,7 +320,7 @@ git commits and the created tag, and push the <code>.gem</code> file to
 </div></div>
 
       <div id="footer">
-  Generated on Fri Dec  9 15:32:16 2022 by
+  Generated on Fri Dec  9 17:34:26 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
