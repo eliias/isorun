@@ -3,4 +3,8 @@ module Isorun
     SIMPLE_RESOLVER: untyped
     SSR_APP_RESOLVER: untyped
   end
+
+  private
+
+  def asset_path: -> string
 end
