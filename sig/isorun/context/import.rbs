@@ -1,6 +1,8 @@
 module Isorun
   class Context
     class Import
+      CACHE_KEY: string
+
       @context: Context
 
       attr_reader context: Context

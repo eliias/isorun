@@ -15,7 +15,7 @@
 * Automatically reload modules when updated in development
 * Automatically extracts state (Apollo) and hydrates client-side 
 * Supports server-side rendering of multiple apps on a single page
-* Examples for [React](./examples/rails-react-app), [Vue](./examples/rails-vue-app), [D3](./examples/rails-service-app) and a [multi-app](./examples/rails-multi-app) setup
+* Examples for [React](./examples/rails-react-app), [Vue](./examples/rails-vue-app), [D3](./examples/rails-d3-app) and a [multi-app](./examples/rails-multi-app) setup
 
 ## How to
 
@@ -29,8 +29,9 @@ export function say(word) {
 ```
 
 ```ruby
-context = Isorun::Context.create
+context = Isorun::Context.new
 
+# import `export function say` from module 
 say = context.import(:say).from("./module.js")
 say.call("Hello!") # "Hello!"
 ```

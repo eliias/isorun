@@ -1,5 +1,5 @@
 module Isorun
-  module Context
+  class Context
     class From
       @context: Context
 
