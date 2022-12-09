@@ -3,7 +3,7 @@
 # load native extension
 begin
   ruby_version = /(\d+\.\d+)/.match(::RUBY_VERSION)
-  require "#{ruby_version}/isorun/isorun"
+  require "isorun/#{ruby_version}/isorun"
 rescue LoadError
   require "isorun/isorun"
 end
