@@ -19,6 +19,24 @@
 
 ## How to
 
+### Plain JavaScript
+
+```js
+// module.js
+export function say(word) {
+  return word;  
+}
+```
+
+```ruby
+context = Isorun::Context.create
+
+say = context.import(:say).from("./module.js")
+say.call("Hello!") # "Hello!"
+```
+
+### Simple React app
+
 ```bash
 rails new myproject --javascript esbuild
 cd myproject
