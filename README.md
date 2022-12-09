@@ -9,11 +9,11 @@
 ## Features
 
 * Import JavaScript functions, objects, or just values and use them in Ruby
-* An EMCAScript module spec like Ruby DSL to load modules
+* An EMCAScript like Ruby DSL to load modules and import items
 * Automatically converts arguments and return values
 * Send messages between *JavaScript*<->*Ruby* (allows to intercept network requests and avoid network round-trips for e.g. API calls)
-* Automatically reload modules when updates (in the development environment)
-* Automatically extracts state (Apollo) and hydrates clients 
+* Automatically reload modules when updated in development
+* Automatically extracts state (Apollo) and hydrates client-side 
 * Supports server-side rendering of multiple apps on a single page
 * Examples for [React](./examples/rails-react-app), [Vue](./examples/rails-vue-app), [D3](./examples/rails-service-app) and a [multi-app](./examples/rails-multi-app) setup
 
@@ -21,6 +21,15 @@
 
 ```bash
 rails new myproject --javascript esbuild
+```
+
+```json
+{
+  "scripts": {
+    "build": "esbuild app/javascript/app.jsx --bundle --sourcemap --outdir=app/assets/builds --public-path=assets",
+    "build-server": "esbuild app/javascript/app-server.jsx --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm"
+  }
+}
 ```
 
 ```ruby
