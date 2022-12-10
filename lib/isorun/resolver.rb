@@ -6,8 +6,7 @@ module Isorun
       if Rails.env.development?
         Rails.root.join("app", "assets", "builds", "#{bundle_id}-server.js").to_s
       else
-        asset = ActionController::Base.helpers.asset_path("#{bundle_id}-server")
-        asset_path(asset)
+        asset_path("#{bundle_id}-server")
       end
     }
 
@@ -15,8 +14,7 @@ module Isorun
       if Rails.env.development?
         Rails.root.join("app", "assets", "builds", "#{bundle_id}.js").to_s
       else
-        asset = ActionController::Base.helpers.asset_path(bundle_id)
-        asset_path(asset)
+        asset_path(bundle_id)
       end
     }
   end

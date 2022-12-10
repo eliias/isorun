@@ -1702,7 +1702,7 @@ checksum = "f88c5561171189e69df9d98bcf18fd5f9558300f7ea7b801eb8a0fd748bd8745"
 
 [[package]]
 name = "isorun"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "deno_console",
  "deno_core",
