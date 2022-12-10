@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Update gh-pages with docs
+    defaults:
+      run:
+        working-directory: gems/isorun-native
     steps:
       - name: Checkout this repo
         uses: actions/checkout@v3

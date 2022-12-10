@@ -1,0 +1,38 @@
+# frozen_string_literal: true
+
+require "bundler/gem_tasks"
+require "rubygems/package_task"
+require "rake/testtask"
+
+spec = Bundler.load_gemspec("isorun.gemspec")
+
+Gem::PackageTask.new(spec).define
+
+begin
+  require "rspec/core/rake_task"
+  RSpec::Core::RakeTask.new(:spec)
+  task test: :spec
+  task default: %i[test]
+rescue LoadError
+  # Ok
+end
+
+begin
+  require "rubocop/rake_task"
+
+  RuboCop::RakeTask.new
+rescue LoadError
+  # Ok
+end
+
+begin
+  require "yard"
+
+  YARD::Rake::YardocTask.new
+
+  task docs: :environment do
+    `yard server --reload`
+  end
+rescue LoadError
+  # Ok
+end

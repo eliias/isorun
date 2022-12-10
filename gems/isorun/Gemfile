@@ -6,6 +6,7 @@ source "https://rubygems.org"
 gemspec
 
 gem "benchmark-ips"
+gem "isorun-native", path: "../isorun-native"
 gem "rails"
 gem "rspec"
 gem "rubocop"

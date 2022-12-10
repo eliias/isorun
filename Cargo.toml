@@ -1,3 +1,5 @@
 [workspace]
 resolver = "2"
-members = ["ext/isorun"]
+members = [
+  "gems/isorun-native/ext/isorun_native"
+]

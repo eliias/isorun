@@ -12,6 +12,9 @@ jobs:
   native_gem:
     name: Compile native gem
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: gems/isorun-native
     strategy:
       matrix:
         platform:
@@ -44,11 +47,11 @@ jobs:
 
       - name: Display structure of built gems
         run: ls -R
-        working-directory: pkg/
+        working-directory: gems/isorun-native/pkg/
 
       - name: Release gem
         if: startsWith(github.ref, 'refs/tags/v')
-        working-directory: pkg/
+        working-directory: gems/isorun-native/pkg/
         env:
           RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
         run: |

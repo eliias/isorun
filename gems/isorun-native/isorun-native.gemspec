@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "lib/isorun/version"
+require_relative "lib/isorun_native/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "isorun"
-  spec.version = Isorun::VERSION
+  spec.name = "isorun-native"
+  spec.version = IsorunNative::VERSION
   spec.authors = ["Hannes Moser"]
   spec.email = ["box@hannesmoser.at"]
 
   spec.summary = "Run JavaScript applications in your Rails application."
   spec.description = <<~DESC
-    Import ECMAScript modules into Ruby and use values and functions like 
+    Import ECMAScript modules into Ruby and use values and functions like#{' '}
     JavaScript is part of Ruby. Enables easy to set up server-side rendering for
     modern frontend stacks.
 
@@ -38,13 +38,11 @@ Gem::Specification.new do |spec|
 
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.add_dependency "railties", ">= 6.0.0"
   spec.add_dependency "rake", "~> 13.0"
   spec.add_dependency "rb_sys", "~> 0.9.46"
 
   spec.add_development_dependency "rake-compiler"
   spec.add_development_dependency "rake-compiler-dock"
-  spec.add_development_dependency "rspec-rails"
 
-  spec.extensions = ["ext/isorun/extconf.rb"]
+  spec.extensions = ["ext/isorun_native/extconf.rb"]
 end

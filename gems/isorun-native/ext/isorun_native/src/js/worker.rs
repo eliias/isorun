@@ -214,10 +214,11 @@ impl Default for Worker {
         let isorun_native_gem_path =
             env::var("ISORUN_NATIVE_GEM_PATH").unwrap_or(default_path.clone());
         let js_path = Path::new(isorun_native_gem_path.as_str())
-            .join("ext/isorun/src/call.js");
+            .join("ext/isorun_native/src/call.js");
 
-        let main_module =
-            deno_core::resolve_path(&js_path.to_string_lossy()).unwrap();
+        let main_module = deno_core::resolve_path(&js_path.to_string_lossy())
+            .map_err(|error| println!("error loading main module: {}", error))
+            .unwrap();
         let permissions = Permissions::allow_all();
         let mut worker = MainWorker::bootstrap_from_options(
             main_module.clone(),

@@ -1,14 +1,14 @@
 PATH
-  remote: ../../gems/isorun-native
+  remote: ../isorun-native
   specs:
     isorun-native (0.1.4.pre)
       rake (~> 13.0)
       rb_sys (~> 0.9.46)
 
 PATH
-  remote: ../../gems/isorun
+  remote: .
   specs:
-    isorun (0.1.5.pre)
+    isorun (0.1.4.pre)
       isorun-native
       railties (>= 6.0.0)
       rake (~> 13.0)
@@ -81,94 +81,45 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    addressable (2.8.1)
-      public_suffix (>= 2.0.2, < 6.0)
-    bindex (0.8.1)
-    bootsnap (1.15.0)
-      msgpack (~> 1.2)
+    ast (2.4.2)
+    benchmark-ips (2.10.0)
     builder (3.2.4)
-    capybara (3.38.0)
-      addressable
-      matrix
-      mini_mime (>= 0.1.3)
-      nokogiri (~> 1.8)
-      rack (>= 1.6.0)
-      rack-test (>= 0.6.3)
-      regexp_parser (>= 1.5, < 3.0)
-      xpath (~> 3.2)
     concurrent-ruby (1.1.10)
     crass (1.0.6)
-    date (3.3.1)
-    debug (1.7.0)
-      irb (>= 1.5.0)
-      reline (>= 0.3.1)
-    domain_name (0.5.20190701)
-      unf (>= 0.0.5, < 1.0.0)
+    diff-lcs (1.5.0)
     erubi (1.11.0)
-    ffi (1.15.5)
-    ffi-compiler (1.0.1)
-      ffi (>= 1.0.0)
-      rake
     globalid (1.0.0)
       activesupport (>= 5.0)
-    graphiql-rails (1.8.0)
-      railties
-      sprockets-rails
-    graphql (2.0.15)
-    http (5.1.0)
-      addressable (~> 2.8)
-      http-cookie (~> 1.0)
-      http-form_data (~> 2.2)
-      llhttp-ffi (~> 0.4.0)
-    http-cookie (1.0.5)
-      domain_name (~> 0.5)
-    http-form_data (2.3.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
-    io-console (0.5.11)
-    irb (1.6.0)
-      reline (>= 0.3.0)
-    jbuilder (2.11.5)
-      actionview (>= 5.0.0)
-      activesupport (>= 5.0.0)
-    jsbundling-rails (1.0.3)
-      railties (>= 6.0.0)
-    llhttp-ffi (0.4.0)
-      ffi-compiler (~> 1.0)
-      rake (~> 13.0)
+    json (2.6.2)
     loofah (2.19.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    mail (2.8.0)
+    mail (2.7.1)
       mini_mime (>= 0.1.1)
-      net-imap
-      net-pop
-      net-smtp
     marcel (1.0.2)
-    matrix (0.4.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
     minitest (5.16.3)
-    msgpack (1.6.0)
-    net-imap (0.3.2)
-      date
+    net-imap (0.3.1)
       net-protocol
     net-pop (0.1.2)
       net-protocol
-    net-protocol (0.2.1)
+    net-protocol (0.1.3)
       timeout
     net-smtp (0.3.3)
       net-protocol
     nio4r (2.5.8)
-    nokogiri (1.13.10-arm64-darwin)
+    nokogiri (1.13.9-arm64-darwin)
       racc (~> 1.4)
-    public_suffix (5.0.1)
-    puma (5.6.5)
-      nio4r (~> 2.0)
-    racc (1.6.1)
+    nokogiri (1.13.9-x86_64-linux)
+      racc (~> 1.4)
+    parallel (1.22.1)
+    parser (3.1.2.1)
+      ast (~> 2.4.1)
+    racc (1.6.0)
     rack (2.2.4)
-    rack-cors (1.1.1)
-      rack (>= 2.0.0)
     rack-test (2.0.2)
       rack (>= 1.3)
     rails (7.0.4)
@@ -197,88 +148,84 @@ GEM
       rake (>= 12.2)
       thor (~> 1.0)
       zeitwerk (~> 2.5)
+    rainbow (3.1.1)
     rake (13.0.6)
     rb_sys (0.9.46)
-    redis (4.8.0)
-    regexp_parser (2.6.1)
-    reline (0.3.1)
-      io-console (~> 0.5)
+    regexp_parser (2.6.0)
     rexml (3.2.5)
-    rubyzip (2.3.2)
-    selenium-webdriver (4.7.1)
-      rexml (~> 3.2, >= 3.2.5)
-      rubyzip (>= 1.2.2, < 3.0)
-      websocket (~> 1.0)
-    sprockets (4.1.1)
-      concurrent-ruby (~> 1.0)
-      rack (> 1, < 3)
-    sprockets-rails (3.4.2)
-      actionpack (>= 5.2)
-      activesupport (>= 5.2)
-      sprockets (>= 3.0.0)
-    sqlite3 (1.5.4-arm64-darwin)
-    stimulus-rails (1.2.1)
-      railties (>= 6.0.0)
-    tailwindcss-rails (2.0.21-arm64-darwin)
-      railties (>= 6.0.0)
+    rspec (3.12.0)
+      rspec-core (~> 3.12.0)
+      rspec-expectations (~> 3.12.0)
+      rspec-mocks (~> 3.12.0)
+    rspec-core (3.12.0)
+      rspec-support (~> 3.12.0)
+    rspec-expectations (3.12.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.12.0)
+    rspec-mocks (3.12.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.12.0)
+    rspec-rails (6.0.1)
+      actionpack (>= 6.1)
+      activesupport (>= 6.1)
+      railties (>= 6.1)
+      rspec-core (~> 3.11)
+      rspec-expectations (~> 3.11)
+      rspec-mocks (~> 3.11)
+      rspec-support (~> 3.11)
+    rspec-support (3.12.0)
+    rubocop (1.39.0)
+      json (~> 2.3)
+      parallel (~> 1.10)
+      parser (>= 3.1.2.1)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml (>= 3.2.5, < 4.0)
+      rubocop-ast (>= 1.23.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 3.0)
+    rubocop-ast (1.23.0)
+      parser (>= 3.1.1.0)
+    rubocop-performance (1.15.1)
+      rubocop (>= 1.7.0, < 2.0)
+      rubocop-ast (>= 0.4.0)
+    rubocop-rails (2.17.2)
+      activesupport (>= 4.2.0)
+      rack (>= 1.1)
+      rubocop (>= 1.33.0, < 2.0)
+    rubocop-rspec (2.15.0)
+      rubocop (~> 1.33)
+    ruby-progressbar (1.11.0)
     thor (1.2.1)
-    timeout (0.3.1)
-    turbo-rails (1.3.2)
-      actionpack (>= 6.0.0)
-      activejob (>= 6.0.0)
-      railties (>= 6.0.0)
+    timeout (0.3.0)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
-    unf (0.1.4)
-      unf_ext
-    unf_ext (0.0.8.2)
-    web-console (4.2.0)
-      actionview (>= 6.0.0)
-      activemodel (>= 6.0.0)
-      bindex (>= 0.4.0)
-      railties (>= 6.0.0)
-    webdrivers (5.2.0)
-      nokogiri (~> 1.6)
-      rubyzip (>= 1.3.0)
-      selenium-webdriver (~> 4.0)
-    websocket (1.2.9)
+    unicode-display_width (2.3.0)
+    webrick (1.7.0)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    xpath (3.2.0)
-      nokogiri (~> 1.8)
+    yard (0.9.28)
+      webrick (~> 1.7.0)
     zeitwerk (2.6.6)
 
 PLATFORMS
   arm64-darwin-21
+  arm64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
-  bootsnap
-  capybara
-  debug
-  graphiql-rails
-  graphql (~> 2.0.15)
-  http
+  benchmark-ips
   isorun!
   isorun-native!
-  jbuilder
-  jsbundling-rails
-  puma (~> 5.0)
-  rack-cors (~> 1.1.1)
-  rails (~> 7.0.4)
-  redis (~> 4.0)
-  selenium-webdriver
-  sprockets-rails
-  sqlite3 (~> 1.4)
-  stimulus-rails
-  tailwindcss-rails (~> 2.0)
-  turbo-rails
-  tzinfo-data
-  web-console
-  webdrivers
-
-RUBY VERSION
-   ruby 3.0.4p208
+  rails
+  rspec
+  rspec-rails
+  rubocop
+  rubocop-performance
+  rubocop-rails
+  rubocop-rspec
+  yard
 
 BUNDLED WITH
-   2.3.24
+   2.3.26

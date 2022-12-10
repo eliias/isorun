@@ -3,4 +3,4 @@
 require "mkmf"
 require "rb_sys/mkmf"
 
-create_rust_makefile("isorun/isorun")
+create_rust_makefile("isorun_native")

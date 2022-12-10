@@ -13,13 +13,13 @@ cross_platforms = %w[
   x86_64-linux
 ]
 
-spec = Bundler.load_gemspec("isorun.gemspec")
+spec = Bundler.load_gemspec("isorun-native.gemspec")
 
 Gem::PackageTask.new(spec).define
 
-Rake::ExtensionTask.new("isorun", spec) do |ext|
+Rake::ExtensionTask.new("isorun_native", spec) do |ext|
   ext.source_pattern = "*.{rs,toml}"
-  ext.lib_dir = "lib/isorun"
+  ext.lib_dir = "lib/isorun_native"
   ext.cross_compile = true
   ext.cross_platform = cross_platforms
   ext.config_script = ENV["ALTERNATE_CONFIG_SCRIPT"] || "extconf.rb"
@@ -30,7 +30,7 @@ Rake::ExtensionTask.new("isorun", spec) do |ext|
 end
 
 namespace "gem" do
-  task "prepare" do # rubocop:disable Rails/RakeEnvironment
+  task "prepare" do
     sh "bundle"
   end
 
@@ -63,18 +63,6 @@ begin
   require "rubocop/rake_task"
 
   RuboCop::RakeTask.new
-rescue LoadError
-  # Ok
-end
-
-begin
-  require "yard"
-
-  YARD::Rake::YardocTask.new
-
-  task docs: :environment do
-    `yard server --reload`
-  end
 rescue LoadError
   # Ok
 end
