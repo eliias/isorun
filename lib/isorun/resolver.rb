@@ -6,7 +6,7 @@ module Isorun
       if Rails.env.development?
         Rails.root.join("app", "assets", "builds", "#{bundle_id}-server.js").to_s
       else
-        asset_path("#{bundle_id}-server")
+        Isorun::Resolver.module_path("#{bundle_id}-server")
       end
     }
 
@@ -14,15 +14,13 @@ module Isorun
       if Rails.env.development?
         Rails.root.join("app", "assets", "builds", "#{bundle_id}.js").to_s
       else
-        asset_path(bundle_id)
+        Isorun::Resolver.module_path(bundle_id)
       end
     }
 
-    private
-
-    def asset_path(asset)
-      asset_path = Rails.application.assets_manifest.assets["#{asset}.js"]
-      "#{Rails.application.assets_manifest.directory}/#{asset_path}"
+    def self.module_path(asset)
+      file = Rails.application.assets_manifest.assets["#{asset}.js"]
+      "#{Rails.application.assets_manifest.directory}/#{file}"
     end
   end
 end

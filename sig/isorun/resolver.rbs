@@ -1,10 +1,12 @@
 module Isorun
   module Resolver
-    SIMPLE_RESOLVER: untyped
-    SSR_APP_RESOLVER: untyped
+    SIMPLE_RESOLVER: Proc
+    SSR_APP_RESOLVER: Proc
+
+    def self.module_path: -> string
+
+    private
+
+    def asset_path: -> string
   end
-
-  private
-
-  def asset_path: -> string
 end
