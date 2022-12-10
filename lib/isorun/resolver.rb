@@ -17,12 +17,12 @@ module Isorun
         asset_path(bundle_id)
       end
     }
-  end
 
-  private
+    private
 
-  def asset_path(asset)
-    asset_path = Rails.application.assets_manifest.assets["#{asset}.js"]
-    "#{Rails.application.assets_manifest.directory}/#{asset_path}"
+    def asset_path(asset)
+      asset_path = Rails.application.assets_manifest.assets["#{asset}.js"]
+      "#{Rails.application.assets_manifest.directory}/#{asset_path}"
+    end
   end
 end
