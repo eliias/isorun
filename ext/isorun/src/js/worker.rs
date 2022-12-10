@@ -13,6 +13,7 @@ use magnus::{Error, Value};
 use std::borrow::BorrowMut;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
+use std::env;
 use std::path::Path;
 use std::rc::Rc;
 use std::string::ToString;
@@ -203,7 +204,18 @@ impl Default for Worker {
 
         // todo: we don't use the main module at all, but it could be used as an
         //  entry point for "eval" JavaScript.
-        let js_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/call.js");
+        let default_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../..")
+            .canonicalize()
+            .unwrap()
+            .into_os_string()
+            .into_string()
+            .unwrap();
+        let isorun_native_gem_path =
+            env::var("ISORUN_NATIVE_GEM_PATH").unwrap_or(default_path.clone());
+        let js_path = Path::new(isorun_native_gem_path.as_str())
+            .join("ext/isorun/src/call.js");
+
         let main_module =
             deno_core::resolve_path(&js_path.to_string_lossy()).unwrap();
         let permissions = Permissions::allow_all();
