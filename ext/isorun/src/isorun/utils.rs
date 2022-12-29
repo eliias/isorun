@@ -5,12 +5,13 @@ use magnus::{
     Integer, RArray, RFloat, RHash, RString, RStruct, Symbol, Value, QFALSE,
     QNIL, QTRUE,
 };
-use v8::{Array, GetPropertyNamesArgs, HandleScope, Local, Object};
+use v8::{Array, GetPropertyNamesArgs, Global, HandleScope, Local, Object};
 
 pub fn convert_v8_to_ruby(
-    value: Local<v8::Value>,
+    value: &Global<v8::Value>,
     scope: &mut HandleScope,
 ) -> Result<Value, AnyError> {
+    let value = Local::new(scope, value);
     if value.is_null() {
         return Ok(Value::from(QNIL));
     }
@@ -36,8 +37,7 @@ pub fn convert_v8_to_ruby(
     }
 
     if value.is_string() {
-        let raw = value.to_rust_string_lossy(scope);
-        return Ok(Value::from(RString::from(raw)));
+        return Ok(Value::from(value.to_rust_string_lossy(scope)));
     }
 
     if value.is_array() {
@@ -46,7 +46,8 @@ pub fn convert_v8_to_ruby(
         let r_arr = RArray::with_capacity(length as usize);
         for i in 0..length {
             let raw = arr.get_index(scope, i).unwrap();
-            let val = convert_v8_to_ruby(raw, scope).unwrap();
+            let global_raw = Global::<v8::Value>::new(scope, raw);
+            let val = convert_v8_to_ruby(&global_raw, scope).unwrap();
             r_arr.push(val).expect("cannot add item to array");
         }
         return Ok(Value::from(r_arr));
@@ -61,9 +62,11 @@ pub fn convert_v8_to_ruby(
         let r_hash = RHash::new();
         for i in 0..length {
             let raw_key = properties.get_index(scope, i).unwrap();
+            let global_raw_key = Global::<v8::Value>::new(scope, raw_key);
             let raw_val = obj.get(scope, raw_key).unwrap();
-            let key = convert_v8_to_ruby(raw_key, scope).unwrap();
-            let val = convert_v8_to_ruby(raw_val, scope).unwrap();
+            let global_raw_val = Global::<v8::Value>::new(scope, raw_val);
+            let key = convert_v8_to_ruby(&global_raw_key, scope).unwrap();
+            let val = convert_v8_to_ruby(&global_raw_val, scope).unwrap();
             r_hash.aset(key, val).expect("cannot set item to hash");
         }
         return Ok(Value::from(r_hash));

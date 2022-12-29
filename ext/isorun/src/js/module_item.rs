@@ -1,6 +1,5 @@
 use crate::js::worker::WORKER;
 use deno_core::JsRealm;
-use magnus::gvl::without_gvl;
 use std::cell::RefCell;
 use std::ops::Deref;
 use std::rc::Rc;
@@ -39,20 +38,11 @@ impl Function {
         WORKER.with(|worker| {
             let realm = self.realm.borrow();
             let realm = realm.deref();
-            let result = without_gvl(
-                |gvl_context| {
-                    worker.ruby_context.replace(Some(gvl_context));
-                    let result = worker
-                        .runtime
-                        // we block here instead of the worker, due to a refcell issue
-                        // when borrowing within an await
-                        .block_on(worker.call(realm, &self.binding, args));
-                    worker.ruby_context.replace(None);
-                    result
-                },
-                None::<fn()>,
-            );
-            result.0.unwrap()
+            worker
+                .runtime
+                // we block here instead of the worker, due to a refcell issue
+                // when borrowing within an await
+                .block_on(worker.call_without_gvl(realm, &self.binding, args))
         })
     }
 }

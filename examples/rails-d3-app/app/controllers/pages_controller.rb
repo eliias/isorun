@@ -4,7 +4,8 @@ class PagesController < ApplicationController
 
     @result = Isorun::Context.create do |ctx|
       default = ctx.import(:default).from(service_path)
-      default.call(canvas, settings, data)
+      receiver = lambda { |v| "test" }
+      default.call_without_gvl(canvas, settings, data, receiver)
     end
   end
 
