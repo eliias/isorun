@@ -18,8 +18,6 @@ Isorun.configure do
 
     case action
     when "test"
-      puts action
-      pp args
       args
     when "fetch"
       options, = args.with_indifferent_access

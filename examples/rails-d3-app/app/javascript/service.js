@@ -2,7 +2,7 @@ import {parseHTML} from 'linkedom';
 import * as d3 from "d3";
 import convert from 'color-convert';
 
-export default function generate(canvas, settings, data) {
+export default async function generate(canvas, settings, data) {
   const {document} = parseHTML(`
     <!doctype html>
     <html lang="en">

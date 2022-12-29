@@ -16,9 +16,10 @@ module Isorun
                                `#{id}-server.js` exists.")
         end
 
-        Isorun.with_receiver(Isorun.configuration.receiver) do
-          render_function.call_without_gvl(render_context)
-        end
+        render_function.call_without_gvl(
+          render_context,
+          Isorun.configuration.receiver
+        )
       end
 
       html = if ssr_html.present?

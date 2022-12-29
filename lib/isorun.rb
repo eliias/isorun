@@ -6,7 +6,7 @@ ENV["ISORUN_NATIVE_GEM_PATH"] = File.expand_path("..", __dir__)
 
 # load native extension
 begin
-  ruby_version = /(\d+\.\d+)/.match(::RUBY_VERSION)
+  ruby_version = /(\d+\.\d+)/.match(RUBY_VERSION)
   require "isorun/#{ruby_version}/isorun"
 rescue LoadError
   require "isorun/isorun"
@@ -23,11 +23,4 @@ module Isorun
   extend ActiveSupport::Autoload
 
   class Error < StandardError; end
-
-  def self.with_receiver(receiver)
-    self.receiver = receiver
-    result = yield
-    self.receiver = nil
-    result
-  end
 end

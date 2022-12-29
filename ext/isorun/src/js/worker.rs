@@ -8,7 +8,7 @@ use deno_runtime::worker::{MainWorker, WorkerOptions};
 use deno_runtime::BootstrapOptions;
 use deno_web::BlobStore;
 use magnus::block::Proc;
-use magnus::gvl::GVLContext;
+use magnus::gvl::{without_gvl, GVLContext};
 use magnus::{Error, Value};
 use std::borrow::BorrowMut;
 use std::cell::RefCell;
@@ -19,7 +19,7 @@ use std::rc::Rc;
 use std::string::ToString;
 use std::sync::Arc;
 use tokio::runtime::Runtime;
-use v8::{Global, Local};
+use v8::{Global, HandleScope, Local};
 
 fn get_error_class_name(e: &AnyError) -> &'static str {
     deno_runtime::errors::get_error_class_name(e).unwrap_or("Error")
@@ -83,10 +83,60 @@ impl Worker {
                 let local_arg = Local::<v8::Value>::new(&mut scope, arg);
                 local_args.push(local_arg);
             }
+
             let receiver = v8::undefined(scope.borrow_mut());
             let promise = callee
                 .call(&mut scope, receiver.into(), local_args.as_slice())
                 .unwrap();
+            Global::<v8::Value>::new(&mut scope, promise)
+        };
+
+        let value = {
+            let mut worker = self.worker.borrow_mut();
+            worker.js_runtime.resolve_value(promise).await.unwrap()
+        };
+
+        let value = self.to_ruby(realm, &value).unwrap();
+
+        Ok(value)
+    }
+
+    pub(crate) async fn call_without_gvl(
+        &self,
+        realm: &JsRealm,
+        callee: &Global<v8::Value>,
+        args: &[Global<v8::Value>],
+    ) -> Result<Value, Error> {
+        let promise = {
+            let mut worker = self.worker.borrow_mut();
+            let mut scope = realm.handle_scope(worker.js_runtime.v8_isolate());
+
+            let callee = Local::<v8::Value>::new(&mut scope, callee);
+            let callee = Local::<v8::Function>::try_from(callee).unwrap();
+
+            let mut local_args: Vec<Local<v8::Value>> = vec![];
+            for arg in args {
+                let local_arg = Local::<v8::Value>::new(&mut scope, arg);
+                local_args.push(local_arg);
+            }
+            let receiver = v8::undefined(scope.borrow_mut());
+            let (promise, _cancel) = without_gvl(
+                |ctx| {
+                    self.ruby_context.replace(Some(ctx));
+                    let result = callee
+                        .call(
+                            &mut scope,
+                            receiver.into(),
+                            local_args.as_slice(),
+                        )
+                        .unwrap();
+                    self.ruby_context.replace(None);
+                    result
+                },
+                None::<fn()>,
+            );
+
+            let promise = promise.unwrap();
             Global::<v8::Value>::new(&mut scope, promise)
         };
 
@@ -107,7 +157,6 @@ impl Worker {
     ) -> Option<Value> {
         let mut worker = self.worker.borrow_mut();
         let mut scope = realm.handle_scope(worker.js_runtime.v8_isolate());
-        let value = Local::new(&mut scope, value);
         let result = convert_v8_to_ruby(value, &mut scope);
 
         match result {
@@ -129,20 +178,57 @@ impl Worker {
         Some(value)
     }
 
-    fn send(&self, value: Value) -> Result<Value, Error> {
-        // we need to deref the receiver as mut, as it is behind an Option
-        if let (Some(ctx), Some(rec)) = (
+    fn send<'a>(
+        &self,
+        scope: &mut HandleScope,
+        value: serde_v8::Value<'a>,
+    ) -> Result<serde_v8::Value<'a>, AnyError> {
+        if let None = self.ruby_receiver.borrow_mut().as_mut() {
+            return Err(AnyError::msg(
+                "Cannot send to ruby. The ruby receiver is missing, please \
+                initialize and set one before calling into Ruby?",
+            ));
+        }
+
+        // we can send with and without gvl, if no ruby context is present, we
+        // assume that GVL is held
+        if let (None, Some(rec)) = (
             self.ruby_context.borrow_mut().as_mut(),
             self.ruby_receiver.borrow_mut().as_mut(),
         ) {
+            let mut scope = scope; // fixme: can't figure out how to forward the borrow
+            let value = value.v8_value;
+            let value = Global::<v8::Value>::new(&mut scope, value);
+            let value = convert_v8_to_ruby(&value, &mut scope).unwrap();
+            let args: (Value,) = (value,);
+            return rec
+                .call::<(Value,), Value>(args)
+                .map_err(|err| AnyError::msg(format!("{:?}", err)))
+                .and_then(|value| convert_ruby_to_v8(value, &mut scope))
+                .map(|value| from_v8(&mut scope, value).unwrap());
+        }
+
+        // we need to deref the receiver as mut, as it is behind an Option
+        // TODO: make sure all operations on Ruby data happen when GVL is held
+        if let Some(ctx) = self.ruby_context.borrow_mut().as_mut() {
+            let mut scope = scope; // fixme: can't figure out how to forward the borrow
             ctx.with_gvl(|| {
-                let args: (Value,) = (value,);
-                rec.call::<(Value,), Value>(args)
-            })?
+                if let Some(rec) = self.ruby_receiver.borrow_mut().as_mut() {
+                    let value = value.v8_value;
+                    let value = Global::<v8::Value>::new(&mut scope, value);
+                    let value = convert_v8_to_ruby(&value, &mut scope)?;
+                    let args: (Value,) = (value,);
+                    rec.call::<(Value,), Value>(args)
+                        .map_err(|err| AnyError::msg(format!("{:?}", err)))
+                } else {
+                    Err(AnyError::msg("cannot access ruby receiver"))
+                }
+            })
+            .map_err(|err| AnyError::msg(format!("{:?}", err)))?
+            .and_then(|value| convert_ruby_to_v8(value, &mut scope))
+            .map(|value| from_v8(&mut scope, value).unwrap())
         } else {
-            Err(Error::runtime_error(
-                "Cannot send to ruby. Is the ruby receiver and context initialized and set?",
-            ))
+            Err(AnyError::msg("this should never happen"))
         }
     }
 }
@@ -200,6 +286,7 @@ impl Default for Worker {
             shared_array_buffer_store: None,
             compiled_wasm_module_store: None,
             stdio: Default::default(),
+            should_wait_for_inspector_session: false,
         };
 
         // todo: we don't use the main module at all, but it could be used as an
@@ -254,17 +341,5 @@ fn op_send_to_ruby<'a>(
     scope: &mut v8::HandleScope,
     data: serde_v8::Value<'a>,
 ) -> Result<serde_v8::Value<'a>, AnyError> {
-    let value = convert_v8_to_ruby(data.v8_value, scope)?;
-
-    WORKER.with(|worker| {
-        worker
-            .send(value)
-            .map(|v| {
-                let v = convert_ruby_to_v8(v, scope).unwrap();
-                from_v8(scope, v).unwrap()
-            })
-            .map_err(|error| {
-                AnyError::msg(format!("failed to send to ruby: {}", error))
-            })
-    })
+    WORKER.with(|worker| worker.send(scope, data))
 }
