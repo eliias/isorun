@@ -12,6 +12,8 @@ module Isorun
 
       # Specify the module to import from
       def from(module_path)
+        module_path = module_path.to_s if module_path.is_a? Pathname
+
         mod = load(module_path)
         imports = export_names.map { |export_name| mod.import(export_name) }
         return imports.first if imports.size == 1
@@ -66,7 +68,8 @@ module Isorun
       #     func.call("Hello, World!")
       #   end
       #
-      # @yield [Isorun::Context] The newly created JavaScript context
+      # @yield [context] The newly created JavaScript context
+      # @yieldparam [Isorun::Context] context
       # @yieldreturn [Object, nil] An optional return value from the execution context
       def create(&block)
         raise "[Isorun::Context] block missing when creating context" unless block

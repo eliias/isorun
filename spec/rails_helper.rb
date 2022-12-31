@@ -4,25 +4,19 @@ require "spec_helper"
 
 ENV["RAILS_ENV"] ||= "test"
 
-require File.expand_path("examples/rails-app/environment", __dir__)
+require File.expand_path("./dummy/config/environment", __dir__)
+
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 
 require "rspec/rails"
 
+require "simplecov"
+
+SimpleCov.start "rails"
+SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([SimpleCov::Formatter::HTMLFormatter])
+
 # autoload support files
 Dir[Rails.root / "spec" / "support" / "**" / "*.rb"].sort.each { |f| require f }
 
-# Checks for pending migrations and applies them before tests are run.
-# If you are not using ActiveRecord, you can remove these lines.
-begin
-  ActiveRecord::Migration.maintain_test_schema!
-rescue ActiveRecord::PendingMigrationError => e
-  puts e.to_s.strip
-  exit 1
-end
-
-RSpec.configure do |config|
-  config.use_transactional_fixtures = true
-  config.filter_rails_from_backtrace!
-end
+RSpec.configure(&:filter_rails_from_backtrace!)

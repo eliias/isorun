@@ -2,7 +2,6 @@
 
 module Isorun
   module AppHelper
-
     # The isorun_app helper is the most convenient way to server-side render
     # a JavaScript application, including state extraction and automatic
     # rehydration. The helper tries to render the application and will also

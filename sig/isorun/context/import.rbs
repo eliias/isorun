@@ -8,7 +8,7 @@ module Isorun
       attr_reader context: Context
       attr_reader export_names: [string]
 
-      def from: -> [Function|Object]
+      def from: (String|Pathname) -> [Function|Object]
     end
   end
 end
