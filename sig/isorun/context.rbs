@@ -2,8 +2,8 @@ module Isorun
   class Context
     def self.create: -> Context
 
-    def enter: -> untyped
+    def self.default_options: -> Hash[Symbol, Proc]
 
-    def import: -> untyped
+    def import: -> Import
   end
 end

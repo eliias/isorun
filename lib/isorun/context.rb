@@ -76,9 +76,9 @@ module Isorun
       export_names = [:default.to_s] if export_names.empty?
       Import.new(self, export_names)
     end
-  end
 
-  # @!method receiver=(receiver)
-  # @param receiver [Proc]
-  # @return [Isorun::Context] the newly created context
+    # @!method receiver=(receiver)
+    # @param receiver [Proc, nil]
+    # @return [Isorun::Context] the newly created context
+  end
 end

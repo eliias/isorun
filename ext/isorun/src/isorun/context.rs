@@ -2,6 +2,7 @@ use crate::isorun;
 use crate::js::module::Module;
 use crate::js::worker::WORKER;
 use deno_core::JsRealm;
+use magnus::block::Proc;
 use magnus::Error;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -20,6 +21,10 @@ impl Context {
             .map_err(|_error| {
                 Error::runtime_error("cannot create JavaScript context")
             })
+    }
+
+    pub(crate) fn set_receiver(&self, receiver: Option<Proc>) {
+        WORKER.with(|worker| worker.ruby_receiver.replace(receiver));
     }
 
     pub(crate) fn load(

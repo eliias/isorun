@@ -83,42 +83,6 @@ impl Worker {
                 let local_arg = Local::<v8::Value>::new(&mut scope, arg);
                 local_args.push(local_arg);
             }
-
-            let receiver = v8::undefined(scope.borrow_mut());
-            let promise = callee
-                .call(&mut scope, receiver.into(), local_args.as_slice())
-                .unwrap();
-            Global::<v8::Value>::new(&mut scope, promise)
-        };
-
-        let value = {
-            let mut worker = self.worker.borrow_mut();
-            worker.js_runtime.resolve_value(promise).await.unwrap()
-        };
-
-        let value = self.to_ruby(realm, &value).unwrap();
-
-        Ok(value)
-    }
-
-    pub(crate) async fn call_without_gvl(
-        &self,
-        realm: &JsRealm,
-        callee: &Global<v8::Value>,
-        args: &[Global<v8::Value>],
-    ) -> Result<Value, Error> {
-        let promise = {
-            let mut worker = self.worker.borrow_mut();
-            let mut scope = realm.handle_scope(worker.js_runtime.v8_isolate());
-
-            let callee = Local::<v8::Value>::new(&mut scope, callee);
-            let callee = Local::<v8::Function>::try_from(callee).unwrap();
-
-            let mut local_args: Vec<Local<v8::Value>> = vec![];
-            for arg in args {
-                let local_arg = Local::<v8::Value>::new(&mut scope, arg);
-                local_args.push(local_arg);
-            }
             let receiver = v8::undefined(scope.borrow_mut());
             let (promise, _cancel) = without_gvl(
                 |ctx| {
