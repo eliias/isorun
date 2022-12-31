@@ -68,11 +68,18 @@ module Isorun
       #
       # @yield [Isorun::Context] The newly created JavaScript context
       # @yieldreturn [Object, nil] An optional return value from the execution context
-      def create(&block)
+      def create(options = default_options, &block)
         raise "[Isorun::Context] block missing when creating context" unless block
 
         context = Isorun::Context.new
-        yield(context)
+
+        context.receiver = options[:receiver] if options[:receiver].present?
+
+        result = yield(context)
+
+        context.receiver = nil if options[:receiver].present?
+
+        result
       end
 
       # @!method new()
@@ -82,7 +89,7 @@ module Isorun
 
       def default_options
         {
-          receiver: Isorun.configuration.receiver
+          receiver: nil
         }
       end
     end
