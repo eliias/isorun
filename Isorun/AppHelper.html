@@ -243,13 +243,7 @@ convention, the target node (e.g. <code>&lt;div id=&quot;my_app&quot;&gt;</code>
 55
 56
 57
-58
-59
-60
-61
-62
-63
-64</pre>
+58</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'app/helpers/isorun/app_helper.rb', line 21</span>
@@ -259,7 +253,7 @@ convention, the target node (e.g. <code>&lt;div id=&quot;my_app&quot;&gt;</code>
 
   <span class='id identifier rubyid_module_path'>module_path</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_module_resolver'>module_resolver</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_ssr_html'>ssr_html</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Context.html" title="Isorun::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="Context.html#create-class_method" title="Isorun::Context.create (method)">create</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_context'>context</span><span class='op'>|</span>
+  <span class='id identifier rubyid_ssr_html'>ssr_html</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Context.html" title="Isorun::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="Context.html#create-class_method" title="Isorun::Context.create (method)">create</a></span></span><span class='lparen'>(</span><span class='label'>receiver:</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_context'>context</span><span class='op'>|</span>
     <span class='id identifier rubyid_render_context'>render_context</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>environment:</span> <span class='const'>Rails</span><span class='period'>.</span><span class='id identifier rubyid_env'>env</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='rbrace'>}</span>
     <span class='id identifier rubyid_render_function'>render_function</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_import'>import</span><span class='period'>.</span><span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='id identifier rubyid_module_path'>module_path</span><span class='rparen'>)</span>
 
@@ -271,13 +265,7 @@ convention, the target node (e.g. <code>&lt;div id=&quot;my_app&quot;&gt;</code>
       <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
     <span class='kw'>end</span>
 
-    <span class='comment'># set receiver to allow calling into Ruby from JavaScript
-</span>    <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span>
-
     <span class='id identifier rubyid_html'>html</span> <span class='op'>=</span> <span class='id identifier rubyid_render_function'>render_function</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_render_context'>render_context</span><span class='rparen'>)</span>
-
-    <span class='comment'># reset receiver
-</span>    <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span> <span class='op'>=</span> <span class='kw'>nil</span>
 
     <span class='const'>ActiveSupport</span><span class='op'>::</span><span class='const'>Notifications</span><span class='period'>.</span><span class='id identifier rubyid_instrument'>instrument</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>finish.render.isorun</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='lbrace'>{</span> <span class='label'>ts:</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_current'>current</span> <span class='rbrace'>}</span>
     <span class='const'>ActiveSupport</span><span class='op'>::</span><span class='const'>Notifications</span><span class='period'>.</span><span class='id identifier rubyid_instrument'>instrument</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>stats.isorun</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='period'>.</span><span class='id identifier rubyid_stats'>stats</span>
@@ -308,7 +296,7 @@ convention, the target node (e.g. <code>&lt;div id=&quot;my_app&quot;&gt;</code>
 </div>
 
       <div id="footer">
-  Generated on Sat Dec 31 16:11:01 2022 by
+  Generated on Sat Dec 31 17:24:17 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.0.5).
 </div>
