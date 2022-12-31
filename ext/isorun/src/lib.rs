@@ -1,4 +1,6 @@
+use self::isorun::utils::stats;
 use crate::isorun::context::Context;
+use crate::isorun::utils::low_memory_notification;
 use isorun::function::Function;
 use isorun::module::Module;
 use magnus::{define_module, function, method, Error, Module as M, Object};
@@ -9,6 +11,15 @@ mod js;
 #[magnus::init]
 fn init() -> Result<(), Error> {
     let root = define_module("Isorun").expect("cannot define module: Isorun");
+
+    root.define_module_function("stats", function!(stats, 0))
+        .expect("cannot define module function: stats");
+
+    root.define_module_function(
+        "low_memory_notification",
+        function!(low_memory_notification, 0),
+    )
+    .expect("cannot define module function: low_memory_notification");
 
     let context = root
         .define_class("Context", Default::default())

@@ -12,7 +12,6 @@ module Isorun
 
     initializer "isorun.helpers", before: :load_config_initializers do
       ActiveSupport.on_load(:action_controller_base) do
-        Rails.logger.debug Isorun::Engine.helpers
         helper Isorun::Engine.helpers
       end
     end
