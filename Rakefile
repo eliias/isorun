@@ -72,7 +72,7 @@ begin
 
   YARD::Rake::YardocTask.new
 
-  task docs: :environment do
+  task :docs do
     `yard server --reload`
   end
 rescue LoadError

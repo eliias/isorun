@@ -1,3 +1,4 @@
+use crate::js::worker::WORKER;
 use deno_core::error::AnyError;
 use magnus::r_hash::ForEach;
 use magnus::value::{Qfalse, Qtrue};
@@ -5,6 +6,7 @@ use magnus::{
     Integer, RArray, RFloat, RHash, RString, RStruct, Symbol, Value, QFALSE,
     QNIL, QTRUE,
 };
+use std::collections::HashMap;
 use v8::{Array, GetPropertyNamesArgs, Global, HandleScope, Local, Object};
 
 pub fn convert_v8_to_ruby(
@@ -156,4 +158,68 @@ pub fn convert_ruby_to_v8<'s>(
     }
 
     Ok(v8::null(scope).into())
+}
+
+pub(crate) fn low_memory_notification() {
+    WORKER.with(|worker| {
+        let mut worker = worker.worker.borrow_mut();
+        worker.js_runtime.v8_isolate().low_memory_notification();
+    });
+}
+
+pub(crate) fn stats() -> RHash {
+    WORKER.with(|worker| {
+        let mut worker = worker.worker.borrow_mut();
+
+        let heap_stats = &mut Default::default();
+        worker
+            .js_runtime
+            .v8_isolate()
+            .get_heap_statistics(heap_stats);
+
+        let current_thread = std::thread::current();
+        let thread = HashMap::from([(
+            "thread_id",
+            format!("{:?}", current_thread.id()),
+        )]);
+
+        let heap = HashMap::from([
+            ("external_memory", heap_stats.external_memory()),
+            ("heap_size_limit", heap_stats.heap_size_limit()),
+            ("malloced_memory", heap_stats.malloced_memory()),
+            (
+                "number_of_detached_contexts",
+                heap_stats.number_of_detached_contexts(),
+            ),
+            (
+                "number_of_native_contexts",
+                heap_stats.number_of_native_contexts(),
+            ),
+            ("peak_malloced_memory", heap_stats.peak_malloced_memory()),
+            ("total_available_size", heap_stats.total_available_size()),
+            (
+                "total_global_handles_size",
+                heap_stats.total_global_handles_size(),
+            ),
+            ("total_heap_size", heap_stats.total_heap_size()),
+            (
+                "total_heap_size_executable",
+                heap_stats.total_heap_size_executable(),
+            ),
+            ("total_physical_size", heap_stats.total_physical_size()),
+            (
+                "used_global_handles_size",
+                heap_stats.used_global_handles_size(),
+            ),
+            ("used_heap_size", heap_stats.used_heap_size()),
+        ]);
+
+        let h = RHash::new();
+        h.aset("current_thread", RHash::from_iter(thread))
+            .expect("cannot set stats for current_thread");
+        h.aset("heap", RHash::from_iter(heap))
+            .expect("cannot set stats for heap");
+
+        h
+    })
 }

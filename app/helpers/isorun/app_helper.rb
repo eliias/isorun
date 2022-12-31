@@ -2,7 +2,25 @@
 
 module Isorun
   module AppHelper
+
+    # The isorun_app helper is the most convenient way to server-side render
+    # a JavaScript application, including state extraction and automatic
+    # rehydration. The helper tries to render the application and will also
+    # inject the client-side code immediately after the rendered result.
+    #
+    # @example Renders a JavaScript application
+    #   <html>
+    #   <body>
+    #     <%= isorun_app("my_app") %>
+    #   </body>
+    #   </html>
+    #
+    # @param id [String] An ID representing both, the asset bundle, and by
+    #   convention, the target node (e.g. `<div id="my_app">`)
+    # @return [String]
     def isorun_app(id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      ActiveSupport::Notifications.instrument "start.render.isorun", { ts: Time.current }
+
       module_path = Isorun.config.module_resolver.call(id)
 
       ssr_html = Isorun::Context.create do |context|
@@ -24,6 +42,9 @@ module Isorun
 
         # reset receiver
         context.receiver = nil
+
+        ActiveSupport::Notifications.instrument "finish.render.isorun", { ts: Time.current }
+        ActiveSupport::Notifications.instrument "stats.isorun", Isorun.stats
 
         html
       end
