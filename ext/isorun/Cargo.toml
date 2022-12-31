@@ -1,6 +1,6 @@
 [package]
 name = "isorun"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 authors = ["Hannes Moser <box@hannesmoser.at>"]
 homepage = "https://github.com/eliias/isorun"

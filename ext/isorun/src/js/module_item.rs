@@ -30,21 +30,6 @@ impl Function {
                 .block_on(worker.call(realm, &self.binding, args))
         })
     }
-
-    pub(crate) fn call_without_gvl(
-        &self,
-        args: &[Global<v8::Value>],
-    ) -> Result<magnus::Value, magnus::Error> {
-        WORKER.with(|worker| {
-            let realm = self.realm.borrow();
-            let realm = realm.deref();
-            worker
-                .runtime
-                // we block here instead of the worker, due to a refcell issue
-                // when borrowing within an await
-                .block_on(worker.call_without_gvl(realm, &self.binding, args))
-        })
-    }
 }
 
 pub(crate) struct Value {

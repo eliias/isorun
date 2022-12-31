@@ -18,7 +18,10 @@ fn init() -> Result<(), Error> {
         .expect("cannot define singelton method: new");
     context
         .define_method("load", method!(Context::load, 1))
-        .expect("cannot load module");
+        .expect("cannot define method: load");
+    context
+        .define_method("receiver=", method!(Context::set_receiver, 1))
+        .expect("cannot define method: receiver=");
 
     let module = root
         .define_class("Module", Default::default())
@@ -36,12 +39,6 @@ fn init() -> Result<(), Error> {
     function
         .define_method("call", method!(Function::call, -1))
         .expect("cannot define method: call");
-    function
-        .define_method(
-            "call_without_gvl",
-            method!(Function::call_without_gvl, -1),
-        )
-        .expect("cannot define method: call_without_gvl");
 
     Ok(())
 }

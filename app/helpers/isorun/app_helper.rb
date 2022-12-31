@@ -3,7 +3,7 @@
 module Isorun
   module AppHelper
     def isorun_app(id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-      module_path = Isorun.configuration.module_resolver.call(id)
+      module_path = Isorun.config.module_resolver.call(id)
 
       ssr_html = Isorun::Context.create do |context|
         render_context = { environment: Rails.env.to_s }
@@ -14,12 +14,18 @@ module Isorun
                             "does not have a server entrypoint. Please " \
                             "check if an asset with filename " + "
                                `#{id}-server.js` exists.")
+          return ""
         end
 
-        render_function.call_without_gvl(
-          render_context,
-          Isorun.configuration.receiver
-        )
+        # set receiver to allow calling into Ruby from JavaScript
+        context.receiver = Isorun.config.receiver
+
+        html = render_function.call(render_context)
+
+        # reset receiver
+        context.receiver = nil
+
+        html
       end
 
       html = if ssr_html.present?
