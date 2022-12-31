@@ -23,7 +23,7 @@ module Isorun
 
       module_path = Isorun.config.module_resolver.call(id)
 
-      ssr_html = Isorun::Context.create do |context|
+      ssr_html = Isorun::Context.create(receiver: Isorun.config.receiver) do |context|
         render_context = { environment: Rails.env.to_s }
         render_function = context.import.from(module_path)
 
@@ -35,13 +35,7 @@ module Isorun
           return ""
         end
 
-        # set receiver to allow calling into Ruby from JavaScript
-        context.receiver = Isorun.config.receiver
-
         html = render_function.call(render_context)
-
-        # reset receiver
-        context.receiver = nil
 
         ActiveSupport::Notifications.instrument "finish.render.isorun", { ts: Time.current }
         ActiveSupport::Notifications.instrument "stats.isorun", Isorun.stats
