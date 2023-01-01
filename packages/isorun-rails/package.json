@@ -23,6 +23,6 @@
     "lint:fix": "eslint ./src --fix"
   },
   "dependencies": {
-    "@changesets/cli": "^2.25.2"
+    "@changesets/cli": "^2.26.0"
   }
 }
