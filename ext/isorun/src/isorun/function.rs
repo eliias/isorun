@@ -1,6 +1,6 @@
 use crate::js;
 use crate::js::worker::WORKER;
-use magnus::Error;
+use magnus::{exception, Error};
 use std::cell::RefCell;
 use std::ops::Deref;
 use v8::{Global, Value};
@@ -28,10 +28,10 @@ impl Function {
 
             let result =
                 self.0.borrow().call(v8_args.as_slice()).map_err(|error| {
-                    Error::runtime_error(format!(
-                        "cannot call function: {}",
-                        error
-                    ))
+                    Error::new(
+                        exception::runtime_error(),
+                        format!("cannot call function: {}", error),
+                    )
                 });
 
             result

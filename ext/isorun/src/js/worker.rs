@@ -229,6 +229,7 @@ impl Default for Worker {
                 inspect: false,
             },
             extensions: std::mem::take(&mut extensions),
+            extensions_with_js: Default::default(),
             startup_snapshot: None,
             unsafely_ignore_certificate_errors: None,
             root_cert_store: None,

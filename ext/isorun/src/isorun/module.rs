@@ -1,6 +1,6 @@
 use crate::isorun::function::Function;
 use crate::js;
-use magnus::Error;
+use magnus::{exception, Error};
 use std::cell::RefCell;
 
 #[magnus::wrap(class = "Isorun::Module")]
@@ -19,9 +19,10 @@ impl Module {
         export_name: String,
     ) -> Result<magnus::Value, Error> {
         let module = self.0.borrow();
-        let module_item = module
-            .import(export_name.as_str())
-            .map_err(|error| Error::runtime_error(format!("{}", error)))?;
+        let module_item =
+            module.import(export_name.as_str()).map_err(|error| {
+                Error::new(exception::runtime_error(), format!("{}", error))
+            })?;
 
         match module_item {
             js::module_item::ModuleItem::Value(v) => Ok(v.to_ruby().unwrap()),

@@ -3,7 +3,7 @@ use crate::js::module::Module;
 use crate::js::worker::WORKER;
 use deno_core::JsRealm;
 use magnus::block::Proc;
-use magnus::Error;
+use magnus::{exception, Error};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -19,7 +19,10 @@ impl Context {
             .with(|worker| worker.create_realm())
             .map(|realm| Context(Rc::new(RefCell::from(realm))))
             .map_err(|_error| {
-                Error::runtime_error("cannot create JavaScript context")
+                Error::new(
+                    exception::runtime_error(),
+                    "cannot create JavaScript context",
+                )
             })
     }
 
@@ -41,11 +44,14 @@ impl Context {
             })
             .map(|module| isorun::Module(RefCell::from(module)))
             .map_err(|error| {
-                Error::runtime_error(format!(
-                    "cannot load module: `{}`: {}",
-                    path.as_str(),
-                    error
-                ))
+                Error::new(
+                    exception::runtime_error(),
+                    format!(
+                        "cannot load module: `{}`: {}",
+                        path.as_str(),
+                        error
+                    ),
+                )
             })
     }
 }
