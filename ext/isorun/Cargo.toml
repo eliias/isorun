@@ -1,19 +1,19 @@
 [package]
 name = "isorun"
-version = "0.1.7"
+version = "0.1.8"
 edition = "2021"
 authors = ["Hannes Moser <box@hannesmoser.at>"]
 homepage = "https://github.com/eliias/isorun"
 repository = "https://github.com/eliias/isorun"
 
 [dependencies]
-deno_console = "0.82.0"
-deno_core = "0.164.0"
-deno_fetch = "0.106.0"
-deno_runtime = "0.90.0"
-deno_url = "0.82.0"
-deno_web = "0.113.0"
-deno_webidl = "0.82.0"
+deno_console = "0.83.0"
+deno_core = "0.165.0"
+deno_fetch = "0.107.0"
+deno_runtime = "0.91.0"
+deno_url = "0.83.0"
+deno_web = "0.114.0"
+deno_webidl = "0.83.0"
 lazy_static = "1.4.0"
 magnus = { git = "https://github.com/eliias/magnus", rev = "5220756ca0ab4f2bc32d38310c26f7dda2be9bd6" }
 tokio = { version = "1.21.1", features = ["full"] }
