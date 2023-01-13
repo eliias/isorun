@@ -15,12 +15,12 @@ deno_url = "0.82.0"
 deno_web = "0.113.0"
 deno_webidl = "0.82.0"
 lazy_static = "1.4.0"
-magnus = { git = "https://github.com/eliias/magnus", rev = "3289eeda7ea63831c0277b153666f1efab3866bb" }
+magnus = { git = "https://github.com/eliias/magnus", rev = "5220756ca0ab4f2bc32d38310c26f7dda2be9bd6" }
 tokio = { version = "1.21.1", features = ["full"] }
 v8 = "0.60.0"
 
 [dev-dependencies]
-magnus = { git = "https://github.com/eliias/magnus", rev = "3289eeda7ea63831c0277b153666f1efab3866bb", features = ["embed"] }
+magnus = { git = "https://github.com/eliias/magnus", rev = "5220756ca0ab4f2bc32d38310c26f7dda2be9bd6", features = ["embed"] }
 
 [lib]
 name = "isorun"
