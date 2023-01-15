@@ -1,0 +1,5 @@
+module Isorun
+  module ViteAppHelper
+    def isorun_vite_app: -> string
+  end
+end

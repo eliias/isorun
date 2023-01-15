@@ -2,6 +2,7 @@ module Isorun
   module Resolver
     SIMPLE_RESOLVER: Proc
     SSR_APP_RESOLVER: Proc
+    SSR_VITE_APP_RESOLVER: Proc
 
     def self.module_path: -> string
 

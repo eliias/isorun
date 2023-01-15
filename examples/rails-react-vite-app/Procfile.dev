@@ -1,0 +1,4 @@
+vite: bin/vite dev
+ssr: bin/vite build --ssr --watch
+web: bin/rails s -p 3000
+css: bin/rails tailwindcss:watch
