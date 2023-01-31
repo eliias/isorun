@@ -6,7 +6,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   native_gem:
@@ -33,7 +33,7 @@ jobs:
       - uses: oxidize-rb/cross-gem-action@main
         with:
           platform: ${{ matrix.platform }}
-          version: '0.9.58'
+          version: "0.9.58"
           env: |
             RUBY_CC_VERSION=3.2.0:3.1.0:3.0.0:2.7.0
 

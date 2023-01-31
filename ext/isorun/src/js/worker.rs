@@ -3,7 +3,7 @@ use deno_core::error::AnyError;
 use deno_core::serde_v8::from_v8;
 use deno_core::{op, serde_v8, Extension, FsModuleLoader, JsRealm, ModuleId};
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
-use deno_runtime::permissions::Permissions;
+use deno_runtime::permissions::PermissionsContainer;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
 use deno_runtime::BootstrapOptions;
 use deno_web::BlobStore;
@@ -207,7 +207,7 @@ impl Default for Worker {
             todo!("Web workers are not supported in the example");
         });
 
-        let extension_send = Extension::builder()
+        let extension_send = Extension::builder("isorun")
             .ops(vec![op_send_to_ruby::decl()])
             .build();
         let mut extensions = vec![extension_send];
@@ -263,7 +263,7 @@ impl Default for Worker {
 
         let main_module =
             deno_core::resolve_path(&js_path.to_string_lossy()).unwrap();
-        let permissions = Permissions::allow_all();
+        let permissions = PermissionsContainer::allow_all();
         let mut worker = MainWorker::bootstrap_from_options(
             main_module.clone(),
             permissions,
