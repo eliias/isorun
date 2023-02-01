@@ -621,7 +621,7 @@ dependencies = [
  "smallvec",
  "sourcemap",
  "url",
- "v8",
+ "v8 0.60.1",
 ]
 
 [[package]]
@@ -1718,7 +1718,7 @@ dependencies = [
  "lazy_static",
  "magnus",
  "tokio",
- "v8",
+ "v8 0.62.1",
 ]
 
 [[package]]
@@ -2949,7 +2949,7 @@ dependencies = [
  "serde",
  "serde_bytes",
  "smallvec",
- "v8",
+ "v8 0.60.1",
 ]
 
 [[package]]
@@ -3548,6 +3548,18 @@ name = "v8"
 version = "0.60.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07fd5b3ed559897ff02c0f62bc0a5f300bfe79bb4c77a50031b8df771701c628"
+dependencies = [
+ "bitflags",
+ "fslock",
+ "lazy_static",
+ "which",
+]
+
+[[package]]
+name = "v8"
+version = "0.62.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "908c9fc704035b5f7c742daaf1620e82792d11751d220bcac001a7dac64ef798"
 dependencies = [
  "bitflags",
  "fslock",
