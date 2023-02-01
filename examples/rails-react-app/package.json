@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.7.1",
-    "@headlessui/react": "^1.7.7",
+    "@headlessui/react": "^1.7.8",
     "@heroicons/react": "^2.0.12",
     "@hotwired/stimulus": "^3.1.0",
     "@hotwired/turbo-rails": "^7.2.4",
