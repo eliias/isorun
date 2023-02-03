@@ -20,8 +20,9 @@ module Isorun
     #   convention, the target node (e.g. `<div id="my_app">`)
     # @param [Hash] options All valid tag options can also passed as options
     #   to this method
+    # @param [Hash, nil] ctx Pass variables to render context
     # @return [String]
-    def isorun_vite_app(id, options = nil)
+    def isorun_vite_app(id, options = nil, ctx: {})
       ActiveSupport::Notifications.instrument "start.render.isorun", { ts: Time.current }
 
       # if id has a file extension, we extract the extension and reduce the ID
@@ -32,7 +33,7 @@ module Isorun
       module_path = Isorun.config.module_resolver.call(id)
 
       ssr_html = Isorun::Context.create(receiver: Isorun.config.receiver) do |context|
-        render_context = { environment: Rails.env.to_s }
+        render_context = { environment: Rails.env.to_s }.merge(ctx)
         render_function = context.import.from(module_path)
 
         if render_function.blank?

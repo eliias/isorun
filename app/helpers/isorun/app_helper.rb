@@ -19,14 +19,15 @@ module Isorun
     #   convention, the target node (e.g. `<div id="my_app">`)
     # @param [Hash] options All valid tag options can also passed as options
     #   to this method
+    # @param [Hash, nil] ctx Pass variables to render context
     # @return [String]
-    def isorun_app(id, options = nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def isorun_app(id, options = nil, ctx: {}) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       ActiveSupport::Notifications.instrument "start.render.isorun", { ts: Time.current }
 
       module_path = Isorun.config.module_resolver.call(id)
 
       ssr_html = Isorun::Context.create(receiver: Isorun.config.receiver) do |context|
-        render_context = { environment: Rails.env.to_s }
+        render_context = { environment: Rails.env.to_s }.merge(ctx)
         render_function = context.import.from(module_path)
 
         if render_function.blank?
