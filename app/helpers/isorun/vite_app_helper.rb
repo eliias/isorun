@@ -15,10 +15,13 @@ module Isorun
     #   </body>
     #   </html>
     #
-    # @param id [String] An ID representing both, the asset bundle, and by
+    # @see https://api.rubyonrails.org/v5.1/classes/ActionView/Helpers/TagHelper.html#method-i-tag
+    # @param [String] id An ID representing both, the asset bundle, and by
     #   convention, the target node (e.g. `<div id="my_app">`)
+    # @param [Hash] options All valid tag options can also passed as options
+    #   to this method
     # @return [String]
-    def isorun_vite_app(id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def isorun_vite_app(id, options = nil)
       ActiveSupport::Notifications.instrument "start.render.isorun", { ts: Time.current }
 
       # if id has a file extension, we extract the extension and reduce the ID
@@ -49,7 +52,10 @@ module Isorun
       end
 
       html = if ssr_html.present?
-               tag.div id: id do
+               options ||= {}
+               options[:id] = id
+
+               tag.div(**options) do
                  ssr_html.html_safe # rubocop:disable Rails/OutputSafety
                end
              else
