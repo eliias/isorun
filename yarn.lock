@@ -3585,16 +3585,16 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.2.4.tgz"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-linkedom@^0.14.21:
-  version "0.14.21"
-  resolved "https://registry.npmjs.org/linkedom/-/linkedom-0.14.21.tgz"
-  integrity sha512-V+c0AAFMTVJA2iAhrdd+u44lL0TjL6hBenVB061VQ6BHqTAHtXw1v5F1/CHGKtwg0OHm+hrGbepb9ZSFJ7lJkg==
+linkedom@^0.14.25:
+  version "0.14.25"
+  resolved "https://registry.yarnpkg.com/linkedom/-/linkedom-0.14.25.tgz#b2b2772d61b0e2457837b1fc30f26bd7eb0d7baa"
+  integrity sha512-Q5BvQVFzMveMxHvZ9L3E60duxSVPIWQRzY2HJKpCV4pRzY3jS/r/a1upLeo/Nup9mDRJ5MS0FX2hRR+wRo+Hiw==
   dependencies:
     css-select "^5.1.0"
     cssom "^0.5.0"
     html-escaper "^3.0.3"
     htmlparser2 "^8.0.1"
-    uhyphen "^0.1.0"
+    uhyphen "^0.2.0"
 
 load-tsconfig@^0.2.0:
   version "0.2.3"
@@ -4915,10 +4915,10 @@ typescript@^4.9.5:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
-uhyphen@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/uhyphen/-/uhyphen-0.1.0.tgz"
-  integrity sha512-o0QVGuFg24FK765Qdd5kk0zU/U4dEsCtN/GSiwNI9i8xsSVtjIAOdTaVhLwZ1nrbWxFVMxNDDl+9fednsOMsBw==
+uhyphen@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/uhyphen/-/uhyphen-0.2.0.tgz#8fdf0623314486e020a3c00ee5cc7a12fe722b81"
+  integrity sha512-qz3o9CHXmJJPGBdqzab7qAYuW8kQGKNEuoHFYrBwV6hWIMcpAmxDLXojcHfFr9US1Pe6zUswEIJIbLI610fuqA==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"
