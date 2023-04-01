@@ -16,7 +16,7 @@
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.54.0",
     "@vue/apollo-composable": "^4.0.0-beta.1",
-    "@vue/apollo-ssr": "^4.0.0-alpha.18",
+    "@vue/apollo-ssr": "^4.0.0-beta.4",
     "buffer": "^6.0.3",
     "eslint": "^8.28.0",
     "eslint-plugin-vue": "^9.8.0",
