@@ -1842,7 +1842,7 @@ dependencies = [
  "lazy_static",
  "magnus",
  "tokio",
- "v8 0.60.1",
+ "v8 0.63.0",
 ]
 
 [[package]]
