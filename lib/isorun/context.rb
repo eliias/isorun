@@ -26,7 +26,8 @@ module Isorun
       CACHE_KEY = "isorun_module_path_mtime"
       private_constant :CACHE_KEY
 
-      def load(module_path) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      def load(module_path)
+        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         return context.load(module_path) if Rails.env.production?
 
         key = module_path.parameterize

@@ -1,11 +1,8 @@
 use crate::js::worker::WORKER;
 use deno_core::error::AnyError;
 use magnus::r_hash::ForEach;
-use magnus::value::{Qfalse, Qtrue};
-use magnus::{
-    Integer, RArray, RFloat, RHash, RString, RStruct, Symbol, Value, QFALSE,
-    QNIL, QTRUE,
-};
+use magnus::value::{qfalse, qnil, qtrue, Qfalse, Qtrue, ReprValue};
+use magnus::{Integer, RArray, RFloat, RHash, RString, RStruct, Symbol, Value};
 use std::collections::HashMap;
 use v8::{Array, GetPropertyNamesArgs, Global, HandleScope, Local, Object};
 
@@ -15,31 +12,31 @@ pub fn convert_v8_to_ruby(
 ) -> Result<Value, AnyError> {
     let value = Local::new(scope, value);
     if value.is_null() {
-        return Ok(Value::from(QNIL));
+        return Ok(qnil().as_value());
     }
 
     if value.is_int32() {
-        return Ok(Value::from(Integer::from_i64(
-            value.int32_value(scope).unwrap() as i64,
-        )));
+        return Ok(Integer::from_i64(value.int32_value(scope).unwrap() as i64)
+            .as_value());
     }
 
     if value.is_number() {
-        return Ok(Value::from(
-            RFloat::from_f64(value.number_value(scope).unwrap()).unwrap(),
-        ));
+        return Ok(RFloat::from_f64(value.number_value(scope).unwrap())
+            .unwrap()
+            .as_value());
     }
 
     if value.is_true() {
-        return Ok(Value::from(QTRUE));
+        return Ok(qtrue().as_value());
     }
 
     if value.is_false() {
-        return Ok(Value::from(QFALSE));
+        return Ok(qfalse().as_value());
     }
 
     if value.is_string() {
-        return Ok(Value::from(value.to_rust_string_lossy(scope)));
+        let str = value.to_rust_string_lossy(scope);
+        return Ok(RString::new(str.as_str()).as_value());
     }
 
     if value.is_array() {
@@ -52,7 +49,7 @@ pub fn convert_v8_to_ruby(
             let val = convert_v8_to_ruby(&global_raw, scope).unwrap();
             r_arr.push(val).expect("cannot add item to array");
         }
-        return Ok(Value::from(r_arr));
+        return Ok(r_arr.as_value());
     }
 
     if value.is_object() {
@@ -71,10 +68,10 @@ pub fn convert_v8_to_ruby(
             let val = convert_v8_to_ruby(&global_raw_val, scope).unwrap();
             r_hash.aset(key, val).expect("cannot set item to hash");
         }
-        return Ok(Value::from(r_hash));
+        return Ok(r_hash.as_value());
     }
 
-    Ok(Value::from(QNIL))
+    Ok(qnil().as_value())
 }
 
 pub fn convert_ruby_to_v8<'s>(
