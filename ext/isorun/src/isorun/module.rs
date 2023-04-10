@@ -1,6 +1,6 @@
 use crate::isorun::function::Function;
 use crate::js;
-use magnus::{exception, Error};
+use magnus::{exception, Error, IntoValue};
 use std::cell::RefCell;
 
 #[magnus::wrap(class = "Isorun::Module")]
@@ -27,7 +27,7 @@ impl Module {
         match module_item {
             js::module_item::ModuleItem::Value(v) => Ok(v.to_ruby().unwrap()),
             js::module_item::ModuleItem::Function(f) => {
-                Ok(magnus::Value::from(Function(RefCell::from(f))))
+                Ok(Function(RefCell::from(f)).into_value())
             }
         }
     }

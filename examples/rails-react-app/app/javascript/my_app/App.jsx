@@ -1,7 +1,7 @@
 import * as React from "react";
 import {gql, useQuery} from '@apollo/client';
 import {useCallback, useState} from "react";
-import { ChevronLeftIcon } from '@heroicons/react/20/solid'
+import {ChevronLeftIcon} from '@heroicons/react/20/solid'
 
 const navigation = [
   {name: 'Home', href: '#'},
@@ -164,7 +164,7 @@ export const App = () => {
                   <div className="mx-auto max-w-3xl py-10 px-4 sm:px-6 lg:py-12 lg:px-8">
                     <h1 className="text-3xl font-bold tracking-tight text-blue-gray-900">User account</h1>
                     <h2>{data?.testField}</h2>
-                    <ChevronLeftIcon className="h-5 w-5 text-blue-gray-400" aria-hidden="true" />
+                    <ChevronLeftIcon className="h-5 w-5 text-blue-gray-400" aria-hidden="true"/>
                     <button onClick={increment}>{`Counter: ${counter}`}</button>
                     <form className="divide-y-blue-gray-200 mt-6 space-y-8 divide-y">
                       <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-6 sm:gap-x-6">
@@ -353,7 +353,8 @@ export const App = () => {
                         </div>
 
                         <p className="text-sm text-blue-gray-500 sm:col-span-6">
-                          This account was created on <time dateTime="2017-01-05T20:35:40">January 5, 2017, 8:35:40 PM</time>.
+                          This account was created on <time dateTime="2017-01-05T20:35:40">January 5, 2017, 8:35:40
+                          PM</time>.
                         </p>
                       </div>
 

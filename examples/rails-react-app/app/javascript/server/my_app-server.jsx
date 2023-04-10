@@ -13,7 +13,7 @@ function createClient(isSSR) {
     link: new HttpLink({
       uri: 'http://localhost:3000/graphql',
       fetch: apollo.fetch
-    })
+    }),
   });
 }
 

@@ -1,7 +1,9 @@
+use crate::ext;
 use crate::isorun::utils::{convert_ruby_to_v8, convert_v8_to_ruby};
+use deno_core::anyhow::Context;
 use deno_core::error::AnyError;
 use deno_core::serde_v8::from_v8;
-use deno_core::{op, serde_v8, Extension, FsModuleLoader, JsRealm, ModuleId};
+use deno_core::{serde_v8, FsModuleLoader, JsRealm, ModuleId};
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
 use deno_runtime::permissions::PermissionsContainer;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
@@ -50,8 +52,11 @@ impl Worker {
         let module_id = {
             let mut worker = self.worker.borrow_mut();
 
-            let module_specifier =
-                deno_core::resolve_url_or_path(path).unwrap();
+            let module_specifier = deno_core::resolve_url_or_path(
+                path,
+                &env::current_dir().context("Unable to get CWD")?,
+            )
+            .unwrap();
             let module_id = self
                 .runtime
                 .block_on(worker.preload_side_module(&module_specifier))?;
@@ -142,12 +147,12 @@ impl Worker {
         Some(value)
     }
 
-    fn send<'a>(
+    pub(crate) fn send<'a>(
         &self,
         scope: &mut HandleScope,
         value: serde_v8::Value<'a>,
     ) -> Result<serde_v8::Value<'a>, AnyError> {
-        if let None = self.ruby_receiver.borrow_mut().as_mut() {
+        if self.ruby_receiver.borrow_mut().as_mut().is_none() {
             return Err(AnyError::msg(
                 "Cannot send to ruby. The ruby receiver is missing, please \
                 initialize and set one before calling into Ruby?",
@@ -160,27 +165,25 @@ impl Worker {
             self.ruby_context.borrow_mut().as_mut(),
             self.ruby_receiver.borrow_mut().as_mut(),
         ) {
-            let mut scope = scope; // fixme: can't figure out how to forward the borrow
             let value = value.v8_value;
-            let value = Global::<v8::Value>::new(&mut scope, value);
-            let value = convert_v8_to_ruby(&value, &mut scope).unwrap();
+            let value = Global::<v8::Value>::new(scope, value);
+            let value = convert_v8_to_ruby(&value, scope).unwrap();
             let args: (Value,) = (value,);
             return rec
                 .call::<(Value,), Value>(args)
                 .map_err(|err| AnyError::msg(format!("{:?}", err)))
-                .and_then(|value| convert_ruby_to_v8(value, &mut scope))
-                .map(|value| from_v8(&mut scope, value).unwrap());
+                .and_then(|value| convert_ruby_to_v8(value, scope))
+                .map(|value| from_v8(scope, value).unwrap());
         }
 
         // we need to deref the receiver as mut, as it is behind an Option
         // TODO: make sure all operations on Ruby data happen when GVL is held
         if let Some(ctx) = self.ruby_context.borrow_mut().as_mut() {
-            let mut scope = scope; // fixme: can't figure out how to forward the borrow
             ctx.with_gvl(|| {
                 if let Some(rec) = self.ruby_receiver.borrow_mut().as_mut() {
                     let value = value.v8_value;
-                    let value = Global::<v8::Value>::new(&mut scope, value);
-                    let value = convert_v8_to_ruby(&value, &mut scope)?;
+                    let value = Global::<v8::Value>::new(scope, value);
+                    let value = convert_v8_to_ruby(&value, scope)?;
                     let args: (Value,) = (value,);
                     rec.call::<(Value,), Value>(args)
                         .map_err(|err| AnyError::msg(format!("{:?}", err)))
@@ -189,8 +192,8 @@ impl Worker {
                 }
             })
             .map_err(|err| AnyError::msg(format!("{:?}", err)))?
-            .and_then(|value| convert_ruby_to_v8(value, &mut scope))
-            .map(|value| from_v8(&mut scope, value).unwrap())
+            .and_then(|value| convert_ruby_to_v8(value, scope))
+            .map(|value| from_v8(scope, value).unwrap())
         } else {
             Err(AnyError::msg("this should never happen"))
         }
@@ -207,10 +210,8 @@ impl Default for Worker {
             todo!("Web workers are not supported in the example");
         });
 
-        let extension_send = Extension::builder("isorun")
-            .ops(vec![op_send_to_ruby::decl()])
-            .build();
-        let mut extensions = vec![extension_send];
+        let ext_isorun = ext::isorun::send_to_ruby::init_ops();
+        let mut extensions = vec![ext_isorun];
 
         let options = WorkerOptions {
             bootstrap: BootstrapOptions {
@@ -229,7 +230,6 @@ impl Default for Worker {
                 inspect: false,
             },
             extensions: std::mem::take(&mut extensions),
-            extensions_with_js: Default::default(),
             startup_snapshot: None,
             unsafely_ignore_certificate_errors: None,
             root_cert_store: None,
@@ -261,8 +261,11 @@ impl Default for Worker {
         let js_path = Path::new(isorun_native_gem_path.as_str())
             .join("ext/isorun/src/call.js");
 
-        let main_module =
-            deno_core::resolve_path(&js_path.to_string_lossy()).unwrap();
+        let main_module = deno_core::resolve_path(
+            &js_path.to_string_lossy(),
+            &env::current_dir().context("Unable to get CWD").unwrap(),
+        )
+        .unwrap();
         let permissions = PermissionsContainer::allow_all();
         let mut worker = MainWorker::bootstrap_from_options(
             main_module.clone(),
@@ -297,14 +300,4 @@ impl Default for Worker {
 thread_local! {
     pub(crate) static WORKER: Worker = Worker::default();
     pub(crate) static MODULE_MAP: HashSet<ModuleId> = HashSet::default();
-}
-
-#[allow(clippy::extra_unused_lifetimes)]
-#[op(v8)]
-fn op_send_to_ruby<'a>(
-    // do not remove the v8:: prefix, otherwise the macro complains
-    scope: &mut v8::HandleScope,
-    data: serde_v8::Value<'a>,
-) -> Result<serde_v8::Value<'a>, AnyError> {
-    WORKER.with(|worker| worker.send(scope, data))
 }

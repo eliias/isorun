@@ -35,7 +35,6 @@ impl Context {
         path: String,
     ) -> Result<isorun::module::Module, Error> {
         let realm = self.0.clone();
-
         WORKER
             .with(|worker| {
                 worker
