@@ -4,6 +4,7 @@ RSpec.describe Isorun::Context do
   let(:module_render) { Rails.root / "app" / "javascript" / "render.js" }
   let(:module_say) { Rails.root / "app" / "javascript" / "say.js" }
   let(:module_values) { Rails.root / "app" / "javascript" / "values.js" }
+  let(:module_vite) { Rails.root / "app" / "javascript" / "vite.js" }
 
   it "creates a new context" do
     expect { described_class.new }.not_to raise_error
@@ -80,6 +81,26 @@ RSpec.describe Isorun::Context do
       module_path = module_render
 
       Isorun::Context.create(receiver: Isorun.config.receiver) do |context|
+        render_context = { environment: Rails.env.to_s }
+        render_function = context.import.from(module_path)
+        render_function.call(render_context)
+      end
+    end
+  end
+
+  context "when rendering vite app" do
+    it "imports function" do
+      Isorun.configure do
+        receiver do |message|
+          # "message from JavaScript:\n\t#{message}"
+        rescue StandardError => e
+          Rails.logger.error("[ISORUN] Cannot process received message: #{e.message}\n\n#{e.backtrace&.join("\n")}")
+        end
+      end
+
+      module_path = module_vite
+
+      output = Isorun::Context.create(receiver: Isorun.config.receiver) do |context|
         render_context = { environment: Rails.env.to_s }
         render_function = context.import.from(module_path)
         render_function.call(render_context)
