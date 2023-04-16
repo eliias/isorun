@@ -2215,7 +2215,7 @@ dependencies = [
 
 [[package]]
 name = "isorun"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "deno_console",
  "deno_core",

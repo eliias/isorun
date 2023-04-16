@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "railties", ">= 6.0.0"
   spec.add_dependency "rake", "~> 13.0"
-  spec.add_dependency "rb_sys", "~> 0.9.46"
+  spec.add_dependency "rb_sys", "~> 0.9.81"
 
   spec.add_development_dependency "rails"
   spec.add_development_dependency "rake-compiler"
