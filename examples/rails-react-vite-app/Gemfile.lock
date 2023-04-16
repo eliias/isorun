@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    isorun (0.1.8)
+    isorun (0.1.12)
       railties (>= 6.0.0)
       rake (~> 13.0)
       rb_sys (~> 0.9.46)
@@ -258,7 +258,7 @@ DEPENDENCIES
   webdrivers
 
 RUBY VERSION
-   ruby 3.1.3p185
+   ruby 3.2.0p0
 
 BUNDLED WITH
    2.4.1
