@@ -724,10 +724,10 @@
   resolved "https://registry.npmjs.org/@heroicons/react/-/react-2.0.13.tgz"
   integrity sha512-iSN5XwmagrnirWlYEWNPdCDj9aRYVD/lnK3JlsC9/+fqGF80k8C7rl+1HCvBX0dBoagKqOFBs6fMhJJ1hOg1EQ==
 
-"@heroicons/vue@^2.0.14":
-  version "2.0.14"
-  resolved "https://registry.yarnpkg.com/@heroicons/vue/-/vue-2.0.14.tgz#5a764a223b993d8d783c482875f7d3da07d6169d"
-  integrity sha512-pA1MLZPX0pyZdaQ5OHD/ILE8V/JCXyWvY2BQig7ZnYO7ZFap9sp969Qasn+1VWxnzB5BLWWcYu80OJPCboWo+g==
+"@heroicons/vue@^2.0.18":
+  version "2.0.18"
+  resolved "https://registry.yarnpkg.com/@heroicons/vue/-/vue-2.0.18.tgz#cd55074dfb1915870b680e2757ca4dad6ab3326a"
+  integrity sha512-BcTC9nq2TkwNSfQuqo96J7ehx4etezypc2YeTq7KsXWxrcrerhkgjLrxGRBnStN0wrXo0Gv4BInybqz5uBG6Cw==
 
 "@hotwired/stimulus@^3.1.0":
   version "3.2.1"
