@@ -11,7 +11,7 @@
   "devDependencies": {
     "@apollo/client": "^3.7.9",
     "@headlessui/vue": "^1.7.8",
-    "@heroicons/vue": "^2.0.14",
+    "@heroicons/vue": "^2.0.18",
     "@types/webpack-env": "^1.18.0",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.54.0",
