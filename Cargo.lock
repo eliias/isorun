@@ -711,6 +711,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "deno_core"
+version = "0.185.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d2b7e62e1bd59414dfdd6c37cbd55dc8747c9e57caa9f0cf55a8d5c428cd380"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "deno_ops 0.63.0",
+ "futures",
+ "indexmap",
+ "libc",
+ "log",
+ "once_cell",
+ "parking_lot",
+ "pin-project",
+ "serde",
+ "serde_json",
+ "serde_v8 0.96.0",
+ "smallvec",
+ "sourcemap",
+ "tikv-jemalloc-sys",
+ "url",
+ "v8 0.71.0",
+]
+
+[[package]]
 name = "deno_crypto"
 version = "0.112.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -977,6 +1003,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "deno_ops"
+version = "0.63.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ca04e5ab41b40d3b1ccde68054b0966372b729da3d2a60b7905d40fd97b15a8e"
+dependencies = [
+ "lazy-regex",
+ "once_cell",
+ "pmutil",
+ "proc-macro-crate",
+ "proc-macro2 1.0.56",
+ "quote 1.0.26",
+ "regex",
+ "syn 1.0.109",
+]
+
+[[package]]
 name = "deno_runtime"
 version = "0.106.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1002,7 +1044,7 @@ dependencies = [
  "deno_tls 0.85.0",
  "deno_url",
  "deno_web",
- "deno_webidl",
+ "deno_webidl 0.98.0",
  "deno_websocket",
  "deno_webstorage",
  "dlopen",
@@ -1097,6 +1139,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "777cada7d415180a9a9ef1b106ae30a41baaf942d292ee971c1ea89798fa58ae"
 dependencies = [
  "deno_core 0.180.0",
+]
+
+[[package]]
+name = "deno_webidl"
+version = "0.103.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "01a89641aa3330d74d1970fb6f73148cfbbd273c393b3df758ec5c05f6e1bf46"
+dependencies = [
+ "deno_core 0.185.0",
 ]
 
 [[package]]
@@ -1939,7 +1990,7 @@ dependencies = [
  "deno_runtime",
  "deno_url",
  "deno_web",
- "deno_webidl",
+ "deno_webidl 0.103.0",
  "lazy_static",
  "magnus",
  "tokio",
@@ -3340,6 +3391,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_v8"
+version = "0.96.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a7f7fd217d3732ddc3c74b043b4692a670f939520bb5717f0559926347a2ba0"
+dependencies = [
+ "bytes",
+ "derive_more",
+ "num-bigint",
+ "serde",
+ "serde_bytes",
+ "smallvec",
+ "thiserror",
+ "v8 0.71.0",
+]
+
+[[package]]
 name = "sha-1"
 version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4003,6 +4070,16 @@ dependencies = [
  "proc-macro2 1.0.56",
  "quote 1.0.26",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "tikv-jemalloc-sys"
+version = "0.5.3+5.3.0-patched"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a678df20055b43e57ef8cddde41cdfda9a3c1a060b67f4c5836dfb1d78543ba8"
+dependencies = [
+ "cc",
+ "libc",
 ]
 
 [[package]]
