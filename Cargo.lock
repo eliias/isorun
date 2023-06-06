@@ -1985,7 +1985,7 @@ name = "isorun"
 version = "0.1.12"
 dependencies = [
  "deno_console",
- "deno_core 0.180.0",
+ "deno_core 0.185.0",
  "deno_fetch 0.125.0",
  "deno_runtime",
  "deno_url",
