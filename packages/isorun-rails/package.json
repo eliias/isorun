@@ -13,7 +13,7 @@
   "devDependencies": {
     "eslint-config-custom": "*",
     "tsconfig": "*",
-    "tsup": "^6.5.0",
+    "tsup": "^7.2.0",
     "turbo": "^1.10.7",
     "typescript": "^5.1.3"
   },
