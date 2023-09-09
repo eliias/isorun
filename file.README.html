@@ -308,6 +308,13 @@ release a new version, update the version number in <code>version.rb</code>, and
 git commits and the created tag, and push the <code>.gem</code> file to
 <a href="https://rubygems.org">rubygems.org</a>.</p>
 
+<h3 id="examples">Examples</h3>
+
+<p>When running examples, make sure you are on the exact same Ruby version that you
+used to build <code>isorun</code> with <code>rake compile</code>. If you are on a different Ruby
+version you might get weird segfaults, encoding issues, etc. that are impossible
+to debug.</p>
+
 <h2 id="contributing">Contributing</h2>
 
 <p>Bug reports and pull requests are welcome on GitHub at
@@ -320,7 +327,7 @@ git commits and the created tag, and push the <code>.gem</code> file to
 </div></div>
 
       <div id="footer">
-  Generated on Sat Aug 19 05:51:25 2023 by
+  Generated on Sat Sep  9 18:25:47 2023 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.34 (ruby-3.1.4).
 </div>
