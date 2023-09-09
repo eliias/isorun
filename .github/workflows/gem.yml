@@ -8,6 +8,9 @@ on:
     tags:
       - "v*"
 
+env:
+  PROTOC_VERSION: 3.20.3
+
 jobs:
   ci-data:
     runs-on: ubuntu-latest
@@ -29,17 +32,13 @@ jobs:
       matrix:
         platform: ${{ fromJSON(needs.ci-data.outputs.result).supported-ruby-platforms }}
     steps:
-      - name: Install protobuf
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt install -y protobuf-compiler
-
-      - name: Install protobuf
-        if: matrix.os == 'macos-latest'
-        run: brew install protobuf
-
       - uses: actions/checkout@v2
 
-      - uses: oxidize-rb/actions/cross-gem@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+
+      - uses: oxidize-rb/actions/cross-gem@main
         with:
           platform: ${{ matrix.platform }}
           ruby-versions: ${{ join(fromJSON(needs.ci-data.outputs.result).stable-ruby-versions, ',') }}
