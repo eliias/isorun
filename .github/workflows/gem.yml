@@ -29,17 +29,20 @@ jobs:
       matrix:
         platform: ${{ fromJSON(needs.ci-data.outputs.result).supported-ruby-platforms }}
     steps:
-      - name: Install protobuf
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt install -y protobuf-compiler
-
-      - name: Install protobuf
-        if: matrix.os == 'macos-latest'
-        run: brew install protobuf
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/checkout@v2
 
-      - uses: oxidize-rb/actions/cross-gem@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+
+      - uses: oxidize-rb/actions/cross-gem@main
+        env:
+          PROTOC: /opt/hostedtoolcache/protoc/v23.4/x64/protoc
         with:
           platform: ${{ matrix.platform }}
           ruby-versions: ${{ join(fromJSON(needs.ci-data.outputs.result).stable-ruby-versions, ',') }}
