@@ -30,12 +30,14 @@ jobs:
           cargo-cache: true
           cargo-vendor: true
 
-      - uses: oxidize-rb/cross-gem-action@main
+      - name: Install Protobuf
+        run: apt-get install protobuf-compiler
+
+      - uses: oxidize-rb/actions/cross-gem@main
         with:
           platform: ${{ matrix.platform }}
-          version: "0.9.58"
           env: |
-            RUBY_CC_VERSION=3.2.0:3.1.0:3.0.0:2.7.0
+            RUBY_CC_VERSION=3.2.0:3.1.0:3.0.0
 
       - uses: actions/download-artifact@v3
         with:

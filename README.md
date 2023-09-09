@@ -246,6 +246,13 @@ release a new version, update the version number in `version.rb`, and then run
 git commits and the created tag, and push the `.gem` file to
 [rubygems.org](https://rubygems.org).
 
+### Examples
+
+When running examples, make sure you are on the exact same Ruby version that you
+used to build `isorun` with `rake compile`. If you are on a different Ruby
+version you might get weird segfaults, encoding issues, etc. that are impossible
+to debug.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at

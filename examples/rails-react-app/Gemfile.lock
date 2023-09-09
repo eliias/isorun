@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    isorun (0.1.12)
+    isorun (0.1.13)
       railties (>= 6.0.0)
       rake (~> 13.0)
       rb_sys (~> 0.9.46)

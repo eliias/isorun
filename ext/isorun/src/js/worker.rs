@@ -3,7 +3,11 @@ use crate::isorun::utils::{convert_ruby_to_v8, convert_v8_to_ruby};
 use deno_core::anyhow::Context;
 use deno_core::error::AnyError;
 use deno_core::serde_v8::from_v8;
-use deno_core::{serde_v8, FsModuleLoader, JsRealm, ModuleId};
+use deno_core::{
+    serde_v8, CreateRealmOptions, FsModuleLoader, JsRealm, ModuleId,
+    ModuleLoader,
+};
+use deno_fs::RealFs;
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
 use deno_runtime::permissions::PermissionsContainer;
 use deno_runtime::worker::{MainWorker, WorkerOptions};
@@ -40,7 +44,12 @@ pub(crate) struct Worker {
 impl Worker {
     pub(crate) fn create_realm(&self) -> Result<JsRealm, AnyError> {
         let mut worker = self.worker.borrow_mut();
-        worker.js_runtime.create_realm()
+        let loader: Option<Rc<dyn ModuleLoader>> =
+            Some(Rc::new(FsModuleLoader));
+        let options = CreateRealmOptions {
+            module_loader: loader,
+        };
+        worker.js_runtime.create_realm(options)
     }
 
     pub(crate) fn load_module(&self, path: &str) -> Result<ModuleId, AnyError> {
@@ -206,9 +215,6 @@ impl Default for Worker {
         let create_web_worker_cb = Arc::new(|_| {
             todo!("Web workers are not supported in the example");
         });
-        let web_worker_event_cb = Arc::new(|_| {
-            todo!("Web workers are not supported in the example");
-        });
 
         let ext_isorun = ext::isorun::send_to_ruby::init_ops();
         let mut extensions = vec![ext_isorun];
@@ -217,7 +223,7 @@ impl Default for Worker {
             bootstrap: BootstrapOptions {
                 args: vec![],
                 cpu_count: 1,
-                debug_flag: false,
+                log_level: Default::default(),
                 enable_testing_features: false,
                 locale: v8::icu::get_language_tag(),
                 location: None,
@@ -228,16 +234,16 @@ impl Default for Worker {
                 unstable: false,
                 user_agent: USER_AGENT.to_string(),
                 inspect: false,
+                has_node_modules_dir: false,
+                maybe_binary_npm_command_name: None,
             },
             extensions: std::mem::take(&mut extensions),
             startup_snapshot: None,
+            create_params: None,
             unsafely_ignore_certificate_errors: None,
-            root_cert_store: None,
             seed: None,
             source_map_getter: None,
             format_js_error_fn: None,
-            web_worker_preload_module_cb: web_worker_event_cb.clone(),
-            web_worker_pre_execute_module_cb: web_worker_event_cb,
             create_web_worker_cb,
             maybe_inspector_server: None,
             should_break_on_first_statement: false,
@@ -246,12 +252,14 @@ impl Default for Worker {
             get_error_class_fn: Some(&get_error_class_name),
             cache_storage_dir: None,
             origin_storage_dir: None,
-            blob_store: BlobStore::default(),
+            blob_store: Arc::from(BlobStore::default()),
             broadcast_channel: InMemoryBroadcastChannel::default(),
             shared_array_buffer_store: None,
             compiled_wasm_module_store: None,
             stdio: Default::default(),
             should_wait_for_inspector_session: false,
+            root_cert_store_provider: None,
+            fs: Arc::new(RealFs),
         };
 
         // todo: we don't use the main module at all, but it could be used as an

@@ -7,20 +7,22 @@ homepage = "https://github.com/eliias/isorun"
 repository = "https://github.com/eliias/isorun"
 
 [dependencies]
-deno_console = "0.98.0"
-deno_core = "0.180.0"
-deno_fetch = "0.125.0"
-deno_runtime = "0.106.0"
-deno_url = "0.98.0"
-deno_web = "0.129.0"
-deno_webidl = "0.103.0"
+deno_console = "0.118.0"
+deno_core = "0.204.0"
+deno_fetch = "0.142.0"
+deno_fs = "0.28.0"
+deno_runtime = "0.126.0"
+deno_url = "0.118.0"
+deno_web = "0.149.0"
+deno_webidl = "0.118.0"
 lazy_static = "1.4.0"
 magnus = { git = "https://github.com/eliias/magnus", rev = "fdfc70bdb52ea614f6823e55a7fda3122e83d1d4" }
-tokio = { version = "1.21.1", features = ["full"] }
-v8 = "0.68.0"
+tokio = { version = "1.32.0", features = ["full"] }
+v8 = "0.74.3"
 
 [dev-dependencies]
 magnus = { git = "https://github.com/eliias/magnus", rev = "fdfc70bdb52ea614f6823e55a7fda3122e83d1d4", features = ["embed"] }
+protoc = "2.28.0"
 
 [lib]
 name = "isorun"
