@@ -20,6 +20,14 @@ jobs:
           - "x86_64-linux"
     environment: "isorun-deploy"
     steps:
+      - name: Install protobuf
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt install -y protobuf-compiler
+
+      - name: Install protobuf
+        if: matrix.os == 'macos-latest'
+        run: brew install protobuf
+
       - uses: actions/checkout@v2
 
       - uses: oxidize-rb/actions/setup-ruby-and-rust@main
@@ -30,12 +38,11 @@ jobs:
           cargo-cache: true
           cargo-vendor: true
 
-      - uses: oxidize-rb/cross-gem-action@main
+      - uses: oxidize-rb/actions/cross-gem@main
         with:
           platform: ${{ matrix.platform }}
-          version: "0.9.58"
           env: |
-            RUBY_CC_VERSION=3.2.0:3.1.0:3.0.0:2.7.0
+            RUBY_CC_VERSION=3.2.0:3.1.0:3.0.0
 
       - uses: actions/download-artifact@v3
         with:

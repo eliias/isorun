@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   DESC
   spec.homepage = "https://github.com/eliias/isorun"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 3.0.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 

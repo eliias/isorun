@@ -1,17 +1,9 @@
 use crate::js::worker::WORKER;
 use deno_core::error::AnyError;
+use deno_core::op;
 use deno_core::serde_v8;
-use deno_core::{op, ExtensionBuilder};
 
-fn force_op_registration(ext: &mut ExtensionBuilder) {
-    ext.force_op_registration();
-}
-
-deno_core::extension!(
-    send_to_ruby,
-    ops = [op_send_to_ruby],
-    customizer = force_op_registration
-);
+deno_core::extension!(send_to_ruby, ops = [op_send_to_ruby]);
 
 #[allow(clippy::extra_unused_lifetimes)]
 #[op(v8)]
