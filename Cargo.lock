@@ -874,7 +874,27 @@ checksum = "21bf05b1bc2c42e407a83e8724d4569006acaf97f2c43e04ae013541add84f05"
 dependencies = [
  "async-trait",
  "deno_core 0.204.0",
- "deno_io",
+ "deno_io 0.28.0",
+ "filetime",
+ "fs3",
+ "libc",
+ "log",
+ "nix",
+ "rand",
+ "serde",
+ "tokio",
+ "winapi",
+]
+
+[[package]]
+name = "deno_fs"
+version = "0.30.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "51fa26124bf30b134633eff27446a33edf6f9739576b95e006eaa7e6cd03e15d"
+dependencies = [
+ "async-trait",
+ "deno_core 0.218.0",
+ "deno_io 0.30.0",
  "filetime",
  "fs3",
  "libc",
@@ -930,6 +950,21 @@ checksum = "f4c09188978bdaea1ac7c413a75993df239f4e605641b2ac2a125f0e7216cdc8"
 dependencies = [
  "async-trait",
  "deno_core 0.204.0",
+ "filetime",
+ "fs3",
+ "once_cell",
+ "tokio",
+ "winapi",
+]
+
+[[package]]
+name = "deno_io"
+version = "0.30.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9a3d355a1487498025662a959c705573964c0f1c55b4d1a8fc6546caea657d9"
+dependencies = [
+ "async-trait",
+ "deno_core 0.218.0",
  "filetime",
  "fs3",
  "once_cell",
@@ -1027,7 +1062,7 @@ dependencies = [
  "data-encoding",
  "deno_core 0.204.0",
  "deno_fetch 0.142.0",
- "deno_fs",
+ "deno_fs 0.28.0",
  "deno_media_type",
  "deno_npm",
  "deno_semver",
@@ -1148,9 +1183,9 @@ dependencies = [
  "deno_crypto",
  "deno_fetch 0.142.0",
  "deno_ffi",
- "deno_fs",
+ "deno_fs 0.28.0",
  "deno_http",
- "deno_io",
+ "deno_io 0.28.0",
  "deno_kv",
  "deno_napi",
  "deno_net",
@@ -2320,7 +2355,7 @@ dependencies = [
  "deno_console",
  "deno_core 0.204.0",
  "deno_fetch 0.144.0",
- "deno_fs",
+ "deno_fs 0.30.0",
  "deno_runtime",
  "deno_url",
  "deno_web",
