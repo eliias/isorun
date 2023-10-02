@@ -2329,7 +2329,7 @@ dependencies = [
  "magnus",
  "protoc",
  "tokio",
- "v8 0.74.3",
+ "v8 0.78.0",
 ]
 
 [[package]]
