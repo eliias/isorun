@@ -1156,7 +1156,7 @@ dependencies = [
  "deno_net",
  "deno_node",
  "deno_tls 0.105.0",
- "deno_url",
+ "deno_url 0.118.0",
  "deno_web",
  "deno_webidl",
  "deno_websocket",
@@ -1258,6 +1258,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9915e0eecac8ed1177b99eca8a220abfdcd8f4e7c5b0d99443b6b81eb90472b"
 dependencies = [
  "deno_core 0.204.0",
+ "serde",
+ "urlpattern",
+]
+
+[[package]]
+name = "deno_url"
+version = "0.120.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47dcced032b60c40920e2c4586565838a52f53e423610196d0e42404d1cd4c10"
+dependencies = [
+ "deno_core 0.218.0",
  "serde",
  "urlpattern",
 ]
@@ -2322,7 +2333,7 @@ dependencies = [
  "deno_fetch 0.144.0",
  "deno_fs",
  "deno_runtime",
- "deno_url",
+ "deno_url 0.120.0",
  "deno_web",
  "deno_webidl",
  "lazy_static",
