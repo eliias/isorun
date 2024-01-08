@@ -4,7 +4,7 @@ PATH
     isorun (0.1.13)
       railties (>= 6.0.0)
       rake (~> 13.0)
-      rb_sys (~> 0.9.46)
+      rb_sys (~> 0.9.81)
 
 GEM
   remote: https://rubygems.org/
@@ -152,13 +152,13 @@ GEM
       timeout
     net-smtp (0.3.3)
       net-protocol
-    nio4r (2.5.9)
+    nio4r (2.7.0)
     nokogiri (1.14.3-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.14.3-x86_64-linux)
       racc (~> 1.4)
     public_suffix (5.0.1)
-    puma (5.6.7)
+    puma (5.6.8)
       nio4r (~> 2.0)
     racc (1.6.2)
     rack (2.2.6.4)
@@ -193,7 +193,7 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
-    rb_sys (0.9.72)
+    rb_sys (0.9.86)
     redis (4.8.1)
     regexp_parser (2.7.0)
     reline (0.3.3)
