@@ -116,10 +116,10 @@ pub fn convert_ruby_to_v8<'s>(
             arr = Array::new(scope, v.len() as i32);
         }
 
-        for (i, val) in v.each().enumerate() {
+        for (i, val) in v.into_iter().enumerate() {
             let v8_value;
             {
-                v8_value = convert_ruby_to_v8(val.unwrap(), scope).unwrap();
+                v8_value = convert_ruby_to_v8(val, scope).unwrap();
             }
             arr.set_index(scope, i as u32, v8_value);
         }

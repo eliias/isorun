@@ -2614,8 +2614,8 @@ dependencies = [
 
 [[package]]
 name = "magnus"
-version = "0.5.0"
-source = "git+https://github.com/eliias/magnus?rev=fdfc70bdb52ea614f6823e55a7fda3122e83d1d4#fdfc70bdb52ea614f6823e55a7fda3122e83d1d4"
+version = "0.6.0"
+source = "git+https://github.com/eliias/magnus?rev=4aef03adf7396a52155ad2ce56ed0f43cdfee040#4aef03adf7396a52155ad2ce56ed0f43cdfee040"
 dependencies = [
  "magnus-macros",
  "rb-sys",
@@ -2625,8 +2625,8 @@ dependencies = [
 
 [[package]]
 name = "magnus-macros"
-version = "0.4.0"
-source = "git+https://github.com/eliias/magnus?rev=fdfc70bdb52ea614f6823e55a7fda3122e83d1d4#fdfc70bdb52ea614f6823e55a7fda3122e83d1d4"
+version = "0.6.0"
+source = "git+https://github.com/eliias/magnus?rev=4aef03adf7396a52155ad2ce56ed0f43cdfee040#4aef03adf7396a52155ad2ce56ed0f43cdfee040"
 dependencies = [
  "proc-macro2 1.0.76",
  "quote 1.0.35",
