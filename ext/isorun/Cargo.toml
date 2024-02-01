@@ -18,7 +18,7 @@ deno_webidl = "0.121.0"
 lazy_static = "1.4.0"
 magnus = { git = "https://github.com/eliias/magnus", rev = "4aef03adf7396a52155ad2ce56ed0f43cdfee040" }
 tokio = { version = "1.32.0", features = ["full"] }
-v8 = "0.74.3"
+v8 = "0.79.2"
 
 [dev-dependencies]
 magnus = { git = "https://github.com/eliias/magnus", rev = "4aef03adf7396a52155ad2ce56ed0f43cdfee040", features = ["embed"] }
