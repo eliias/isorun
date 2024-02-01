@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
-    "turbo": "^1.10.14"
+    "turbo": "^1.12.2"
   },
   "workspaces": [
     "examples/*",
