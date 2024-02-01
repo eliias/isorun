@@ -1357,11 +1357,11 @@ dependencies = [
 
 [[package]]
 name = "deno_url"
-version = "0.121.0"
+version = "0.136.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d1511f888bd2a7c458c31536f5a13403202b5443ed01eeab8b6eb5b5eaff29e2"
+checksum = "7978221ce33221ac7a18b649a5a18fe7983fbe2fddf5a6959fc672089c10f9a9"
 dependencies = [
- "deno_core 0.222.0",
+ "deno_core 0.256.0",
  "serde",
  "urlpattern",
 ]
@@ -2459,7 +2459,7 @@ dependencies = [
  "deno_fetch 0.145.0",
  "deno_fs",
  "deno_runtime",
- "deno_url 0.121.0",
+ "deno_url 0.136.0",
  "deno_web",
  "deno_webidl 0.136.0",
  "lazy_static",
