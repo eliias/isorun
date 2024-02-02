@@ -13,7 +13,7 @@ deno_fetch = "0.145.0"
 deno_fs = "0.28.0"
 deno_runtime = "0.126.0"
 deno_url = "0.136.0"
-deno_web = "0.149.0"
+deno_web = "0.167.0"
 deno_webidl = "0.136.0"
 lazy_static = "1.4.0"
 magnus = { git = "https://github.com/eliias/magnus", rev = "4aef03adf7396a52155ad2ce56ed0f43cdfee040" }
