@@ -1371,10 +1371,10 @@
     ts-essentials "^9.4.0"
     vue-demi "^0.14.6"
 
-"@vue/apollo-ssr@^4.0.0-beta.5":
-  version "4.0.0-beta.9"
-  resolved "https://registry.npmjs.org/@vue/apollo-ssr/-/apollo-ssr-4.0.0-beta.9.tgz"
-  integrity sha512-hP1urtTDR/e6/8PFaFrtkDQtL0OCBX7SthTnYdRbNO5sgX/YFxi4SW2dma3uti1xdr0hl4laBhJB6JlnYRd1fw==
+"@vue/apollo-ssr@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@vue/apollo-ssr/-/apollo-ssr-4.0.0.tgz#a2bf0d9c84f091a011ad6c13c39afa388d605233"
+  integrity sha512-SPr8TM1V62JDhqcnYh/7qCAYU4EPmCQO+hDm+LB3L38tAN0fefQqpgInFKKw00hcHsXUDh9uQ1BqzG4XDatzUQ==
   dependencies:
     serialize-javascript "^6.0.1"
 
