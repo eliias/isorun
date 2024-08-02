@@ -184,7 +184,8 @@ GEM
     regexp_parser (2.6.1)
     reline (0.3.1)
       io-console (~> 0.5)
-    rexml (3.2.5)
+    rexml (3.3.3)
+      strscan
     rubyzip (2.3.2)
     selenium-webdriver (4.7.0)
       rexml (~> 3.2, >= 3.2.5)
@@ -201,6 +202,7 @@ GEM
     sqlite3 (1.5.4-x86_64-linux)
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
+    strscan (3.1.0)
     tailwindcss-rails (2.0.21-arm64-darwin)
       railties (>= 6.0.0)
     tailwindcss-rails (2.0.21-x86_64-linux)
