@@ -7,7 +7,7 @@ homepage = "https://github.com/eliias/isorun"
 repository = "https://github.com/eliias/isorun"
 
 [dependencies]
-deno_console = "0.118.0"
+deno_console = "0.142.0"
 deno_core = "0.204.0"
 deno_fetch = "0.145.0"
 deno_fs = "0.28.0"
