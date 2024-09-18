@@ -6,7 +6,7 @@
 <title>
   Class: Isorun::Context
   
-    &mdash; Documentation by YARD 0.9.36
+    &mdash; Documentation by YARD 0.9.37
   
 </title>
 
@@ -221,11 +221,11 @@ the block.</p>
 <div class="tags">
   
   <div class="examples">
-    <p class="tag_title">Examples:</p>
+    <h4 class="tag_title">Examples:</h4>
     
       
-        <p class="example_title"><div class='inline'><p>Creates a new context, imports the default as function</p>
-</div></p>
+        <h5 class="example_title"><div class='inline'><p>Creates a new context, imports the default as function</p>
+</div></h5>
       
       <pre class="example code"><code><span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Isorun::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_context'>context</span><span class='op'>|</span>
   <span class='id identifier rubyid_func'>func</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_import'>import</span><span class='period'>.</span><span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='id identifier rubyid_module_path'>module_path</span><span class='rparen'>)</span>
@@ -351,27 +351,27 @@ the default export is taken.</p>
 <div class="tags">
   
   <div class="examples">
-    <p class="tag_title">Examples:</p>
+    <h4 class="tag_title">Examples:</h4>
     
       
-        <p class="example_title"><div class='inline'><p>Import default export</p>
-</div></p>
+        <h5 class="example_title"><div class='inline'><p>Import default export</p>
+</div></h5>
       
       <pre class="example code"><code><span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Isorun::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="#create-class_method" title="Isorun::Context.create (method)">create</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_context'>context</span><span class='op'>|</span>
   <span class='id identifier rubyid_item'>item</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_import'>import</span><span class='period'>.</span><span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='id identifier rubyid_module_path'>module_path</span><span class='rparen'>)</span>
 <span class='kw'>end</span></code></pre>
     
       
-        <p class="example_title"><div class='inline'><p>Import default export explicitly</p>
-</div></p>
+        <h5 class="example_title"><div class='inline'><p>Import default export explicitly</p>
+</div></h5>
       
       <pre class="example code"><code><span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Isorun::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="#create-class_method" title="Isorun::Context.create (method)">create</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_context'>context</span><span class='op'>|</span>
   <span class='id identifier rubyid_item'>item</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_import'>import</span><span class='lparen'>(</span><span class='symbol'>:default</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='id identifier rubyid_module_path'>module_path</span><span class='rparen'>)</span>
 <span class='kw'>end</span></code></pre>
     
       
-        <p class="example_title"><div class='inline'><p>Import various exports</p>
-</div></p>
+        <h5 class="example_title"><div class='inline'><p>Import various exports</p>
+</div></h5>
       
       <pre class="example code"><code><span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Isorun.html" title="Isorun (module)">Isorun</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Isorun::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create'><span class='object_link'><a href="#create-class_method" title="Isorun::Context.create (method)">create</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_context'>context</span><span class='op'>|</span>
   <span class='id identifier rubyid_hello'>hello</span><span class='comma'>,</span> <span class='id identifier rubyid_world'>world</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_import'>import</span><span class='lparen'>(</span><span class='symbol'>:hello</span><span class='comma'>,</span> <span class='symbol'>:world</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='id identifier rubyid_module_path'>module_path</span><span class='rparen'>)</span>
@@ -478,9 +478,9 @@ the default export is taken.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Sep  2 08:06:53 2024 by
+  Generated on Wed Sep 18 09:04:56 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.36 (ruby-3.1.6).
+  0.9.37 (ruby-3.1.6).
 </div>
 
     </div>
