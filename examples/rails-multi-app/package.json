@@ -19,7 +19,7 @@
     "@vue/apollo-ssr": "^4.0.0",
     "buffer": "^6.0.3",
     "eslint": "^8.57.0",
-    "eslint-plugin-vue": "^9.26.0",
+    "eslint-plugin-vue": "^9.28.0",
     "graphql": "^16.9.0",
     "graphql-tag": "^2.12.6",
     "ts-loader": "^9.5.1",
