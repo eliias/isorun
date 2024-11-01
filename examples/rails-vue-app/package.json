@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@apollo/client": "^3.7.9",
-    "@headlessui/vue": "^1.7.22",
+    "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.1.5",
     "@types/webpack-env": "^1.18.4",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
