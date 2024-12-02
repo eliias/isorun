@@ -9,7 +9,7 @@
     "lint:fix": "eslint app/javascript/** --fix"
   },
   "devDependencies": {
-    "@apollo/client": "^3.7.9",
+    "@apollo/client": "^3.11.10",
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.2.0",
     "@types/webpack-env": "^1.18.5",
