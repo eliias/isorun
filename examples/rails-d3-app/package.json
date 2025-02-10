@@ -6,7 +6,7 @@
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --format=esm"
   },
   "dependencies": {
-    "esbuild": "^0.23.0"
+    "esbuild": "^0.25.0"
   },
   "devDependencies": {
     "color-convert": "^2.0.1",
