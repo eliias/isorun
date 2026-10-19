@@ -6,13 +6,13 @@
 <title>
   Class: Isorun::Context
   
-    &mdash; Documentation by YARD 0.9.37
+    &mdash; Documentation by YARD 0.9.45
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+  <link rel="stylesheet" href="../css/common.css" type="text/css">
 
 <script type="text/javascript">
   pathId = "Isorun::Context";
@@ -27,6 +27,8 @@
 
   </head>
   <body>
+    <div id="main_progress" aria-hidden="true"></div>
+
     <div class="nav_wrap">
       <iframe id="nav" src="../class_list.html?1"></iframe>
       <div id="resizer"></div>
@@ -94,11 +96,24 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/isorun/context.rb</dd>
+    <dd>lib/isorun/context.rb<span class="defines">,<br>
+  sig/isorun/context.rbs,<br> sig/isorun/context/from.rbs,<br> sig/isorun/context/import.rbs</span>
+
+</dd>
   </dl>
   
 </div>
 
+<h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Context/From.html" title="Isorun::Context::From (class)">From</a></span>
+    
+  
+</p>
 
 
 
@@ -117,7 +132,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#create-class_method" title="create (class method)">.<strong>create</strong>(options = default_options) {|context| ... } &#x21d2; Object </a>
+      <a href="#create-class_method" title="create (class method)">.<strong>create</strong>(options = default_options) {|context| ... } &#x21d2; Context </a>
     
 
     
@@ -138,6 +153,7 @@
 
       
     </ul>
+    
   
     <h2>
       Instance Method Summary
@@ -149,7 +165,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#import-instance_method" title="#import (instance method)">#<strong>import</strong>(*export_names)  &#x21d2; Object </a>
+      <a href="#import-instance_method" title="#import (instance method)">#<strong>import</strong>(*export_names)  &#x21d2; Import </a>
     
 
     
@@ -193,6 +209,7 @@
 
       
     </ul>
+    
   
 
 
@@ -204,7 +221,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="create-class_method">
   
-    .<strong>create</strong>(options = default_options) {|context| ... } &#x21d2; <tt>Object</tt> 
+    .<strong>create</strong>(options = default_options) {|context| ... } &#x21d2; <tt><span class='object_link'><a href="" title="Isorun::Context (class)">Context</a></span></tt> 
   
 
   
@@ -283,6 +300,19 @@ the block.</p>
     </li>
   
 </ul>
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Isorun::Context (class)">Context</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
 
 </div><table class="source_code">
   <tr>
@@ -334,7 +364,7 @@ the block.</p>
       <div class="method_details first">
   <h3 class="signature first" id="import-instance_method">
   
-    #<strong>import</strong>(*export_names)  &#x21d2; <tt>Object</tt> 
+    #<strong>import</strong>(*export_names)  &#x21d2; <tt><span class='object_link'>Import</span></tt> 
   
 
   
@@ -379,6 +409,19 @@ the default export is taken.</p>
     
   </div>
 
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'>Import</span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
 
 </div><table class="source_code">
   <tr>
@@ -478,9 +521,9 @@ the default export is taken.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Feb 20 12:29:20 2025 by
+  Generated on Mon Oct 19 14:25:11 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.37 (ruby-3.1.6).
+  0.9.45 (ruby-3.4.11).
 </div>
 
     </div>
