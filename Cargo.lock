@@ -819,37 +819,6 @@ dependencies = [
 
 [[package]]
 name = "deno_core"
-version = "0.256.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd5997286bcc46199bbae727f43ee65cf4bd073ac2d240a36a6ceae3bfab14ac"
-dependencies = [
- "anyhow",
- "bit-set",
- "bit-vec",
- "bytes",
- "cooked-waker",
- "deno_core_icudata",
- "deno_ops 0.132.0",
- "deno_unsync 0.3.2",
- "futures",
- "libc",
- "log",
- "memoffset 0.9.0",
- "parking_lot",
- "pin-project",
- "serde",
- "serde_json",
- "serde_v8 0.165.0",
- "smallvec",
- "sourcemap 7.0.1",
- "static_assertions",
- "tokio",
- "url",
- "v8 0.83.1",
-]
-
-[[package]]
-name = "deno_core"
 version = "0.260.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73aca42c38336874c2cd141182b7e782dfea25b8dc2ca1d699ce0e6b47f38ca9"
@@ -1244,21 +1213,6 @@ dependencies = [
 
 [[package]]
 name = "deno_ops"
-version = "0.132.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02163d08afdd6fcf21e37c399c7425987c7170203a853052a800e80c91c2e87b"
-dependencies = [
- "proc-macro-rules",
- "proc-macro2 1.0.76",
- "quote 1.0.35",
- "strum",
- "strum_macros",
- "syn 2.0.48",
- "thiserror",
-]
-
-[[package]]
-name = "deno_ops"
 version = "0.136.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "588b2d0792b1668e6aa85c082821c5815cb9dc974e9ec978387d9c9dda32c771"
@@ -1403,14 +1357,9 @@ dependencies = [
 
 [[package]]
 name = "deno_url"
-version = "0.136.0"
+version = "0.222.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7978221ce33221ac7a18b649a5a18fe7983fbe2fddf5a6959fc672089c10f9a9"
-dependencies = [
- "deno_core 0.256.0",
- "serde",
- "urlpattern",
-]
+checksum = "54c190c36940b8ba25043e2258775df3cd4af06f28c8a9efd28b50799efe2977"
 
 [[package]]
 name = "deno_web"
@@ -2505,7 +2454,7 @@ dependencies = [
  "deno_fetch 0.145.0",
  "deno_fs",
  "deno_runtime",
- "deno_url 0.136.0",
+ "deno_url 0.222.0",
  "deno_web",
  "deno_webidl 0.137.0",
  "lazy_static",
@@ -4203,21 +4152,6 @@ dependencies = [
  "smallvec",
  "thiserror",
  "v8 0.79.2",
-]
-
-[[package]]
-name = "serde_v8"
-version = "0.165.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88862d513bcbc04a7f93b0f454dffd0b01a5c0d8e1964c7532ec55f52b9a6351"
-dependencies = [
- "bytes",
- "derive_more",
- "num-bigint",
- "serde",
- "smallvec",
- "thiserror",
- "v8 0.83.1",
 ]
 
 [[package]]
