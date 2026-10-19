@@ -23,7 +23,7 @@ jobs:
           supported-ruby-platforms: |
             exclude: ["arm-linux", "aarch64-linux", "x64-mingw-ucrt", "x64-mingw32", "x86_64-linux-musl"]
           stable-ruby-versions: |
-            exclude: ["head", "2.7"]
+            exclude: ["head", "2.7", "3.0", "3.1"]
   cross-gem:
     name: Compile native gem for ${{ matrix.platform }}
     runs-on: ubuntu-latest
@@ -32,20 +32,20 @@ jobs:
       matrix:
         platform: ${{ fromJSON(needs.ci-data.outputs.result).supported-ruby-platforms }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.1"
+          ruby-version: "3.4"
 
       - uses: oxidize-rb/actions/cross-gem@main
         with:
           platform: ${{ matrix.platform }}
           ruby-versions: ${{ join(fromJSON(needs.ci-data.outputs.result).stable-ruby-versions, ',') }}
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v7
         with:
-          name: cross-gem
+          name: cross-gem-${{ matrix.platform }}
           path: ${{ steps.cross-gem.outputs.gem-path }}
 
       - name: Display structure of built gems

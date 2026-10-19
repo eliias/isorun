@@ -99,9 +99,10 @@ export default async function() {
 ## Ruby and platform support
 
 Ruby versions:
-  - `2.7`
-  - `3.0`
-  - `3.1`.
+  - `3.2`
+  - `3.3`
+  - `3.4`
+  - `4.0`
 
 Platforms and architectures:
   - `x86_64-linux`
