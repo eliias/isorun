@@ -11,11 +11,11 @@ jobs:
     name: Update gh-pages with docs
     steps:
       - name: Checkout this repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.1"
+          ruby-version: "3.4"
       - name: Install required gem dependencies
         run: gem install yard github-markup redcarpet --no-document
 
@@ -23,7 +23,7 @@ jobs:
         run: yardoc --output-dir ./doc
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
