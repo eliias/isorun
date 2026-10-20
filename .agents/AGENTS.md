@@ -9,6 +9,9 @@ The project was archived from 2024 to 2026. The last real code change before the
 archive was 8870aa5 (2024-01-23). All later commits up to 2025-02 came from
 dependabot.
 
+Design proposals live in `.docs/rfcs/`. RFC 0001 replaces the deno runtime with
+a custom runtime on rusty_v8.
+
 ## Layout
 
 - `lib/`: the Ruby API. `Isorun::Context` (import DSL, module reload in
