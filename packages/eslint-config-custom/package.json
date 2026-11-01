@@ -9,7 +9,7 @@
   "private": true,
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^8.71.2",
-    "@typescript-eslint/parser": "^8.71.2",
+    "@typescript-eslint/parser": "^8.72.1",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.0.1"
   }
