@@ -4,3 +4,8 @@
 # not, and they need to be included for the `embed` feature to work with static
 # Ruby.
 rustflags = ["-C", "link-dead-code=on"]
+
+[env]
+# Same flag as ext/isorun/extconf.rb, for cargo calls outside of the gem build
+# (clippy, tests). See the comment there.
+BINDGEN_EXTRA_CLANG_ARGS = "-std=gnu2x"
