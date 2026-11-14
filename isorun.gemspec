@@ -47,7 +47,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake-compiler-dock"
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "rspec-rails"
-  spec.add_development_dependency "simplecov", "~> 0.22.0"
+  spec.add_development_dependency "simplecov", "~> 1.2.0"
 
   spec.extensions = ["ext/isorun/extconf.rb"]
 end
