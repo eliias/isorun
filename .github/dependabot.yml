@@ -8,6 +8,10 @@ updates:
     directory: "/"
     schedule:
       interval: monthly
+    # The deno crates must move together, and RFC 0001 replaces them.
+    ignore:
+      - dependency-name: "deno_*"
+      - dependency-name: "v8"
   - package-ecosystem: bundler
     directory: "/"
     schedule:
